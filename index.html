@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Soccer Pong - Verde vs Grigio</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #050505;
+            color: #39FF14;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            touch-action: none; /* Impedisce lo scroll e lo zoom su mobile */
+            overscroll-behavior: none;
+        }
+
+        #game-container {
+            position: relative;
+            box-shadow: 0 0 50px rgba(57, 255, 20, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #39FF14;
+            /* Adattamento dinamico per tutti gli schermi (Responsive) */
+            width: 100%;
+            height: 100%;
+            max-width: 95vw;
+            max-height: 95vh;
+            aspect-ratio: 90 / 55;
+        }
+
+        canvas {
+            display: block;
+            background-color: #080a0c; /* Colore dark cyber */
+            width: 100%;
+            height: 100%;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #score-board {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-size: clamp(30px, 6vmin, 54px);
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(0,0,0,1);
+            gap: 50px;
+        }
+
+        .score-p1 { color: #39FF14; text-shadow: 0 0 15px #39FF14, 0 0 30px #39FF14; }
+        .score-p2 { color: #ffffff; text-shadow: 0 0 15px #ffffff, 0 0 30px #a8a9ad; }
+
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(20px, 4vmin, 40px);
+            font-weight: bold;
+            text-align: center;
+            background: rgba(5, 5, 5, 0.9);
+            padding: 5% 8%;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            border: 2px solid #39FF14;
+            color: #39FF14;
+            transition: opacity 0.3s;
+            text-transform: uppercase;
+            box-shadow: 0 0 30px rgba(57, 255, 20, 0.5);
+            z-index: 10;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #controls-info {
+            text-align: center;
+            padding: 10px;
+            font-size: clamp(10px, 2.5vmin, 14px);
+            color: #39FF14;
+            background: rgba(0,0,0,0.8);
+            border-top: 1px solid #39FF14;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <canvas id="gameCanvas" width="900" height="550"></canvas>
+        <div id="ui-layer">
+            <div id="score-board">
+                <span id="score1" class="score-p1">0</span>
+                <span>-</span>
+                <span id="score2" class="score-p2">0</span>
+            </div>
+            <div id="message">Clicca o premi SPAZIO per iniziare</div>
+            <div id="controls-info">
+                Tocca e tira indietro una tua pedina (Verde), poi rilascia per lanciarla! (Stile Angry Birds)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const score1El = document.getElementById('score1');
+        const score2El = document.getElementById('score2');
+        const messageEl = document.getElementById('message');
+
+        // Impostazioni di gioco
+        const GAME_STATE_START = 0;
+        const GAME_STATE_PLAYING = 1;
+        const GAME_STATE_GOAL = 2;
+        let gameState = GAME_STATE_START;
+
+        // Parametri Campo
+        const goalHeight = 160;
+        const goalWidth = 20;
+
+        // Effetti Visivi (Juice)
+        let particles = [];
+        let shakeTime = 0;
+        let shakeMagnitude = 0;
+
+        // Fisica Subbuteo
+        const friction = 0.96; // Attrito panno verde per pedine
+        const ballFriction = 0.98; // La palla rotola un po' di più
+        const maxBallSpeed = 18;
+
+        // Variabili Input e Slingshot (Fionda)
+        let pointer = { x: 0, y: 0, active: false };
+        let dragTarget = null;
+        let scoreP1 = 0;
+        let scoreP2 = 0;
+        let aiTimer = 0;
+
+        function handleStart() {
+            if (gameState !== GAME_STATE_PLAYING) {
+                if (gameState === GAME_STATE_START || gameState === GAME_STATE_GOAL) {
+                    resetPositions();
+                    gameState = GAME_STATE_PLAYING;
+                    showMessage("");
+                }
+                return true;
+            }
+            return false;
+        }
+
+        function updatePointer(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            let clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            if (clientX !== undefined && clientY !== undefined) {
+                pointer.x = (clientX - rect.left) * (canvas.width / rect.width);
+                pointer.y = (clientY - rect.top) * (canvas.height / rect.height);
+            }
+        }
+
+        function startDrag() {
+            for (let p of team1) {
+                let dx = pointer.x - p.x;
+                let dy = pointer.y - p.y;
+                if (dx * dx + dy * dy <= p.radius * p.radius) {
+                    dragTarget = p;
+                    // Salva la posizione iniziale per l'effetto fionda
+                    dragTarget.dragStartX = p.x;
+                    dragTarget.dragStartY = p.y;
+                    dragTarget.vx = 0;
+                    dragTarget.vy = 0;
+                    break;
+                }
+            }
+        }
+
+        function endDrag() {
+            if (dragTarget && pointer.active) {
+                // Calcola vettore di lancio: dalla posizione tirata indietro verso il punto originale
+                let dx = dragTarget.dragStartX - dragTarget.x;
+                let dy = dragTarget.dragStartY - dragTarget.y;
+                
+                // Applica l'impulso alla pedina (moltiplicatore di forza)
+                dragTarget.vx = dx * 0.35;
+                dragTarget.vy = dy * 0.35;
+                
+                // Crea scintille al momento del rilascio
+                createExplosion(dragTarget.dragStartX, dragTarget.dragStartY, '#39FF14', 10, 6, 4, 20);
+                triggerScreenShake(3, 2);
+
+                dragTarget = null;
+            }
+        }
+
+        canvas.addEventListener('mousedown', (e) => { 
+            updatePointer(e);
+            if (!handleStart()) { pointer.active = true; startDrag(); }
+        });
+        canvas.addEventListener('touchstart', (e) => { 
+            e.preventDefault(); 
+            updatePointer(e);
+            if (!handleStart()) { pointer.active = true; startDrag(); }
+        }, {passive: false});
+        
+        canvas.addEventListener('mousemove', (e) => { if (pointer.active) updatePointer(e); });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if (pointer.active) updatePointer(e); }, {passive: false});
+        
+        window.addEventListener('mouseup', () => { endDrag(); pointer.active = false; });
+        window.addEventListener('touchend', () => { endDrag(); pointer.active = false; });
+        window.addEventListener('touchcancel', () => { endDrag(); pointer.active = false; }); // Cattura l'uscita forzata del tocco
+
+        window.addEventListener('keydown', e => {
+            if (e.code === 'Space' && gameState !== GAME_STATE_PLAYING) {
+                handleStart();
+            }
+        });
+
+        // --- SISTEMA PARTICELLARE ---
+        class Particle {
+            constructor(x, y, color, speed, size, life) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * speed;
+                this.vy = (Math.random() - 0.5) * speed;
+                this.color = color;
+                this.size = size;
+                this.life = life;
+                this.maxLife = life;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life--;
+                this.size *= 0.95; // rimpicciolisce
+            }
+            draw(ctx) {
+                ctx.globalAlpha = Math.max(0, this.life / this.maxLife);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        function createExplosion(x, y, color, amount, speed, size, life) {
+            for (let i = 0; i < amount; i++) {
+                particles.push(new Particle(x, y, color, speed, size, life));
+            }
+        }
+
+        function triggerScreenShake(duration, magnitude) {
+            shakeTime = duration;
+            shakeMagnitude = magnitude;
+        }
+
+        // Classi Entità
+        class CircleEntity {
+            constructor(x, y, radius, mass) {
+                this.x = x;
+                this.y = y;
+                this.vx = 0;
+                this.vy = 0;
+                this.radius = radius;
+                this.mass = mass;
+            }
+
+            applyFriction(f) {
+                this.vx *= f;
+                this.vy *= f;
+                // Ferma completamente se la velocità è trascurabile
+                if (Math.abs(this.vx) < 0.05) this.vx = 0;
+                if (Math.abs(this.vy) < 0.05) this.vy = 0;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+            }
+        }
+
+        class Player extends CircleEntity {
+            constructor(x, y, isP1) {
+                super(x, y, 22, 2.5); // Massa aumentata per non rimbalzare troppo
+                this.isP1 = isP1;
+                this.startX = x;
+                this.startY = y;
+            }
+
+            resetPosition() {
+                this.x = this.startX;
+                this.y = this.startY;
+                this.vx = 0;
+                this.vy = 0;
+            }
+
+            draw(ctx) {
+                ctx.save();
+                
+                // Alone luminoso (Glow)
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
+                if (dragTarget === this) {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.shadowBlur = 25;
+                    ctx.shadowColor = '#ffffff';
+                } else {
+                    ctx.fillStyle = this.isP1 ? 'rgba(57, 255, 20, 0.3)' : 'rgba(255, 255, 255, 0.3)';
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = this.isP1 ? '#39FF14' : '#ffffff';
+                }
+                ctx.fill();
+
+                // Base metallica
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                let gradient = ctx.createRadialGradient(
+                    this.x - 5, this.y - 5, 2,
+                    this.x, this.y, this.radius
+                );
+
+                if (this.isP1) {
+                    // Elettronica scura
+                    gradient.addColorStop(0, '#2a2a2a');
+                    gradient.addColorStop(0.7, '#111111');
+                    gradient.addColorStop(1, '#000000');
+                    ctx.strokeStyle = '#39FF14'; // Bordo verde neon
+                } else {
+                    // Cyborg bianco metallizzato
+                    gradient.addColorStop(0, '#ffffff');
+                    gradient.addColorStop(0.4, '#e0e0e0');
+                    gradient.addColorStop(0.8, '#a8a9ad');
+                    gradient.addColorStop(1, '#555555');
+                    ctx.strokeStyle = '#ffffff'; // Bordo cromo
+                }
+
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Nucleo di energia centrale
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius * 0.4, 0, Math.PI * 2);
+                ctx.fillStyle = this.isP1 ? '#39FF14' : '#ffffff';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.isP1 ? '#39FF14' : '#ffffff';
+                ctx.fill();
+
+                // Circuiti a croce
+                ctx.shadowBlur = 0;
+                ctx.beginPath();
+                ctx.moveTo(this.x - this.radius * 0.8, this.y);
+                ctx.lineTo(this.x + this.radius * 0.8, this.y);
+                ctx.moveTo(this.x, this.y - this.radius * 0.8);
+                ctx.lineTo(this.x, this.y + this.radius * 0.8);
+                ctx.strokeStyle = this.isP1 ? '#39FF14' : '#888888';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.restore();
+            }
+        }
+
+        class Ball extends CircleEntity {
+            constructor(x, y) {
+                super(x, y, 14, 0.8); // Palla più grande e leggera rispetto ai giocatori
+                this.trail = [];
+            }
+
+            update() {
+                super.update();
+                // Effetto scia della palla
+                let speed = Math.hypot(this.vx, this.vy);
+                if (speed > 3) {
+                    this.trail.push({x: this.x, y: this.y, life: 10});
+                }
+                for (let i = this.trail.length - 1; i >= 0; i--) {
+                    this.trail[i].life--;
+                    if (this.trail[i].life <= 0) this.trail.splice(i, 1);
+                }
+            }
+
+            draw(ctx) {
+                ctx.save();
+                
+                // Disegna scia di energia
+                this.trail.forEach((t) => {
+                    ctx.beginPath();
+                    ctx.arc(t.x, t.y, this.radius * (t.life / 10), 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(57, 255, 20, ${t.life / 20})`;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#39FF14';
+                    ctx.fill();
+                });
+
+                // Globo di energia (Palla)
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                
+                let grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.5, '#aaffaa');
+                grad.addColorStop(1, '#39FF14');
+                
+                ctx.fillStyle = grad;
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#39FF14';
+                ctx.fill();
+
+                // Nucleo incandescente
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius * 0.4, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+
+                ctx.restore();
+            }
+        }
+
+        // Inizializzazione Squadre (5 contro 5)
+        const team1 = [
+            new Player(120, canvas.height / 2, true),       // Portiere
+            new Player(250, canvas.height / 2 - 120, true), // Difensore Su
+            new Player(250, canvas.height / 2 + 120, true), // Difensore Giù
+            new Player(400, canvas.height / 2 - 70, true),  // Attaccante Su
+            new Player(400, canvas.height / 2 + 70, true)   // Attaccante Giù
+        ];
+        
+        const team2 = [
+            new Player(canvas.width - 120, canvas.height / 2, false),
+            new Player(canvas.width - 250, canvas.height / 2 - 120, false),
+            new Player(canvas.width - 250, canvas.height / 2 + 120, false),
+            new Player(canvas.width - 400, canvas.height / 2 - 70, false),
+            new Player(canvas.width - 400, canvas.height / 2 + 70, false)
+        ];
+        
+        const ball = new Ball(canvas.width / 2, canvas.height / 2);
+
+        function showMessage(text) {
+            if (text === "") {
+                messageEl.classList.add('hidden');
+            } else {
+                messageEl.textContent = text;
+                messageEl.classList.remove('hidden');
+            }
+        }
+
+        function resetPositions() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.vx = 0;
+            ball.vy = 0;
+            team1.forEach(p => p.resetPosition());
+            team2.forEach(p => p.resetPosition());
+            dragTarget = null;
+        }
+
+        function drawField() {
+            // Sfondo Dark Cyber
+            ctx.fillStyle = '#080a0c';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Griglia Olografica
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(57, 255, 20, 0.15)';
+            for(let i=0; i<canvas.width; i+=40) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+            for(let i=0; i<canvas.height; i+=40) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+            }
+
+            ctx.save();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#39FF14';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#39FF14';
+
+            // Bordo esterno luminoso
+            ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+            // Linea di metà campo
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 20);
+            ctx.lineTo(canvas.width / 2, canvas.height - 20);
+            ctx.stroke();
+
+            // Cerchio di centrocampo
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 70, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Punto centrale
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#39FF14';
+            ctx.fill();
+
+            // Area di rigore sinistra
+            ctx.strokeRect(20, canvas.height / 2 - 140, 120, 280);
+            ctx.strokeRect(20, canvas.height / 2 - 60, 40, 120);
+            
+            // Area di rigore destra
+            ctx.strokeRect(canvas.width - 140, canvas.height / 2 - 140, 120, 280);
+            ctx.strokeRect(canvas.width - 60, canvas.height / 2 - 60, 40, 120);
+
+            // Porte (Olografiche)
+            const goalYStart = canvas.height / 2 - goalHeight / 2;
+            
+            // Porta Verde (Sinistra)
+            ctx.fillStyle = 'rgba(57, 255, 20, 0.1)';
+            ctx.fillRect(0, goalYStart, 20, goalHeight);
+            ctx.strokeRect(0, goalYStart, 20, goalHeight);
+
+            // Porta Grigia/Cyborg (Destra)
+            ctx.strokeStyle = '#ffffff';
+            ctx.shadowColor = '#ffffff';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(canvas.width - 20, goalYStart, 20, goalHeight);
+            ctx.strokeRect(canvas.width - 20, goalYStart, 20, goalHeight);
+
+            ctx.restore();
+        }
+
+        function handleAI() {
+            if (gameState !== GAME_STATE_PLAYING) return;
+            
+            aiTimer--;
+            if (aiTimer <= 0) {
+                // Scegli la pedina Grigia migliore per tirare
+                let bestPlayer = null;
+                let minDist = Infinity;
+                
+                for (let p of team2) {
+                    // L'IA tira solo con pedine quasi ferme
+                    if (Math.abs(p.vx) < 1 && Math.abs(p.vy) < 1) {
+                        let d = Math.hypot(ball.x - p.x, ball.y - p.y);
+                        
+                        // L'IA preferisce le pedine che si trovano "dietro" la palla per spingerla verso la tua porta
+                        if (p.x > ball.x - 15) d *= 0.6; 
+                        
+                        if (d < minDist) { 
+                            minDist = d; 
+                            bestPlayer = p; 
+                        }
+                    }
+                }
+                
+                if (bestPlayer && minDist < 500) { // Tira se è a distanza ragionevole
+                    let dx = ball.x - bestPlayer.x;
+                    let dy = ball.y - bestPlayer.y;
+                    
+                    // Aggiungi un po' di imperfezione
+                    dx += (Math.random() - 0.5) * 30;
+                    dy += (Math.random() - 0.5) * 30;
+
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    let power = Math.min((dist / 8), 24); // Regola forza IA
+                    
+                    bestPlayer.vx = (dx / dist) * power;
+                    bestPlayer.vy = (dy / dist) * power;
+                    
+                    // Scintille visive quando l'IA lancia una pedina (Scintille Bianche Cyborg)
+                    createExplosion(bestPlayer.x, bestPlayer.y, '#ffffff', 8, 5, 3, 20);
+
+                    // Attesa tra un tiro e l'altro (più reattiva)
+                    aiTimer = 40 + Math.random() * 60;
+                } else {
+                    aiTimer = 20; // Riprova presto se non ha trovato pedine buone
+                }
+            }
+        }
+
+        function resolveCollision(entity1, entity2) {
+            let dx = entity2.x - entity1.x;
+            let dy = entity2.y - entity1.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            let minDist = entity1.radius + entity2.radius;
+
+            if (distance < minDist) {
+                let overlap = minDist - distance;
+                let nx = dx / distance;
+                let ny = dy / distance;
+
+                let totalMass = entity1.mass + entity2.mass;
+                let m1Ratio = entity2.mass / totalMass;
+                let m2Ratio = entity1.mass / totalMass;
+
+                entity1.x -= nx * overlap * m1Ratio;
+                entity1.y -= ny * overlap * m1Ratio;
+                entity2.x += nx * overlap * m2Ratio;
+                entity2.y += ny * overlap * m2Ratio;
+
+                let kx = (entity1.vx - entity2.vx);
+                let ky = (entity1.vy - entity2.vy);
+                
+                // Restituzione (bounciness) - 0.8 per pedine contro palla per colpi più secchi
+                let restitution = 0.8; 
+                let p = (1 + restitution) * (nx * kx + ny * ky) / totalMass;
+                
+                entity1.vx -= p * entity2.mass * nx;
+                entity1.vy -= p * entity2.mass * ny;
+                entity2.vx += p * entity1.mass * nx;
+                entity2.vy += p * entity1.mass * ny;
+
+                // --- EFFETTI VISIVI COLLISIONE ---
+                let impactSpeed = Math.abs(p);
+                if (impactSpeed > 5) {
+                    let impactX = entity1.x + nx * entity1.radius;
+                    let impactY = entity1.y + ny * entity1.radius;
+                    // Scintille verdi/bianche per il tema cyborg
+                    let color = (entity1 === ball || entity2 === ball) ? '#39FF14' : '#ffffff';
+                    
+                    // Scintille sul punto di impatto
+                    createExplosion(impactX, impactY, color, Math.min(impactSpeed * 2, 15), impactSpeed, 3, 20);
+                    
+                    // Shake leggero sui colpi forti
+                    if (impactSpeed > 12) triggerScreenShake(6, impactSpeed * 0.3); 
+                }
+            }
+        }
+
+        function updatePhysics() {
+            if (gameState !== GAME_STATE_PLAYING) return;
+
+            // Aggiorna posizione della pedina trascinata (Effetto elastico Angry Birds)
+            if (dragTarget && pointer.active) {
+                let dx = pointer.x - dragTarget.dragStartX;
+                let dy = pointer.y - dragTarget.dragStartY;
+                let dist = Math.hypot(dx, dy);
+                let maxPull = 100; // Massima estensione dell'elastico
+
+                if (dist > maxPull) {
+                    dx = (dx / dist) * maxPull;
+                    dy = (dy / dist) * maxPull;
+                }
+
+                dragTarget.x = dragTarget.dragStartX + dx;
+                dragTarget.y = dragTarget.dragStartY + dy;
+            }
+
+            const allEntities = [...team1, ...team2, ball];
+
+            // Applica attrito e aggiorna posizioni
+            for (let entity of allEntities) {
+                if (entity === dragTarget) continue; // Salta la fisica per la pedina che stiamo trascinando
+
+                if (entity === ball) entity.applyFriction(ballFriction);
+                else entity.applyFriction(friction);
+                
+                // Limite velocità palla
+                if (entity === ball) {
+                    let speed = Math.hypot(ball.vx, ball.vy);
+                    if (speed > maxBallSpeed) {
+                        ball.vx = (ball.vx / speed) * maxBallSpeed;
+                        ball.vy = (ball.vy / speed) * maxBallSpeed;
+                    }
+                }
+                
+                entity.update();
+            }
+
+            // Collisioni tra tutte le entità
+            for (let i = 0; i < allEntities.length; i++) {
+                for (let j = i + 1; j < allEntities.length; j++) {
+                    // Evita collisioni con la pedina mentre viene tirata nell'elastico
+                    if (allEntities[i] === dragTarget || allEntities[j] === dragTarget) continue;
+                    resolveCollision(allEntities[i], allEntities[j]);
+                }
+            }
+
+            // Collisioni muri - Pedine
+            [...team1, ...team2].forEach(p => {
+                // In Subbuteo possono muoversi liberamente su tutto il campo
+                if (p.x < p.radius + 20) { p.x = p.radius + 20; p.vx *= -0.5; }
+                if (p.x > canvas.width - p.radius - 20) { p.x = canvas.width - p.radius - 20; p.vx *= -0.5; }
+                if (p.y < p.radius + 20) { p.y = p.radius + 20; p.vy *= -0.5; }
+                if (p.y > canvas.height - p.radius - 20) { p.y = canvas.height - p.radius - 20; p.vy *= -0.5; }
+            });
+
+            // Collisioni palla-muri
+            if (ball.y < ball.radius + 20) { ball.y = ball.radius + 20; ball.vy *= -0.8; }
+            if (ball.y > canvas.height - ball.radius - 20) { ball.y = canvas.height - ball.radius - 20; ball.vy *= -0.8; }
+
+            const goalYStart = canvas.height / 2 - goalHeight / 2;
+            const goalYEnd = canvas.height / 2 + goalHeight / 2;
+
+            if (ball.x < ball.radius + 20) {
+                if (ball.y > goalYStart && ball.y < goalYEnd) {
+                    scoreGoal(2); // P2 segna
+                } else {
+                    ball.x = ball.radius + 20;
+                    ball.vx *= -0.8;
+                }
+            }
+            
+            if (ball.x > canvas.width - ball.radius - 20) {
+                if (ball.y > goalYStart && ball.y < goalYEnd) {
+                    scoreGoal(1); // P1 segna
+                } else {
+                    ball.x = canvas.width - ball.radius - 20;
+                    ball.vx *= -0.8;
+                }
+            }
+        }
+
+        function scoreGoal(playerScored) {
+            gameState = GAME_STATE_GOAL;
+            triggerScreenShake(20, 8); // Shake forte per il goal!
+
+            if (playerScored === 1) {
+                scoreP1++;
+                score1El.innerText = scoreP1;
+                // Esplosione di energia Verde Elettronica
+                createExplosion(canvas.width - 20, canvas.height/2, '#39FF14', 150, 18, 5, 80);
+                showMessage("SYSTEM OVERRIDE\n[GOAL VERDE]");
+            } else {
+                scoreP2++;
+                score2El.innerText = scoreP2;
+                // Esplosione di metallo bianco Cyborg
+                createExplosion(20, canvas.height/2, '#ffffff', 150, 18, 5, 80);
+                showMessage("SYSTEM OVERRIDE\n[GOAL BIANCO]");
+            }
+            
+            if (scoreP1 >= 5) {
+                setTimeout(() => showMessage("VITTORIA TERMINALE\n[VERDE]"), 1000);
+                scoreP1 = 0; scoreP2 = 0;
+                setTimeout(() => { score1El.innerText = 0; score2El.innerText = 0; }, 3000);
+            } else if (scoreP2 >= 5) {
+                setTimeout(() => showMessage("VITTORIA TERMINALE\n[BIANCO]"), 1000);
+                scoreP1 = 0; scoreP2 = 0;
+                setTimeout(() => { score1El.innerText = 0; score2El.innerText = 0; }, 3000);
+            }
+        }
+
+        function drawSlingshot() {
+            if (dragTarget && pointer.active) {
+                let dx = dragTarget.dragStartX - dragTarget.x;
+                let dy = dragTarget.dragStartY - dragTarget.y;
+                let pullDist = Math.hypot(dx, dy);
+
+                // Disegna l'elastico
+                ctx.beginPath();
+                ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY);
+                ctx.lineTo(dragTarget.x, dragTarget.y);
+                ctx.strokeStyle = 'rgba(57, 255, 20, 0.5)';
+                ctx.lineWidth = 6;
+                ctx.stroke();
+
+                // Punto di ancoraggio
+                ctx.beginPath();
+                ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, 5, 0, Math.PI*2);
+                ctx.fillStyle = '#39FF14';
+                ctx.fill();
+
+                // Disegna la traiettoria prevista (stile pallini di Angry Birds)
+                if (pullDist > 10) {
+                    ctx.fillStyle = 'rgba(57, 255, 20, 0.8)';
+                    for (let i = 1; i <= 6; i++) {
+                        let projX = dragTarget.dragStartX + (dx * 0.8 * i);
+                        let projY = dragTarget.dragStartY + (dy * 0.8 * i);
+                        ctx.beginPath();
+                        ctx.arc(projX, projY, Math.max(1, 8 - i), 0, Math.PI*2);
+                        ctx.fill();
+                    }
+                }
+            }
+        }
+
+        function gameLoop() {
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            
+            // Applica Screen Shake
+            if (shakeTime > 0) {
+                let dx = (Math.random() - 0.5) * shakeMagnitude;
+                let dy = (Math.random() - 0.5) * shakeMagnitude;
+                ctx.translate(dx, dy);
+                shakeTime--;
+                shakeMagnitude *= 0.9;
+            }
+
+            drawField();
+            handleAI();
+            updatePhysics();
+
+            // Aggiorna e disegna particelle
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw(ctx);
+                if (particles[i].life <= 0) particles.splice(i, 1);
+            }
+
+            drawSlingshot(); // Disegna prima delle pedine così l'elastico sta sotto
+
+            team1.forEach(p => p.draw(ctx));
+            team2.forEach(p => p.draw(ctx));
+            ball.draw(ctx);
+
+            ctx.restore();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        requestAnimationFrame(gameLoop);
+
+    </script>
+</body>
+</html>
