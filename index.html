@@ -9,7 +9,7 @@
     <!-- OTTIMIZZAZIONI DI CARICAMENTO (Preconnect & Preload) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="image" href="logoStadioVerticale.jpeg">
+    <link rel="preload" as="image" href="logocyborgwinner.jpeg">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,700;1,700&family=Montserrat:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet">
     
     <title>CyberTorneo - TV Broadcast Edition</title>
@@ -93,7 +93,7 @@
         #teams-scroll-area::-webkit-scrollbar-track { background: transparent; }
         #teams-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
 
-        /* Sponsor Bumper Broadcast TV Cinematografico */
+        /* Sponsor Bumper Broadcast TV con Sfondo Immagine Animato */
         #sponsor-bumper {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -103,17 +103,13 @@
         #sponsor-bumper::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: #000;
-            background-image: url('logoStadioVerticale.jpeg');
+            background-image: url('logocyborgwinner.jpeg');
             background-size: cover; background-position: center;
             z-index: -1; will-change: transform, filter;
         }
         #sponsor-bumper.active { opacity: 1; pointer-events: auto; }
         #sponsor-bumper.active::before { animation: gentlePulse 2.5s infinite alternate ease-in-out; }
         
-        .sponsor-logo { 
-            width: clamp(120px, 25vmin, 200px); height: clamp(120px, 25vmin, 200px); margin-bottom: 15px; 
-            filter: drop-shadow(0 0 40px rgba(57,255,20,0.8)); transform: translateY(30px); opacity: 0; 
-        }
         .sponsor-title { 
             position: relative; font-family: 'Chakra Petch', sans-serif; font-size: clamp(30px, 8vmin, 60px); 
             color: #ffffff; font-weight: 900; letter-spacing: 4px; line-height: 1.1; text-align: center; 
@@ -123,8 +119,7 @@
         .sponsor-title span { color: #39FF14; text-shadow: 0 10px 30px rgba(0,0,0,1), 0 0 25px rgba(57,255,20,0.9); }
         
         /* Animazioni Ingresso Cinematografiche */
-        #sponsor-bumper.active .sponsor-logo { animation: epicDrop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s forwards; }
-        #sponsor-bumper.active .sponsor-title { animation: epicDrop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards; }
+        #sponsor-bumper.active .sponsor-title { animation: epicDrop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s forwards; }
         
         /* Effetto Riflesso Lente (Shine) sul Titolo */
         .sponsor-title::after {
@@ -324,7 +319,6 @@
         
         <!-- TV Broadcast Sponsor Bumper Cinematografico -->
         <div id="sponsor-bumper">
-            <svg class="sponsor-logo" viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
             <div class="sponsor-title">BETTING<br><span>EXCHANGE</span> ROOM</div>
         </div>
 
