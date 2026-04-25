@@ -292,21 +292,22 @@
 
         <div id="ui-layer">
             <div id="top-hud">
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                    <div id="score-board">
-                        <span id="score1" class="score-p1">0</span>
-                        <div id="turn-indicator">⏳</div>
-                        <span id="score2" class="score-p2">0</span>
-                    </div>
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-size: 11px; color: #aaa; margin-top: 8px; letter-spacing: 3px; text-shadow: 0 0 5px rgba(255,255,255,0.3); font-weight: 700; text-transform: uppercase;">
-                        FIRST TO 3 WINS
-                    </div>
+                <div id="score-board">
+                    <span id="score1" class="score-p1">0</span>
+                    <div id="turn-indicator">⏳</div>
+                    <span id="score2" class="score-p2">0</span>
                 </div>
             </div>
 
             <!-- Menu Principale e Selezione -->
             <div id="team-menu" class="overlay-screen">
                 <h2>🎮 SELECT MODE</h2>
+                
+                <!-- Indicatore First To 3 Wins super visibile e integrato nel design -->
+                <div style="font-family: 'Chakra Petch', sans-serif; font-size: 14px; color: #fff; margin-bottom: 15px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,255,102,0.8); font-weight: 700; text-transform: uppercase; background: rgba(0,255,102,0.15); padding: 6px 20px; border-radius: 4px; border: 1px solid var(--p1-neon); box-shadow: 0 0 15px rgba(0,255,102,0.2);">
+                    🏆 3 GOALS TO WIN
+                </div>
+
                 <div style="display:flex; width:100%; gap:8px; margin-bottom:10px;">
                     <button id="btn-1p" class="mode-btn active">1 PLAYER</button>
                     <button id="btn-2p" class="mode-btn">2 PLAYERS</button>
@@ -334,7 +335,13 @@
             <div id="game-over-screen" class="overlay-screen hidden">
                 <h2 id="game-over-title" style="font-size: clamp(28px, 6vmin, 45px);">MATCH OVER</h2>
                 <div id="game-over-icon" style="margin-bottom: 15px;"></div>
-                <button id="restart-btn" class="action-btn">🏠 MENU</button>
+                
+                <!-- Bottone Menu con lo stesso stile rotondo del tasto Play -->
+                <button id="restart-btn" class="logo-start-btn" style="margin-top: 0;">
+                    <svg viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
+                    <span>MENU</span>
+                    <div class="finger-icon">👆</div>
+                </button>
             </div>
 
             <div id="message"></div>
@@ -481,7 +488,7 @@
             bumper.classList.add('active');
             
             if (!sponsorVoicePlayed) {
-                commentatorSpeak("Sponsored by Betting Exchange Room.", 1.0, 1.0);
+                commentatorSpeak("Sponsored by Betting Exchange Room. 3 goals to win.", 1.0, 1.0);
                 sponsorVoicePlayed = true; 
             }
 
@@ -1055,7 +1062,7 @@
                     showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#FF0055');
                     commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! ${teamNamesEn[selectedTeamP2]} scores!`, 1.3, 1.4);
                 } else {
-                    showMessage(`SYSTEM OVERRIDE`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#ffffff');
+                    showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#ffffff');
                     commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! The System scores!`, 1.3, 0.8);
                 }
             }
