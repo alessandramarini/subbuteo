@@ -9,6 +9,15 @@
     <!-- Importazione Font da Gaming -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* Anti-Glitch Globale per Smartphone */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -20,20 +29,13 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            height: 100dvh; /* Ottimizzazione per barre di navigazione dinamiche su mobile */
+            height: 100dvh;
             width: 100vw;
             overflow: hidden;
-            
-            /* Ottimizzazioni Mobile e App-like */
-            touch-action: none;
+            touch-action: none; /* Blocca scorrimento nativo */
             overscroll-behavior: none;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            -webkit-tap-highlight-color: transparent; /* Rimuove il flash blu al tocco su iOS/Android */
         }
 
-        /* SVG Icon Utilities */
         .icon {
             width: 1em;
             height: 1em;
@@ -55,7 +57,7 @@
             100% { box-shadow: 0 0 70px rgba(57, 255, 20, 0.6), inset 0 0 20px rgba(57, 255, 20, 0.3); }
         }
 
-        /* Formula per proporzioni perfette su ogni dispositivo senza tagli */
+        /* Proporzioni perfette Responsive (Mobile & Desktop) */
         #game-container {
             position: relative;
             width: 100vw;
@@ -64,13 +66,12 @@
             max-width: calc(100dvh * (900 / 550));
             max-height: 100vh;
             max-height: 100dvh;
-            
-            box-shadow: 0 0 50px rgba(57, 255, 20, 0.3);
             border-radius: 10px;
             overflow: hidden;
             border: 2px solid #39FF14;
             box-sizing: border-box;
             animation: neonPulse 2s infinite alternate;
+            background-color: #080a0c;
         }
 
         @media (min-aspect-ratio: 900/550) {
@@ -84,12 +85,23 @@
 
         canvas {
             display: block;
-            background-color: #080a0c;
             width: 100%;
             height: 100%;
+            z-index: 1;
         }
 
-        /* Scanlines per Effetto Monitor da Gaming */
+        /* Flash Screen (Hit Stop) */
+        #screen-flash {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            pointer-events: none;
+            z-index: 8;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+
+        /* Effetto Monitor da Gaming */
         #scanlines {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -106,10 +118,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            pointer-events: none; /* Il canvas sotto riceve i tocchi */
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            z-index: 10;
         }
 
         #top-hud {
@@ -117,7 +130,6 @@
             justify-content: center;
             align-items: flex-start;
             padding: 10px 20px;
-            z-index: 10;
         }
 
         #score-board {
@@ -129,7 +141,6 @@
             font-style: italic;
             text-shadow: 0 0 20px rgba(0,0,0,1);
             gap: 5vw;
-            pointer-events: auto;
         }
 
         .score-p1 { color: #39FF14; text-shadow: 0 0 15px #39FF14, 0 0 30px #39FF14; }
@@ -182,8 +193,7 @@
         }
 
         .hidden {
-            opacity: 0;
-            pointer-events: none !important;
+            display: none !important;
         }
 
         .overlay-screen {
@@ -195,9 +205,7 @@
             border: 2px solid #39FF14;
             padding: 20px;
             text-align: center;
-            z-index: 15;
-            transition: opacity 0.3s;
-            pointer-events: auto;
+            pointer-events: auto; /* I menu possono essere cliccati */
             -webkit-clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
             clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
             box-shadow: inset 0 0 30px rgba(57, 255, 20, 0.15), 0 0 50px rgba(0,0,0,0.8);
@@ -205,6 +213,7 @@
             -webkit-backdrop-filter: blur(4px);
             width: 85%;
             max-width: 650px;
+            z-index: 20;
         }
 
         .overlay-screen h3 {
@@ -247,12 +256,9 @@
             position: relative;
             overflow: hidden;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
             min-width: 90px;
         }
 
-        /* Effetto Riflesso Laser sui Bottoni */
         .cyber-btn::before {
             content: '';
             position: absolute;
@@ -263,10 +269,7 @@
         }
 
         @media (hover: hover) {
-            .cyber-btn:hover::before {
-                left: 150%;
-            }
-
+            .cyber-btn:hover::before { left: 150%; }
             .cyber-btn:hover {
                 border-color: #39FF14;
                 color: #ffffff;
@@ -286,11 +289,26 @@
             z-index: 2;
         }
 
-        .flag-icon {
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
-            -webkit-filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
-            font-size: 1.2em;
+        /* Divise Nazionali CSS */
+        .mini-jersey {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.6), 0 0 5px rgba(0,0,0,0.8);
         }
+        
+        .jersey-ita { background: #0055A4; border: 2px solid #FFFFFF; }
+        .jersey-mex { background: #006847; border: 2px solid #FFFFFF; }
+        .jersey-bra { background: #FFDF00; border: 2px solid #009B3A; }
+        .jersey-eng { 
+            background: 
+                linear-gradient(90deg, transparent 42%, #CE1124 42%, #CE1124 58%, transparent 58%), 
+                linear-gradient(180deg, transparent 42%, #CE1124 42%, #CE1124 58%, transparent 58%), 
+                #FFFFFF; 
+            border: 2px solid #CE1124; 
+        }
+        .jersey-esp { background: #C60B1E; border: 2px solid #FFC400; }
 
         #controls-info {
             text-align: center;
@@ -299,7 +317,6 @@
             color: #39FF14;
             background: linear-gradient(180deg, rgba(57,255,20,0.1) 0%, rgba(0,0,0,0.9) 100%);
             border-top: 2px solid #39FF14;
-            z-index: 10;
         }
 
         #bracket-screen, #game-over-screen {
@@ -310,8 +327,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 20;
-            transition: opacity 0.3s;
+            z-index: 30;
             pointer-events: auto;
         }
 
@@ -339,10 +355,7 @@
             transform: scale(1.1);
         }
 
-        .stage-box.passed {
-            border-color: #aaa;
-            color: #aaa;
-        }
+        .stage-box.passed { border-color: #aaa; color: #aaa; }
 
         .action-btn {
             margin-top: 20px;
@@ -353,29 +366,18 @@
             padding: 10px 40px;
             cursor: pointer;
             box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
-            transition: all 0.1s;
             pointer-events: auto;
             -webkit-clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
             clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
             font-family: inherit;
         }
 
-        @media (hover: hover) {
-            .action-btn:hover {
-                background: rgba(57, 255, 20, 0.2);
-                box-shadow: 0 0 30px rgba(57, 255, 20, 0.6);
-            }
-        }
-
-        .action-btn:active {
-            transform: scale(0.9);
-        }
-
+        .action-btn:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
 
-    <!-- Definizione Libreria SVG per Loghi Aziendali e Medaglie -->
+    <!-- SVG Libreria -->
     <svg style="display: none;">
         <defs>
             <radialGradient id="gradMetallic" cx="30%" cy="30%" r="70%">
@@ -428,6 +430,8 @@
 
     <div id="game-container">
         <canvas id="gameCanvas" width="900" height="550"></canvas>
+        <div id="screen-flash"></div> <!-- Effetto lampo -->
+        
         <div id="ui-layer">
             <div id="scanlines"></div>
             <div id="top-hud">
@@ -466,13 +470,13 @@
                 <button id="start-btn" class="action-btn">▶️</button>
             </div>
 
-            <!-- Tabellone / Bracket con Medaglie Aziendali -->
+            <!-- Tabellone Campionato -->
             <div id="bracket-screen" class="hidden">
                 <h2 style="color: #39FF14; font-size: clamp(40px, 8vmin, 60px); margin: 0 0 20px 0; text-shadow: 0 0 20px #39FF14;">🏆</h2>
                 <div id="stage-1" class="stage-box">1️⃣ <svg class="icon medal"><use href="#gear-bronze"></use></svg></div>
                 <div id="stage-2" class="stage-box">2️⃣ <svg class="icon medal"><use href="#gear-silver"></use></svg></div>
                 <div id="stage-3" class="stage-box">3️⃣ <svg class="icon medal"><use href="#gear-gold"></use></svg></div>
-                <button id="next-match-btn" class="action-btn hidden">▶️</button>
+                <button id="next-match-btn" class="action-btn">▶️</button>
             </div>
 
             <!-- Game Over -->
@@ -484,26 +488,19 @@
             <!-- Messaggi in Gioco -->
             <div id="message" class="hidden"></div>
             
-            <div id="controls-info">
-                👆 ↔️ 🟢 🚀
-            </div>
+            <div id="controls-info">👆 ↔️ 🟢 🚀</div>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // --- OTTIMIZZAZIONI MOBILE GLOBALI ---
-        // Blocca il menù contestuale (pressione prolungata su iOS/Android che potrebbe fermare il gioco)
-        window.addEventListener('contextmenu', e => e.preventDefault());
-        
-        // Previene lo scroll della pagina (bounce-effect, pull-to-refresh e gestures indesiderate)
+        // Blocco Scorrimento per Mobile Gaming perfetto
         document.addEventListener('touchmove', e => { 
             if(e.cancelable) e.preventDefault(); 
         }, { passive: false });
-        // --------------------------------------
+        window.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
 
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
         const score1El = document.getElementById('score1');
         const score2El = document.getElementById('score2');
         const messageEl = document.getElementById('message');
@@ -512,9 +509,9 @@
         const bracketScreenEl = document.getElementById('bracket-screen');
         const gameOverScreenEl = document.getElementById('game-over-screen');
         const gameOverIconEl = document.getElementById('game-over-icon');
-        const nextMatchBtn = document.getElementById('next-match-btn');
+        const screenFlash = document.getElementById('screen-flash');
 
-        // Impostazioni di gioco
+        // Stati
         const GAME_STATE_MENU = 0;
         const GAME_STATE_BRACKET = 1;
         const GAME_STATE_PLAYING = 2;
@@ -522,30 +519,31 @@
         const GAME_STATE_OVER = 4;
         let gameState = GAME_STATE_MENU;
 
-        // Gestione Campionato
         let currentStage = 1;
         const maxStages = 3;
-
-        // Gestione Turni
         let currentTurn = 1; 
         let isMoving = false; 
 
-        // Parametri Campo & Fisica
-        const goalHeight = 160;
-        const goalWidth = 20;
+        // Emozioni & Game Feel (Juice)
+        let hitStopFrames = 0; // Congelamento schermo per colpi duri
         let particles = [];
         let shakeTime = 0;
         let shakeMagnitude = 0;
+
+        // Fisica e Controllo
+        const goalHeight = 160;
+        const goalWidth = 20;
         const friction = 0.96; 
-        const ballFriction = 0.98; 
-        const maxBallSpeed = 18;
+        const ballFriction = 0.985; 
+        const maxBallSpeed = 22; // Aumentato per "Super Tiri"
+        const maxDragPull = 120; // Elastico più lungo
         let pointer = { x: 0, y: 0, active: false };
         let dragTarget = null;
         let scoreP1 = 0;
         let scoreP2 = 0;
         let aiTimer = 60;
 
-        // Dati Nazionali
+        // Nazionali
         const teamsData = {
             'ITA': { primary: '#0055A4', secondary: '#FFFFFF', type: 'solid' },
             'MEX': { primary: '#006847', secondary: '#FFFFFF', type: 'solid' },
@@ -555,26 +553,22 @@
         };
         let selectedTeam = 'ITA';
 
-        // Event Listeners Menu Squadre
+        // --- SISTEMA MENU ---
         document.querySelectorAll('#team-menu .cyber-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                e.stopPropagation();
                 document.querySelectorAll('#team-menu .cyber-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 selectedTeam = btn.getAttribute('data-team');
             });
         });
 
-        // Flusso Menu -> Bracket -> Gioco
-        document.getElementById('start-btn').addEventListener('click', (e) => {
-            e.stopPropagation();
+        document.getElementById('start-btn').addEventListener('click', () => {
             currentStage = 1;
             teamMenuEl.classList.add('hidden');
             showBracket();
         });
 
-        nextMatchBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+        document.getElementById('next-match-btn').addEventListener('click', () => {
             bracketScreenEl.classList.add('hidden');
             currentTurn = 1;
             resetPositions();
@@ -584,8 +578,7 @@
             showMessage("");
         });
 
-        document.getElementById('restart-btn').addEventListener('click', (e) => {
-            e.stopPropagation();
+        document.getElementById('restart-btn').addEventListener('click', () => {
             gameOverScreenEl.classList.add('hidden');
             teamMenuEl.classList.remove('hidden');
             currentStage = 1;
@@ -598,8 +591,6 @@
         function showBracket() {
             gameState = GAME_STATE_BRACKET;
             bracketScreenEl.classList.remove('hidden');
-            nextMatchBtn.classList.remove('hidden');
-            
             for (let i = 1; i <= maxStages; i++) {
                 let box = document.getElementById(`stage-${i}`);
                 box.className = 'stage-box';
@@ -608,7 +599,26 @@
             }
         }
 
-        // Disegna Logo Aziendale su Canvas
+        function showMessage(htmlContent) {
+            if (htmlContent === "") {
+                messageEl.classList.add('hidden');
+            } else {
+                messageEl.innerHTML = htmlContent;
+                messageEl.classList.remove('hidden');
+            }
+        }
+
+        // Funzioni visive (Flash, Shake)
+        function triggerFlash(intensity = 0.5) {
+            screenFlash.style.opacity = intensity;
+            setTimeout(() => { screenFlash.style.opacity = 0; }, 50);
+        }
+
+        function triggerScreenShake(duration, magnitude) {
+            shakeTime = duration; shakeMagnitude = magnitude;
+        }
+
+        // --- GRAFICA E RENDERING ---
         function drawGearLogo(ctx, x, y, radius) {
             ctx.save();
             let gradient = ctx.createRadialGradient(x-radius*0.2, y-radius*0.2, 1, x, y, radius);
@@ -645,7 +655,6 @@
             ctx.restore();
         }
 
-        // Disegna maglia nazionale
         function drawJersey(ctx, x, y, radius, teamCode) {
             const team = teamsData[teamCode] || teamsData['ITA'];
             ctx.save();
@@ -709,22 +718,23 @@
             updateTurnUI();
         }
 
-        function updatePointer(e) {
+        // --- SISTEMA DI INPUT (Mouse + Touch Universale) ---
+        function updatePointer(clientX, clientY) {
             const rect = canvas.getBoundingClientRect();
-            // Compatibilità API PointerEvent
-            if (e.clientX !== undefined && e.clientY !== undefined) {
-                pointer.x = (e.clientX - rect.left) * (canvas.width / rect.width);
-                pointer.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+            if (clientX !== undefined && clientY !== undefined) {
+                pointer.x = (clientX - rect.left) * (canvas.width / rect.width);
+                pointer.y = (clientY - rect.top) * (canvas.height / rect.height);
             }
         }
 
         function startDrag() {
-            if (gameState !== GAME_STATE_PLAYING || currentTurn !== 1 || isMoving) return;
+            if (gameState !== GAME_STATE_PLAYING || currentTurn !== 1 || isMoving || hitStopFrames > 0) return;
 
             for (let p of team1) {
                 let dx = pointer.x - p.x;
                 let dy = pointer.y - p.y;
-                if (dx * dx + dy * dy <= p.radius * p.radius) {
+                let hitRadius = p.radius * 3; // Hitbox gigante per Mobile
+                if (dx * dx + dy * dy <= hitRadius * hitRadius) {
                     dragTarget = p;
                     dragTarget.dragStartX = p.x;
                     dragTarget.dragStartY = p.y;
@@ -741,97 +751,81 @@
                 let dy = dragTarget.dragStartY - dragTarget.y;
                 
                 isMoving = true;
-                dragTarget.vx = dx * 0.35;
-                dragTarget.vy = dy * 0.35;
+                // Moltiplicatore spinta leggermente aumentato per gioco più esplosivo
+                dragTarget.vx = dx * 0.40;
+                dragTarget.vy = dy * 0.40;
                 
                 createExplosion(dragTarget.dragStartX, dragTarget.dragStartY, '#39FF14', 10, 6, 4, 20);
-                triggerScreenShake(3, 2);
+                triggerScreenShake(4, 3);
 
                 dragTarget = null;
             }
+            pointer.active = false;
         }
 
-        // Pointer Events Unificati per tutti i dispositivi
-        canvas.addEventListener('pointerdown', (e) => { 
-            e.preventDefault(); 
-            updatePointer(e);
+        // Listener Mouse
+        canvas.addEventListener('mousedown', (e) => { 
+            updatePointer(e.clientX, e.clientY);
             pointer.active = true;
             startDrag();
         });
-        
-        canvas.addEventListener('pointermove', (e) => { 
-            e.preventDefault(); 
-            if (pointer.active) updatePointer(e); 
+        window.addEventListener('mousemove', (e) => { 
+            if (pointer.active) updatePointer(e.clientX, e.clientY); 
         });
-        
-        window.addEventListener('pointerup', (e) => { 
-            endDrag(); 
-            pointer.active = false; 
-        });
-        
-        window.addEventListener('pointercancel', (e) => { 
-            endDrag(); 
-            pointer.active = false; 
-        });
+        window.addEventListener('mouseup', endDrag);
 
+        // Listener Touch
+        canvas.addEventListener('touchstart', (e) => { 
+            if(e.touches.length > 0) {
+                updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+                pointer.active = true;
+                startDrag();
+            }
+        }, {passive: false});
+        window.addEventListener('touchmove', (e) => { 
+            if (pointer.active && e.touches.length > 0) {
+                updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, {passive: false});
+        window.addEventListener('touchend', endDrag);
+        window.addEventListener('touchcancel', endDrag);
+
+
+        // --- ENTITA' E FISICA ---
         class Particle {
             constructor(x, y, color, speed, size, life) {
-                this.x = x;
-                this.y = y;
+                this.x = x; this.y = y;
                 this.vx = (Math.random() - 0.5) * speed;
                 this.vy = (Math.random() - 0.5) * speed;
-                this.color = color;
-                this.size = size;
-                this.life = life;
-                this.maxLife = life;
+                this.color = color; this.size = size;
+                this.life = life; this.maxLife = life;
             }
             update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.life--;
-                this.size *= 0.95;
+                this.x += this.vx; this.y += this.vy;
+                this.life--; this.size *= 0.95;
             }
             draw(ctx) {
                 ctx.globalAlpha = Math.max(0, this.life / this.maxLife);
                 ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
                 ctx.globalAlpha = 1.0;
             }
         }
 
         function createExplosion(x, y, color, amount, speed, size, life) {
-            for (let i = 0; i < amount; i++) {
-                particles.push(new Particle(x, y, color, speed, size, life));
-            }
-        }
-
-        function triggerScreenShake(duration, magnitude) {
-            shakeTime = duration;
-            shakeMagnitude = magnitude;
+            for (let i = 0; i < amount; i++) particles.push(new Particle(x, y, color, speed, size, life));
         }
 
         class CircleEntity {
             constructor(x, y, radius, mass) {
-                this.x = x;
-                this.y = y;
-                this.vx = 0;
-                this.vy = 0;
-                this.radius = radius;
-                this.mass = mass;
+                this.x = x; this.y = y; this.vx = 0; this.vy = 0;
+                this.radius = radius; this.mass = mass;
             }
-
             applyFriction(f) {
-                this.vx *= f;
-                this.vy *= f;
-                if (Math.abs(this.vx) < 0.05) this.vx = 0;
-                if (Math.abs(this.vy) < 0.05) this.vy = 0;
+                this.vx *= f; this.vy *= f;
             }
-
             update() {
-                this.x += this.vx;
-                this.y += this.vy;
+                this.x += this.vx; this.y += this.vy;
             }
         }
 
@@ -839,46 +833,28 @@
             constructor(x, y, isP1) {
                 super(x, y, 22, 2.5);
                 this.isP1 = isP1;
-                this.startX = x;
-                this.startY = y;
+                this.startX = x; this.startY = y;
             }
-
             resetPosition() {
-                this.x = this.startX;
-                this.y = this.startY;
-                this.vx = 0;
-                this.vy = 0;
+                this.x = this.startX; this.y = this.startY; this.vx = 0; this.vy = 0;
             }
-
             draw(ctx) {
                 ctx.save();
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
                 if (dragTarget === this) {
-                    ctx.fillStyle = '#ffffff';
-                    ctx.shadowBlur = 25;
-                    ctx.shadowColor = '#ffffff';
+                    ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 25; ctx.shadowColor = '#ffffff';
                 } else {
                     ctx.fillStyle = this.isP1 ? 'rgba(57, 255, 20, 0.3)' : 'rgba(255, 255, 255, 0.3)';
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = this.isP1 ? '#39FF14' : '#ffffff';
+                    ctx.shadowBlur = 15; ctx.shadowColor = this.isP1 ? '#39FF14' : '#ffffff';
                 }
                 ctx.fill();
 
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.isP1 ? '#111' : '#222';
-                ctx.fill();
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = this.isP1 ? '#39FF14' : '#888';
-                ctx.stroke();
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.isP1 ? '#111' : '#222'; ctx.fill();
+                ctx.lineWidth = 2; ctx.strokeStyle = this.isP1 ? '#39FF14' : '#888'; ctx.stroke();
                 
-                if (this.isP1) {
-                    drawJersey(ctx, this.x, this.y, this.radius * 0.75, selectedTeam);
-                } else {
-                    drawGearLogo(ctx, this.x, this.y, this.radius * 0.85);
-                }
-
+                if (this.isP1) drawJersey(ctx, this.x, this.y, this.radius * 0.75, selectedTeam);
+                else drawGearLogo(ctx, this.x, this.y, this.radius * 0.85);
                 ctx.restore();
             }
         }
@@ -888,49 +864,45 @@
                 super(x, y, 14, 0.8);
                 this.trail = [];
             }
-
             update() {
                 super.update();
                 let speed = Math.hypot(this.vx, this.vy);
-                if (speed > 3) {
-                    this.trail.push({x: this.x, y: this.y, life: 10});
-                }
+                if (speed > 3) this.trail.push({x: this.x, y: this.y, life: 10, speed: speed});
                 for (let i = this.trail.length - 1; i >= 0; i--) {
                     this.trail[i].life--;
                     if (this.trail[i].life <= 0) this.trail.splice(i, 1);
                 }
             }
-
             draw(ctx) {
                 ctx.save();
                 
+                // Scia infuocata per i super-tiri
                 this.trail.forEach((t) => {
-                    ctx.beginPath();
+                    ctx.beginPath(); 
                     ctx.arc(t.x, t.y, this.radius * (t.life / 10), 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(57, 255, 20, ${t.life / 20})`;
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = '#39FF14';
+                    let isFire = t.speed > 15; // Soglia per il plasma
+                    ctx.fillStyle = isFire ? `rgba(255, 80, 0, ${t.life / 15})` : `rgba(57, 255, 20, ${t.life / 20})`;
+                    ctx.shadowBlur = isFire ? 15 : 10; 
+                    ctx.shadowColor = isFire ? '#FF5000' : '#39FF14'; 
                     ctx.fill();
                 });
 
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                let currentSpeed = Math.hypot(this.vx, this.vy);
                 
                 let grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
-                grad.addColorStop(0, '#ffffff');
-                grad.addColorStop(0.5, '#aaffaa');
-                grad.addColorStop(1, '#39FF14');
+                if (currentSpeed > 15) {
+                    // Palla incandescente
+                    grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.5, '#ffffaa'); grad.addColorStop(1, '#FF5000');
+                    ctx.shadowColor = '#FF5000';
+                } else {
+                    grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.5, '#aaffaa'); grad.addColorStop(1, '#39FF14');
+                    ctx.shadowColor = '#39FF14';
+                }
                 
-                ctx.fillStyle = grad;
-                ctx.shadowBlur = 20;
-                ctx.shadowColor = '#39FF14';
-                ctx.fill();
-
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius * 0.4, 0, Math.PI * 2);
-                ctx.fillStyle = '#ffffff';
-                ctx.fill();
-
+                ctx.fillStyle = grad; ctx.shadowBlur = 20; ctx.fill();
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius * 0.4, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff'; ctx.fill();
                 ctx.restore();
             }
         }
@@ -950,234 +922,154 @@
             new Player(canvas.width - 400, canvas.height / 2 - 70, false),
             new Player(canvas.width - 400, canvas.height / 2 + 70, false)
         ];
-        
         const ball = new Ball(canvas.width / 2, canvas.height / 2);
 
-        function showMessage(htmlContent) {
-            if (htmlContent === "") {
-                messageEl.classList.add('hidden');
-            } else {
-                messageEl.innerHTML = htmlContent;
-                messageEl.classList.remove('hidden');
-            }
-        }
-
         function resetPositions() {
-            ball.x = canvas.width / 2;
-            ball.y = canvas.height / 2;
-            ball.vx = 0;
-            ball.vy = 0;
-            team1.forEach(p => p.resetPosition());
-            team2.forEach(p => p.resetPosition());
-            dragTarget = null;
-            isMoving = false;
+            ball.x = canvas.width / 2; ball.y = canvas.height / 2;
+            ball.vx = 0; ball.vy = 0;
+            team1.forEach(p => p.resetPosition()); team2.forEach(p => p.resetPosition());
+            dragTarget = null; isMoving = false; hitStopFrames = 0;
             updateTurnUI();
         }
 
         function drawField() {
-            ctx.fillStyle = '#080a0c';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#080a0c'; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Griglia Animata 
             let time = performance.now() / 40;
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'rgba(57, 255, 20, 0.15)';
-            
+            ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(57, 255, 20, 0.15)';
             let offsetX = (time / 2) % 40;
             for(let i = -40 + offsetX; i < canvas.width; i += 40) {
                 ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
             }
-            
             let offsetY = time % 40;
             for(let i = -40 + offsetY; i < canvas.height; i += 40) {
                 ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
             }
 
             ctx.save();
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = '#39FF14';
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = '#39FF14';
-
+            ctx.lineWidth = 3; ctx.strokeStyle = '#39FF14'; ctx.shadowBlur = 15; ctx.shadowColor = '#39FF14';
             ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
-
-            ctx.beginPath();
-            ctx.moveTo(canvas.width / 2, 20);
-            ctx.lineTo(canvas.width / 2, canvas.height - 20);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.arc(canvas.width / 2, canvas.height / 2, 70, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.arc(canvas.width / 2, canvas.height / 2, 4, 0, Math.PI * 2);
-            ctx.fillStyle = '#39FF14';
-            ctx.fill();
-
-            ctx.strokeRect(20, canvas.height / 2 - 140, 120, 280);
-            ctx.strokeRect(20, canvas.height / 2 - 60, 40, 120);
-            
-            ctx.strokeRect(canvas.width - 140, canvas.height / 2 - 140, 120, 280);
-            ctx.strokeRect(canvas.width - 60, canvas.height / 2 - 60, 40, 120);
+            ctx.beginPath(); ctx.moveTo(canvas.width / 2, 20); ctx.lineTo(canvas.width / 2, canvas.height - 20); ctx.stroke();
+            ctx.beginPath(); ctx.arc(canvas.width / 2, canvas.height / 2, 70, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(canvas.width / 2, canvas.height / 2, 4, 0, Math.PI * 2); ctx.fillStyle = '#39FF14'; ctx.fill();
+            ctx.strokeRect(20, canvas.height / 2 - 140, 120, 280); ctx.strokeRect(20, canvas.height / 2 - 60, 40, 120);
+            ctx.strokeRect(canvas.width - 140, canvas.height / 2 - 140, 120, 280); ctx.strokeRect(canvas.width - 60, canvas.height / 2 - 60, 40, 120);
 
             const goalYStart = canvas.height / 2 - goalHeight / 2;
-            
-            ctx.fillStyle = 'rgba(57, 255, 20, 0.1)';
-            ctx.fillRect(0, goalYStart, 20, goalHeight);
-            ctx.strokeRect(0, goalYStart, 20, goalHeight);
-
-            ctx.strokeStyle = '#ffffff';
-            ctx.shadowColor = '#ffffff';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.fillRect(canvas.width - 20, goalYStart, 20, goalHeight);
-            ctx.strokeRect(canvas.width - 20, goalYStart, 20, goalHeight);
-
+            ctx.fillStyle = 'rgba(57, 255, 20, 0.1)'; ctx.fillRect(0, goalYStart, 20, goalHeight); ctx.strokeRect(0, goalYStart, 20, goalHeight);
+            ctx.strokeStyle = '#ffffff'; ctx.shadowColor = '#ffffff'; ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(canvas.width - 20, goalYStart, 20, goalHeight); ctx.strokeRect(canvas.width - 20, goalYStart, 20, goalHeight);
             ctx.restore();
         }
 
         function handleAI() {
-            if (gameState !== GAME_STATE_PLAYING || currentTurn !== 2 || isMoving) return;
-            
+            if (gameState !== GAME_STATE_PLAYING || currentTurn !== 2 || isMoving || hitStopFrames > 0) return;
             aiTimer--;
             if (aiTimer <= 0) {
-                let bestPlayer = null;
-                let minDist = Infinity;
-                
+                let bestPlayer = null, minDist = Infinity;
                 for (let p of team2) {
                     let d = Math.hypot(ball.x - p.x, ball.y - p.y);
                     if (p.x > ball.x - 15) d *= 0.6; 
-                    
-                    if (d < minDist) { 
-                        minDist = d; 
-                        bestPlayer = p; 
-                    }
+                    if (d < minDist) { minDist = d; bestPlayer = p; }
                 }
-                
                 if (bestPlayer) { 
-                    let dx = ball.x - bestPlayer.x;
-                    let dy = ball.y - bestPlayer.y;
-                    
-                    let errorMargin = 40 - (currentStage * 10); 
-                    dx += (Math.random() - 0.5) * errorMargin;
-                    dy += (Math.random() - 0.5) * errorMargin;
-
+                    let dx = ball.x - bestPlayer.x, dy = ball.y - bestPlayer.y;
+                    let errorMargin = 30 - (currentStage * 10); 
+                    dx += (Math.random() - 0.5) * errorMargin; dy += (Math.random() - 0.5) * errorMargin;
                     let dist = Math.sqrt(dx * dx + dy * dy);
-                    
-                    let powerMultiplier = 5.5 - (currentStage * 0.8);
-                    let maxPower = 18 + (currentStage * 3); 
-                    let power = Math.min((dist / powerMultiplier), maxPower); 
-                    
-                    bestPlayer.vx = (dx / dist) * power;
-                    bestPlayer.vy = (dy / dist) * power;
-                    
-                    isMoving = true;
-                    aiTimer = 60 - (currentStage * 10);
-                    
+                    let powerMultiplier = 5.0 - (currentStage * 0.8);
+                    let power = Math.min((dist / powerMultiplier), 20 + (currentStage * 3)); 
+                    bestPlayer.vx = (dx / dist) * power; bestPlayer.vy = (dy / dist) * power;
+                    isMoving = true; aiTimer = 40 - (currentStage * 5); // IA più aggressiva
                     createExplosion(bestPlayer.x, bestPlayer.y, '#ffffff', 8, 5, 3, 20);
                 }
             }
         }
 
-        function resolveCollision(entity1, entity2) {
-            let dx = entity2.x - entity1.x;
-            let dy = entity2.y - entity1.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-            let minDist = entity1.radius + entity2.radius;
-
-            if (distance < minDist) {
-                let overlap = minDist - distance;
-                let nx = dx / distance;
-                let ny = dy / distance;
-
-                let totalMass = entity1.mass + entity2.mass;
-                let m1Ratio = entity2.mass / totalMass;
-                let m2Ratio = entity1.mass / totalMass;
-
-                entity1.x -= nx * overlap * m1Ratio;
-                entity1.y -= ny * overlap * m1Ratio;
-                entity2.x += nx * overlap * m2Ratio;
-                entity2.y += ny * overlap * m2Ratio;
-
-                let kx = (entity1.vx - entity2.vx);
-                let ky = (entity1.vy - entity2.vx);
+        function resolveCollision(e1, e2) {
+            let dx = e2.x - e1.x, dy = e2.y - e1.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+            let minDist = e1.radius + e2.radius;
+            if (dist < minDist) {
+                let overlap = minDist - dist;
+                let nx = dx / dist, ny = dy / dist;
+                let totalMass = e1.mass + e2.mass;
+                let m1Ratio = e2.mass / totalMass, m2Ratio = e1.mass / totalMass;
+                e1.x -= nx * overlap * m1Ratio; e1.y -= ny * overlap * m1Ratio;
+                e2.x += nx * overlap * m2Ratio; e2.y += ny * overlap * m2Ratio;
                 
-                let restitution = 0.8; 
-                let p = (1 + restitution) * (nx * kx + ny * ky) / totalMass;
+                let kx = (e1.vx - e2.vx), ky = (e1.vy - e2.vy);
+                let p = (1 + 0.8) * (nx * kx + ny * ky) / totalMass;
+                e1.vx -= p * e2.mass * nx; e1.vy -= p * e2.mass * ny;
+                e2.vx += p * e1.mass * nx; e2.vy += p * e1.mass * ny;
                 
-                entity1.vx -= p * entity2.mass * nx;
-                entity1.vy -= p * entity2.mass * ny;
-                entity2.vx += p * entity1.mass * nx;
-                entity2.vy += p * entity1.mass * ny;
-
-                let impactSpeed = Math.abs(p);
-                if (impactSpeed > 5) {
-                    let impactX = entity1.x + nx * entity1.radius;
-                    let impactY = entity1.y + ny * entity1.radius;
-                    let color = (entity1 === ball || entity2 === ball) ? '#39FF14' : '#ffffff';
+                let imp = Math.abs(p);
+                if (imp > 5) {
+                    createExplosion(e1.x + nx * e1.radius, e1.y + ny * e1.radius, (e1===ball||e2===ball)?'#39FF14':'#ffffff', Math.min(imp*2, 20), imp, 3, 20);
                     
-                    createExplosion(impactX, impactY, color, Math.min(impactSpeed * 2, 15), impactSpeed, 3, 20);
-                    if (impactSpeed > 12) triggerScreenShake(6, impactSpeed * 0.3); 
+                    // HIT STOP & FLASH: Effetti adrenalinici per colpi devastanti
+                    if (imp > 15) {
+                        triggerScreenShake(10, imp * 0.4); 
+                        hitStopFrames = 4; // Congela il gioco per 4 frame
+                        triggerFlash(0.3); // Flash bianco
+                    } else if (imp > 8) {
+                        triggerScreenShake(5, imp * 0.2); 
+                    }
                 }
             }
         }
 
-        function checkAnyMovement(entities) {
-            for (let e of entities) {
-                if (Math.hypot(e.vx, e.vy) > 0.05) return true;
-            }
-            return false;
+        function forceStopAll(entities) {
+            entities.forEach(e => { e.vx = 0; e.vy = 0; });
         }
 
         function updatePhysics() {
             if (gameState !== GAME_STATE_PLAYING) return;
+            
+            // Hit Stop: Se attivo, non aggiornare la fisica
+            if (hitStopFrames > 0) {
+                hitStopFrames--;
+                return; 
+            }
 
             if (dragTarget && pointer.active) {
-                let dx = pointer.x - dragTarget.dragStartX;
-                let dy = pointer.y - dragTarget.dragStartY;
+                let dx = pointer.x - dragTarget.dragStartX, dy = pointer.y - dragTarget.dragStartY;
                 let dist = Math.hypot(dx, dy);
-                let maxPull = 100;
-
-                if (dist > maxPull) {
-                    dx = (dx / dist) * maxPull;
-                    dy = (dy / dist) * maxPull;
+                if (dist > maxDragPull) { dx = (dx / dist) * maxDragPull; dy = (dy / dist) * maxDragPull; }
+                dragTarget.x = dragTarget.dragStartX + dx; dragTarget.y = dragTarget.dragStartY + dy;
+            }
+            const allEnt = [...team1, ...team2, ball];
+            for (let e of allEnt) {
+                if (e === dragTarget) continue;
+                e.applyFriction(e === ball ? ballFriction : friction);
+                if (e === ball) {
+                    let s = Math.hypot(ball.vx, ball.vy);
+                    if (s > maxBallSpeed) { ball.vx = (ball.vx/s)*maxBallSpeed; ball.vy = (ball.vy/s)*maxBallSpeed; }
                 }
-
-                dragTarget.x = dragTarget.dragStartX + dx;
-                dragTarget.y = dragTarget.dragStartY + dy;
+                e.update();
             }
 
-            const allEntities = [...team1, ...team2, ball];
-
-            for (let entity of allEntities) {
-                if (entity === dragTarget) continue;
-
-                if (entity === ball) entity.applyFriction(ballFriction);
-                else entity.applyFriction(friction);
-                
-                if (entity === ball) {
-                    let speed = Math.hypot(ball.vx, ball.vy);
-                    if (speed > maxBallSpeed) {
-                        ball.vx = (ball.vx / speed) * maxBallSpeed;
-                        ball.vy = (ball.vy / speed) * maxBallSpeed;
-                    }
+            // Snappy Turns: Soglia alzata a 0.2 per fermare le pedine ed evitare scivolamenti infiniti
+            let isAnythingMoving = false;
+            for (let e of allEnt) {
+                if (Math.hypot(e.vx, e.vy) > 0.2) {
+                    isAnythingMoving = true;
+                    break;
                 }
-                
-                entity.update();
             }
 
-            let currentlyMoving = checkAnyMovement(allEntities);
-            if (isMoving && !currentlyMoving && !dragTarget) {
-                isMoving = false;
+            if (isMoving && !isAnythingMoving && !dragTarget) {
+                forceStopAll(allEnt); // Inchioda tutto
+                isMoving = false; 
                 switchTurn();
-            } else if (!isMoving && currentlyMoving) {
+            } else if (!isMoving && isAnythingMoving) {
                 isMoving = true;
             }
 
-            for (let i = 0; i < allEntities.length; i++) {
-                for (let j = i + 1; j < allEntities.length; j++) {
-                    if (allEntities[i] === dragTarget || allEntities[j] === dragTarget) continue;
-                    resolveCollision(allEntities[i], allEntities[j]);
+            for (let i = 0; i < allEnt.length; i++) {
+                for (let j = i + 1; j < allEnt.length; j++) {
+                    if (allEnt[i] === dragTarget || allEnt[j] === dragTarget) continue;
+                    resolveCollision(allEnt[i], allEnt[j]);
                 }
             }
 
@@ -1191,52 +1083,36 @@
             if (ball.y < ball.radius + 20) { ball.y = ball.radius + 20; ball.vy *= -0.8; }
             if (ball.y > canvas.height - ball.radius - 20) { ball.y = canvas.height - ball.radius - 20; ball.vy *= -0.8; }
 
-            const goalYStart = canvas.height / 2 - goalHeight / 2;
-            const goalYEnd = canvas.height / 2 + goalHeight / 2;
-
+            const gy1 = canvas.height/2 - goalHeight/2, gy2 = canvas.height/2 + goalHeight/2;
             if (ball.x < ball.radius + 20) {
-                if (ball.y > goalYStart && ball.y < goalYEnd) {
-                    scoreGoal(2); 
-                } else {
-                    ball.x = ball.radius + 20;
-                    ball.vx *= -0.8;
-                }
+                if (ball.y > gy1 && ball.y < gy2) scoreGoal(2); else { ball.x = ball.radius + 20; ball.vx *= -0.8; }
             }
-            
             if (ball.x > canvas.width - ball.radius - 20) {
-                if (ball.y > goalYStart && ball.y < goalYEnd) {
-                    scoreGoal(1); 
-                } else {
-                    ball.x = canvas.width - ball.radius - 20;
-                    ball.vx *= -0.8;
-                }
+                if (ball.y > gy1 && ball.y < gy2) scoreGoal(1); else { ball.x = canvas.width - ball.radius - 20; ball.vx *= -0.8; }
             }
         }
 
         function scoreGoal(playerScored) {
-            gameState = GAME_STATE_GOAL;
-            isMoving = false; 
-            triggerScreenShake(20, 8); 
+            gameState = GAME_STATE_GOAL; isMoving = false; 
+            hitStopFrames = 10; // Congela pesantemente al gol
+            triggerFlash(0.8);
+            triggerScreenShake(30, 12); // Mega Shake
+            
+            forceStopAll([...team1, ...team2, ball]);
 
             if (playerScored === 1) {
-                scoreP1++;
-                score1El.innerText = scoreP1;
-                currentTurn = 2; 
-                createExplosion(canvas.width - 20, canvas.height/2, '#39FF14', 150, 18, 5, 80);
+                scoreP1++; score1El.innerText = scoreP1; currentTurn = 2; 
+                createExplosion(canvas.width - 20, canvas.height/2, '#39FF14', 200, 25, 6, 100);
                 showMessage(`<div>⚽ 🟢</div>`);
             } else {
-                scoreP2++;
-                score2El.innerText = scoreP2;
-                currentTurn = 1;
-                createExplosion(20, canvas.height/2, '#ffffff', 150, 18, 5, 80);
+                scoreP2++; score2El.innerText = scoreP2; currentTurn = 1;
+                createExplosion(20, canvas.height/2, '#ffffff', 200, 25, 6, 100);
                 showMessage(`<div>⚽ <svg class="icon" style="font-size:1.2em;"><use href="#gear-metallic"></use></svg></div>`);
             }
-            
             updateTurnUI();
 
             if (scoreP1 >= 5 || scoreP2 >= 5) {
                 let winner = scoreP1 >= 5 ? 1 : 2;
-
                 setTimeout(() => {
                     if (winner === 1) {
                         if (currentStage >= maxStages) {
@@ -1245,10 +1121,7 @@
                             gameOverScreenEl.classList.remove('hidden');
                         } else {
                             showMessage(`<div>🏆 🟢</div>`);
-                            setTimeout(() => {
-                                currentStage++;
-                                showBracket();
-                            }, 2000);
+                            setTimeout(() => { currentStage++; showBracket(); }, 2000);
                         }
                     } else {
                         gameState = GAME_STATE_OVER;
@@ -1258,84 +1131,47 @@
                 }, 1500);
             } else {
                 setTimeout(() => {
-                    if (gameState === GAME_STATE_GOAL) {
-                        resetPositions();
-                        gameState = GAME_STATE_PLAYING;
-                        showMessage("");
-                    }
+                    if (gameState === GAME_STATE_GOAL) { resetPositions(); gameState = GAME_STATE_PLAYING; showMessage(""); }
                 }, 2000);
             }
         }
 
         function drawSlingshot() {
             if (dragTarget && pointer.active && currentTurn === 1) {
-                let dx = dragTarget.dragStartX - dragTarget.x;
-                let dy = dragTarget.dragStartY - dragTarget.y;
+                let dx = dragTarget.dragStartX - dragTarget.x, dy = dragTarget.dragStartY - dragTarget.y;
+                ctx.beginPath(); ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY); ctx.lineTo(dragTarget.x, dragTarget.y);
+                ctx.strokeStyle = 'rgba(57, 255, 20, 0.5)'; ctx.lineWidth = 6; ctx.stroke();
+                ctx.beginPath(); ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, 5, 0, Math.PI*2); ctx.fillStyle = '#39FF14'; ctx.fill();
                 let pullDist = Math.hypot(dx, dy);
-
-                ctx.beginPath();
-                ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY);
-                ctx.lineTo(dragTarget.x, dragTarget.y);
-                ctx.strokeStyle = 'rgba(57, 255, 20, 0.5)';
-                ctx.lineWidth = 6;
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, 5, 0, Math.PI*2);
-                ctx.fillStyle = '#39FF14';
-                ctx.fill();
-
                 if (pullDist > 10) {
                     ctx.fillStyle = 'rgba(57, 255, 20, 0.8)';
                     for (let i = 1; i <= 6; i++) {
-                        let projX = dragTarget.dragStartX + (dx * 0.8 * i);
-                        let projY = dragTarget.dragStartY + (dy * 0.8 * i);
-                        ctx.beginPath();
-                        ctx.arc(projX, projY, Math.max(1, 8 - i), 0, Math.PI*2);
-                        ctx.fill();
+                        ctx.beginPath(); ctx.arc(dragTarget.dragStartX + (dx * 0.8 * i), dragTarget.dragStartY + (dy * 0.8 * i), Math.max(1, 8 - i), 0, Math.PI*2); ctx.fill();
                     }
                 }
             }
         }
 
         function gameLoop() {
-            ctx.fillStyle = '#1a1a1a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+            ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.save();
-            
             if (shakeTime > 0) {
-                let dx = (Math.random() - 0.5) * shakeMagnitude;
-                let dy = (Math.random() - 0.5) * shakeMagnitude;
-                ctx.translate(dx, dy);
-                shakeTime--;
-                shakeMagnitude *= 0.9;
+                ctx.translate((Math.random() - 0.5) * shakeMagnitude, (Math.random() - 0.5) * shakeMagnitude);
+                shakeTime--; shakeMagnitude *= 0.9;
             }
-
-            drawField();
-            handleAI();
-            updatePhysics();
-
+            drawField(); handleAI(); updatePhysics();
             for (let i = particles.length - 1; i >= 0; i--) {
-                particles[i].update();
-                particles[i].draw(ctx);
+                particles[i].update(); particles[i].draw(ctx);
                 if (particles[i].life <= 0) particles.splice(i, 1);
             }
-
             drawSlingshot(); 
-
-            team1.forEach(p => p.draw(ctx));
-            team2.forEach(p => p.draw(ctx));
-            ball.draw(ctx);
-
+            team1.forEach(p => p.draw(ctx)); team2.forEach(p => p.draw(ctx)); ball.draw(ctx);
             ctx.restore();
-
             requestAnimationFrame(gameLoop);
         }
 
         updateTurnUI();
         requestAnimationFrame(gameLoop);
-
     </script>
 </body>
 </html>
