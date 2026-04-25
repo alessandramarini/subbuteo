@@ -72,45 +72,76 @@
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(5, 6, 10, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); border-top: 3px solid var(--p1-neon);
             padding: 20px 15px; text-align: center; pointer-events: auto; box-shadow: 0 20px 40px rgba(0,0,0,1);
             backdrop-filter: var(--panel-blur); -webkit-backdrop-filter: var(--panel-blur); width: 90%; max-width: 400px; z-index: 20; display: flex; flex-direction: column; align-items: center;
-            max-height: 95vh; overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none;
+            max-height: 95vh; overflow-y: hidden; /* Scroll gestito internamente */
             clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
             will-change: opacity, transform;
         }
-        .overlay-screen::-webkit-scrollbar { display: none; }
         .hidden { display: none !important; pointer-events: none; }
         .overlay-screen h2 {
             margin: 0 0 10px 0; font-size: clamp(20px, 5vmin, 30px); text-transform: uppercase; letter-spacing: 3px; font-style: italic;
             background: linear-gradient(to right, #ffffff, #aaaaaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 5px rgba(255,255,255,0.2));
         }
 
+        /* Scrollbar custom e gestibile su mobile */
+        #teams-scroll-area {
+            width: 100%; max-height: 40vh; overflow-y: auto; margin-bottom: 10px; padding-right: 5px;
+            -webkit-overflow-scrolling: touch; /* Scroll fluido nativo iOS */
+            touch-action: pan-y; /* Permette lo scorrimento verticale */
+            scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;
+        }
         #teams-scroll-area::-webkit-scrollbar { width: 4px; }
         #teams-scroll-area::-webkit-scrollbar-track { background: transparent; }
         #teams-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
 
-        /* Sponsor Bumper Broadcast TV con Sfondo Immagine Animato */
+        /* Sponsor Bumper Broadcast TV Cinematografico */
         #sponsor-bumper {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-            padding-bottom: 12vh; /* Testo spinto in basso per non coprire il logo centrale dello stadio */
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
             overflow: hidden;
         }
         #sponsor-bumper::before {
-            content: '';
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: #000;
             background-image: url('logoStadioVerticale.jpeg');
             background-size: cover; background-position: center;
-            z-index: -1;
-            will-change: transform, filter;
+            z-index: -1; will-change: transform, filter;
         }
         #sponsor-bumper.active { opacity: 1; pointer-events: auto; }
-        #sponsor-bumper.active::before { animation: gentlePulse 1.5s infinite alternate ease-in-out; }
+        #sponsor-bumper.active::before { animation: gentlePulse 2.5s infinite alternate ease-in-out; }
         
-        .sponsor-title { font-family: 'Chakra Petch', sans-serif; font-size: clamp(26px, 7vmin, 50px); color: #ffffff; font-weight: 900; letter-spacing: 2px; text-align: center; text-transform: uppercase; text-shadow: 0 0 20px rgba(0,0,0,0.9), 0 4px 8px #000; margin-bottom: 15px; z-index: 1;}
-        .sponsor-title span { color: #39FF14; text-shadow: 0 0 20px rgba(57,255,20,0.9), 0 4px 8px #000; }
-        .sponsor-copy { font-family: 'Chakra Petch', sans-serif; font-size: clamp(12px, 3vmin, 18px); color: #fff; font-weight: 700; letter-spacing: 1px; text-align: center; text-transform: uppercase; background: rgba(0,0,0,0.8); padding: 8px 20px; border-radius: 4px; border: 1px solid var(--p1-neon); box-shadow: 0 0 15px rgba(0,255,102,0.3); z-index: 1; backdrop-filter: blur(5px);}
+        .sponsor-logo { 
+            width: clamp(120px, 25vmin, 200px); height: clamp(120px, 25vmin, 200px); margin-bottom: 15px; 
+            filter: drop-shadow(0 0 40px rgba(57,255,20,0.8)); transform: translateY(30px); opacity: 0; 
+        }
+        .sponsor-title { 
+            position: relative; font-family: 'Chakra Petch', sans-serif; font-size: clamp(30px, 8vmin, 60px); 
+            color: #ffffff; font-weight: 900; letter-spacing: 4px; line-height: 1.1; text-align: center; 
+            text-transform: uppercase; text-shadow: 0 10px 30px rgba(0,0,0,1), 0 0 20px rgba(255,255,255,0.3); 
+            transform: translateY(30px); opacity: 0; z-index: 1;
+        }
+        .sponsor-title span { color: #39FF14; text-shadow: 0 10px 30px rgba(0,0,0,1), 0 0 25px rgba(57,255,20,0.9); }
+        
+        /* Animazioni Ingresso Cinematografiche */
+        #sponsor-bumper.active .sponsor-logo { animation: epicDrop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s forwards; }
+        #sponsor-bumper.active .sponsor-title { animation: epicDrop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards; }
+        
+        /* Effetto Riflesso Lente (Shine) sul Titolo */
+        .sponsor-title::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-20deg); animation: stadiumShine 3.5s infinite 1s; pointer-events: none; mix-blend-mode: overlay;
+        }
 
+        @keyframes epicDrop {
+            0% { opacity: 0; transform: scale(1.4) translateY(-20px); filter: blur(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        }
+        @keyframes stadiumShine {
+            0% { left: -100%; }
+            15% { left: 200%; }
+            100% { left: 200%; }
+        }
         @keyframes gentlePulse {
             0% { transform: scale(1); filter: brightness(1) contrast(1); }
             100% { transform: scale(1.05); filter: brightness(1.15) contrast(1.05); }
@@ -153,7 +184,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-top: 10px;
+            margin-top: 5px;
             animation: pulse-logo-btn 1.2s infinite alternate ease-in-out;
             box-shadow: 0 0 20px rgba(0,255,102,0.4), inset 0 0 15px rgba(0,255,102,0.2);
             transition: transform 0.1s;
@@ -291,10 +322,10 @@
         <div id="scanlines"></div>
         <div id="vignette"></div>
         
-        <!-- TV Broadcast Sponsor Bumper con Sfondo Immagine Animato -->
+        <!-- TV Broadcast Sponsor Bumper Cinematografico -->
         <div id="sponsor-bumper">
-            <div class="sponsor-title">BETTING <span>EXCHANGE</span> ROOM</div>
-            <div class="sponsor-copy">Telegram Betting Exchange Signal Active</div>
+            <svg class="sponsor-logo" viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
+            <div class="sponsor-title">BETTING<br><span>EXCHANGE</span> ROOM</div>
         </div>
 
         <div id="ui-layer">
@@ -310,7 +341,7 @@
             <div id="team-menu" class="overlay-screen">
                 <h2>🎮 SELECT MODE</h2>
                 
-                <!-- Indicatore First To 3 Wins super visibile e integrato nel design -->
+                <!-- Indicatore First To 3 Wins super visibile -->
                 <div style="font-family: 'Chakra Petch', sans-serif; font-size: 13px; color: #fff; margin-bottom: 12px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,255,102,0.8); font-weight: 700; text-transform: uppercase; background: rgba(0,255,102,0.15); padding: 6px 20px; border-radius: 4px; border: 1px solid var(--p1-neon); box-shadow: 0 0 15px rgba(0,255,102,0.2);">
                     🏆 3 GOALS TO WIN
                 </div>
@@ -320,7 +351,7 @@
                     <button id="btn-2p" class="mode-btn">2 PLAYERS</button>
                 </div>
 
-                <div id="teams-scroll-area" style="width: 100%; max-height: 40vh; overflow-y: auto; margin-bottom: 10px; padding-right: 5px;">
+                <div id="teams-scroll-area">
                     <h3 style="margin:0 0 10px 0; font-size:12px; color:#00FF66; text-transform:uppercase; letter-spacing: 2px;">🟢 Player 1 Team</h3>
                     <div class="grid-options" id="p1-grid" style="margin-bottom: 10px;"></div>
 
@@ -330,7 +361,7 @@
                     </div>
                 </div>
 
-                <!-- Nuovo Bottone Play Logo -->
+                <!-- Bottone Play Logo -->
                 <button id="start-btn" class="logo-start-btn">
                     <svg viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
                     <span>PLAY</span>
@@ -356,9 +387,15 @@
     </div>
 
     <script>
-        // --- PREVENZIONE GLITCH TOUCH ---
+        // --- PREVENZIONE GLITCH TOUCH (CORRETTA PER PERMETTERE LO SCROLL) ---
         window.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('touchmove', e => { if(e.cancelable) e.preventDefault(); }, { passive: false });
+        document.addEventListener('touchmove', e => { 
+            // Permetti lo scroll fluido se stiamo interagendo con l'area delle squadre
+            if (e.target.closest('#teams-scroll-area') || e.target.closest('.overlay-screen')) {
+                return;
+            }
+            if(e.cancelable) e.preventDefault(); 
+        }, { passive: false });
 
         // Costanti Logiche di Gioco
         const GAME_WIDTH = 600;
@@ -370,7 +407,7 @@
         const ctx = canvas.getContext('2d', { alpha: false }); 
         
         function initDisplay() {
-            // Capping DPR per ottimizzazione smartphone (max 2 per velocità pura)
+            // Capping DPR per ottimizzazione smartphone
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = GAME_WIDTH * dpr;
             canvas.height = GAME_HEIGHT * dpr;
@@ -382,7 +419,7 @@
         initDisplay();
         window.addEventListener('resize', initDisplay);
 
-        // Dati Squadre (Aggiunte le richieste e Messico alla fine)
+        // Dati Squadre
         const teamNamesEn = { 
             'ITA': 'Italy', 'BRA': 'Brazil', 'ENG': 'England', 'ESP': 'Spain',
             'IRL': 'Ireland', 'ROU': 'Romania', 'AUS': 'Australia', 'COL': 'Colombia', 'PER': 'Peru', 'ALB': 'Albania',
@@ -446,7 +483,6 @@
         let crowdGainNode = null;
         let sponsorVoicePlayed = false;
         
-        // Array globale per proteggere la voce dal Garbage Collection su mobile/safari
         window.speechUtterances = []; 
 
         function initAudio() {
@@ -485,7 +521,6 @@
 
         function commentatorSpeak(text, rate = 1.1, pitch = 1.1) {
             if ('speechSynthesis' in window) {
-                // Rimosso il cancel() massivo per permettere frasi fluide senza interruzioni forzate dal browser
                 let msg = new SpeechSynthesisUtterance(text);
                 msg.lang = 'en-US'; msg.rate = rate; msg.pitch = pitch; msg.volume = 1.0;
                 
@@ -503,7 +538,6 @@
             bumper.classList.add('active');
             
             if (!sponsorVoicePlayed) {
-                // Aggiunto "3 goals to win" come richiesto
                 commentatorSpeak("Sponsored by Betting Exchange Room. 3 goals to win.", 1.0, 1.0);
                 sponsorVoicePlayed = true; 
             }
@@ -511,10 +545,10 @@
             setTimeout(() => {
                 bumper.classList.remove('active');
                 setTimeout(() => { bumper.classList.add('hidden'); if (callback) callback(); }, 500); 
-            }, 2500); 
+            }, 3000); // Leggermente più lungo per far godere l'effetto
         }
 
-        // Effetti sonori procedurali (Hit e Trombette da Stadio)
+        // Effetti sonori procedurali
         function playImpactSound(intensity, isGoal = false) {
             if (!audioCtx) return;
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -525,13 +559,12 @@
             const baseFreq = 528;
             
             if (isGoal) {
-                // 1. Trombette da Stadio (Airhorn Synth)
                 const horn1 = audioCtx.createOscillator();
                 const horn2 = audioCtx.createOscillator();
                 const hornGain = audioCtx.createGain();
                 horn1.type = 'sawtooth'; horn2.type = 'sawtooth';
-                horn1.frequency.value = 233; // Sib
-                horn2.frequency.value = 238; // Detuning
+                horn1.frequency.value = 233; 
+                horn2.frequency.value = 238; 
                 
                 hornGain.gain.setValueAtTime(0, audioCtx.currentTime);
                 hornGain.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.1);
@@ -542,14 +575,12 @@
                 horn1.start(); horn2.start();
                 horn1.stop(audioCtx.currentTime + 2.0); horn2.stop(audioCtx.currentTime + 2.0);
 
-                // 2. Boato Esultanza Folla Aumentato
                 if(crowdGainNode) {
                     crowdGainNode.gain.cancelScheduledValues(audioCtx.currentTime);
-                    crowdGainNode.gain.setValueAtTime(0.8, audioCtx.currentTime); // Volume boato altissimo
+                    crowdGainNode.gain.setValueAtTime(0.8, audioCtx.currentTime); 
                     crowdGainNode.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 4);
                 }
                 
-                // 3. Base Goal Boom
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(baseFreq * 2, audioCtx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(baseFreq, audioCtx.currentTime + 0.5);
@@ -557,7 +588,6 @@
                 gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.1);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
             } else {
-                // Hit Pallina
                 osc.type = intensity > 15 ? 'square' : 'triangle';
                 osc.frequency.setValueAtTime(baseFreq * 1.5, audioCtx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(baseFreq, audioCtx.currentTime + 0.1);
@@ -618,7 +648,6 @@
                 let vsText = gameMode === 2 ? teamNamesEn[selectedTeamP2] : "The System";
                 commentatorSpeak(`The match begins! ${teamNamesEn[selectedTeamP1]} against ${vsText}!`, 1.1, 1.2);
                 
-                // Avvia il loop di gioco solo ora per risparmiare risorse
                 if (!window.gameLoopRunning) {
                     window.gameLoopRunning = true;
                     lastTime = performance.now();
@@ -630,9 +659,8 @@
         document.getElementById('restart-btn').addEventListener('click', () => {
             gameOverScreenEl.classList.add('hidden'); teamMenuEl.classList.remove('hidden');
             gameState = GAME_STATE_MENU; hideMessage();
-            window.gameLoopRunning = false; // Ferma il rendering per risparmiare batteria
-            drawStaticBackground(); // Disegna un frame statico
-            // Reset dei pool
+            window.gameLoopRunning = false; 
+            drawStaticBackground(); 
             particlePool.forEach(p => p.active = false);
             textPool.forEach(t => t.active = false);
         });
@@ -647,7 +675,7 @@
         }
         function triggerScreenShake(dur, mag) { shakeTime = dur; shakeMagnitude = mag; }
 
-        // --- OBJECT POOLING PER PARTICELLE (MAX PERFORMANCES) ---
+        // --- OBJECT POOLING PER PARTICELLE ---
         class FloatingText {
             constructor() { this.active = false; }
             spawn(x, y, text, color) { this.x = x; this.y = y; this.text = text; this.color = color; this.life = 1.0; this.vy = -1.5; this.active = true;}
