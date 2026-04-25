@@ -13,7 +13,7 @@
             --p1-neon: #00FF66;
             --p2-neon: #FF0055;
             --bg-dark: #030408;
-            --panel-blur: blur(20px); /* Ottimizzato per mobile */
+            --panel-blur: blur(20px);
         }
 
         /* Anti-Glitch e Ottimizzazione App Nativa */
@@ -76,6 +76,10 @@
             background: linear-gradient(to right, #ffffff, #aaaaaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 5px rgba(255,255,255,0.2));
         }
 
+        #teams-scroll-area::-webkit-scrollbar { width: 4px; }
+        #teams-scroll-area::-webkit-scrollbar-track { background: transparent; }
+        #teams-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
         /* Sponsor Bumper Broadcast TV */
         #sponsor-bumper {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
@@ -85,8 +89,9 @@
         }
         #sponsor-bumper.active { opacity: 1; pointer-events: auto; animation: tvGlitch 2s forwards; }
         
-        .sponsor-logo { width: clamp(100px, 20vmin, 150px); height: clamp(100px, 20vmin, 150px); margin-bottom: 20px; filter: drop-shadow(0 0 20px #FFD700); }
-        .sponsor-title { font-family: 'Chakra Petch', sans-serif; font-size: clamp(22px, 5.5vmin, 40px); color: #FFD700; font-weight: 700; letter-spacing: 2px; text-align: center; text-transform: uppercase; text-shadow: 0 0 15px rgba(255,215,0,0.6); margin-bottom: 10px; }
+        .sponsor-logo { width: clamp(120px, 25vmin, 180px); height: clamp(120px, 25vmin, 180px); margin-bottom: 20px; filter: drop-shadow(0 0 25px rgba(57,255,20,0.5)); }
+        .sponsor-title { font-family: 'Chakra Petch', sans-serif; font-size: clamp(22px, 5.5vmin, 40px); color: #ffffff; font-weight: 700; letter-spacing: 2px; text-align: center; text-transform: uppercase; text-shadow: 0 0 15px rgba(255,255,255,0.6); margin-bottom: 10px; }
+        .sponsor-title span { color: #39FF14; text-shadow: 0 0 15px rgba(57,255,20,0.6); }
         .sponsor-copy { font-family: 'Chakra Petch', sans-serif; font-size: clamp(11px, 2.5vmin, 16px); color: #fff; font-weight: 400; letter-spacing: 1px; text-align: center; text-transform: uppercase; background: rgba(255,255,255,0.05); padding: 6px 15px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);}
 
         @keyframes tvGlitch {
@@ -102,12 +107,9 @@
             padding: 10px; font-size: 13px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px;
             border-radius: 4px; cursor: pointer; flex: 1; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-transform: uppercase;
         }
-        .mode-btn.active {
-            background: rgba(0, 255, 102, 0.15); border-color: var(--p1-neon); color: var(--p1-neon);
-            text-shadow: 0 0 8px rgba(0,255,102,0.6);
-        }
+        .mode-btn.active { background: rgba(0, 255, 102, 0.15); border-color: var(--p1-neon); color: var(--p1-neon); text-shadow: 0 0 8px rgba(0,255,102,0.6); }
 
-        .grid-options { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; width: 100%; }
+        .grid-options { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; width: 100%; }
         .team-btn {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 4px; padding: 8px; cursor: pointer;
             display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all 0.2s; width: 65px;
@@ -115,10 +117,7 @@
         .team-btn .flag-container { width: 44px; height: 30px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); position: relative; }
         .team-btn .flag-container::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.6) 100%); mix-blend-mode: overlay; }
         .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; transition: color 0.3s; }
-        @media (hover: hover) {
-            .team-btn:hover { background: rgba(255, 255, 255, 0.08); }
-            .team-btn:hover span { color: #fff; }
-        }
+        @media (hover: hover) { .team-btn:hover { background: rgba(255, 255, 255, 0.08); } .team-btn:hover span { color: #fff; } }
         .team-btn.active { background: rgba(0, 255, 102, 0.1); border: 1px solid var(--p1-neon); }
         .team-btn.active span { color: var(--p1-neon); text-shadow: 0 0 8px rgba(0,255,102,0.6); }
         #p2-grid .team-btn.active { background: rgba(255, 0, 85, 0.1); border: 1px solid var(--p2-neon); }
@@ -143,68 +142,80 @@
         #message.active { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: glitchPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes glitchPop { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
 
-        /* Trophy Crystal Ball Hologram */
-        .crystal-trophy-container {
-            position: relative; width: 140px; height: 160px; margin: 0 auto 20px auto;
+        /* Trophy - Metal Golden Cup with Engraved Logo */
+        .cup-trophy-container {
+            position: relative; width: 160px; height: 180px; margin: 0 auto 20px auto;
+        }
+        .cup-handle {
+            position: absolute; top: 30px; width: 45px; height: 60px;
+            border: 6px solid #DAA520; border-radius: 20px; z-index: 1;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,255,0.4);
+        }
+        .handle-left { left: 15px; border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;}
+        .handle-right { right: 15px; border-left: none; border-top-left-radius: 0; border-bottom-left-radius: 0;}
+        .cup-bowl {
+            position: absolute; top: 10px; left: 35px; width: 90px; height: 90px;
+            background: linear-gradient(135deg, #FFDF00 0%, #FFF8A0 25%, #DAA520 50%, #B8860B 80%, #FFDF00 100%);
+            border-radius: 5px 5px 45px 45px;
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.4), inset 5px 5px 15px rgba(255,255,255,0.8), 0 15px 20px rgba(0,0,0,0.6);
+            display: flex; align-items: center; justify-content: center; z-index: 3;
+            border-top: 5px solid #FFF8A0;
+        }
+        .cup-stem {
+            position: absolute; top: 95px; left: 70px; width: 20px; height: 45px;
+            background: linear-gradient(90deg, #B8860B, #FFF8A0, #DAA520);
+            box-shadow: 0 10px 10px rgba(0,0,0,0.5); z-index: 2;
+        }
+        .cup-base-top {
+            position: absolute; bottom: 25px; left: 45px; width: 70px; height: 15px;
+            background: linear-gradient(90deg, #DAA520, #FFF8A0, #B8860B);
+            border-radius: 10px 10px 0 0; z-index: 2;
         }
         .trophy-base {
-            position: absolute; bottom: 0; left: 20px; right: 20px; height: 40px;
+            position: absolute; bottom: 0; left: 25px; right: 25px; height: 30px;
             background: linear-gradient(to right, #111, #333, #111);
-            border-radius: 4px 4px 10px 10px;
-            box-shadow: 0 15px 20px rgba(0,0,0,0.9), inset 0 2px 5px rgba(255,255,255,0.2);
+            border-radius: 2px 2px 8px 8px;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.9), inset 0 2px 5px rgba(255,255,255,0.2);
             display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px;
-            border: 1px solid rgba(255,255,255,0.1); border-top: none;
+            border: 1px solid rgba(255,255,255,0.1); border-top: none; z-index: 2;
         }
         .base-plate {
-            font-size: 9px; color: #fff; font-family: 'Chakra Petch', sans-serif; letter-spacing: 2px; font-weight: 700;
-            background: #050505; padding: 3px 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.2);
+            font-size: 8px; color: #fff; font-family: 'Chakra Petch', sans-serif; letter-spacing: 2px; font-weight: 700;
+            background: #050505; padding: 2px 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.2);
         }
-        .crystal-sphere {
-            position: absolute; top: 0; left: 10px; width: 120px; height: 120px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8) 0%, rgba(200,230,255,0.1) 30%, rgba(0,10,25,0.8) 90%);
-            box-shadow: inset -10px -10px 20px rgba(0, 255, 102, 0.2), 0 10px 20px rgba(0,0,0,0.8), 0 0 30px rgba(0,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.4);
-            display: flex; align-items: center; justify-content: center;
-            perspective: 500px; z-index: 2;
+        .cup-logo-inner {
+            width: 48px; height: 48px;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6)); /* Effetto incisione */
         }
-        .crystal-sphere::after {
-            content: ''; position: absolute; top: 8%; left: 12%; width: 40%; height: 30%;
-            border-radius: 50%; background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
-            transform: rotate(-40deg); pointer-events: none;
+        .cup-sparkle {
+            position: absolute; width: 4px; height: 4px; background: white; border-radius: 50%;
+            box-shadow: 0 0 8px 2px white, 0 0 15px 4px #FFDF00; opacity: 0; z-index: 4; pointer-events: none;
         }
-        .holo-logo-inner {
-            width: 60px; height: 60px;
-            animation: holoSpin 4s linear infinite, holoPulse 2s ease-in-out infinite alternate;
-            transform-style: preserve-3d;
-        }
-        @keyframes holoSpin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
-        @keyframes holoPulse {
-            0% { opacity: 0.8; filter: drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 5px #00FF66); }
-            100% { opacity: 1; filter: drop-shadow(0 0 20px #00ffff) drop-shadow(0 0 10px #00FF66); }
-        }
-        .sparkle {
-            position: absolute; width: 3px; height: 3px; background: white; border-radius: 50%;
-            box-shadow: 0 0 5px 1px white, 0 0 10px 2px #00ffff; opacity: 0; z-index: 3; pointer-events: none;
-        }
-        .s1 { top: 25%; left: 25%; animation: sparkleAnim 2s infinite 0s; }
-        .s2 { top: 60%; right: 20%; animation: sparkleAnim 2.5s infinite 0.7s; }
-        .s3 { bottom: 25%; left: 45%; animation: sparkleAnim 1.8s infinite 1.2s; }
+        .s1 { top: 20px; left: 15px; animation: sparkleAnim 2s infinite 0s; }
+        .s2 { top: 40px; right: 10px; animation: sparkleAnim 2.5s infinite 0.7s; }
+        .s3 { bottom: 15px; left: 40px; animation: sparkleAnim 1.8s infinite 1.2s; }
         @keyframes sparkleAnim { 0% { transform: scale(0) rotate(0deg); opacity: 0; } 50% { transform: scale(1.5) rotate(180deg); opacity: 1; } 100% { transform: scale(0) rotate(360deg); opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <!-- Libreria SVG Vettoriale (FIXED: Ora visibile in background al browser per non rompere il rendering) -->
-    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+    <!-- Libreria Vettoriale (Perfettamente ricostruita sull'originale) -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; width: 1px; height: 1px; left: -9999px; top: -9999px; pointer-events: none;" aria-hidden="true">
         <defs>
-            <radialGradient id="gradMetallic" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#a8a9ad"/><stop offset="100%" stop-color="#222222"/></radialGradient>
-            <radialGradient id="gradGold" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffcc"/><stop offset="50%" stop-color="#ffd700"/><stop offset="100%" stop-color="#996500"/></radialGradient>
-            <polygon id="gear-shape" points="100,50 84.6,64.3 85.3,85.3 64.3,84.6 50,100 35.7,84.6 14.7,85.3 15.4,64.3 0,50 15.4,35.7 14.7,14.7 35.7,15.4 50,0 64.3,15.4 85.3,14.7 84.6,35.7"/>
-            <circle id="gear-inner" cx="50" cy="50" r="30" fill="#050505"/>
-            <ellipse id="gear-leaf" cx="50" cy="50" rx="22.5" ry="6" fill="#39FF14" transform="rotate(-45 50 50)"/>
-            <g id="gear-ai"><use href="#gear-shape" fill="url(#gradMetallic)"/><use href="#gear-inner"/><use href="#gear-leaf"/></g>
-            <g id="gear-gold"><use href="#gear-shape" fill="url(#gradGold)"/><use href="#gear-inner"/><use href="#gear-leaf"/></g>
+            <linearGradient id="gradMetallic" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#e0e0e0"/>
+                <stop offset="25%" stop-color="#ffffff"/>
+                <stop offset="50%" stop-color="#999999"/>
+                <stop offset="75%" stop-color="#cccccc"/>
+                <stop offset="100%" stop-color="#666666"/>
+            </linearGradient>
+            
+            <!-- Logo Perfetto Betting Exchange (Silver Gear, Black Core, Neon Green Slit) -->
+            <g id="betting-logo">
+                <path d="M60,11.5 L64.5,21.5 A35,35 0 0,1 78.5,28.5 L88.5,24 L94,36 L85,42.5 A35,35 0 0,1 85,57.5 L94,64 L88.5,76 L78.5,71.5 A35,35 0 0,1 64.5,78.5 L60,88.5 L40,88.5 L35.5,78.5 A35,35 0 0,1 21.5,71.5 L11.5,76 L6,64 L15,57.5 A35,35 0 0,1 15,42.5 L6,36 L11.5,24 L21.5,28.5 A35,35 0 0,1 35.5,21.5 L40,11.5 Z" fill="url(#gradMetallic)"/>
+                <circle cx="50" cy="50" r="24" fill="#000000"/>
+                <path d="M 34 66 Q 45 40 66 34 Q 55 60 34 66 Z" fill="#39FF14"/>
+            </g>
         </defs>
     </svg>
 
@@ -216,8 +227,9 @@
         
         <!-- TV Broadcast Sponsor Bumper -->
         <div id="sponsor-bumper">
-            <svg class="sponsor-logo"><use href="#gear-gold"></use></svg>
-            <div class="sponsor-title">BETTING EXCHANGE ROOM</div>
+            <!-- Usa il logo ricostruito identico all'immagine -->
+            <svg class="sponsor-logo" viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
+            <div class="sponsor-title">BETTING <span>EXCHANGE</span> ROOM</div>
             <div class="sponsor-copy">Telegram Betting Exchange Signal Active</div>
         </div>
 
@@ -233,20 +245,22 @@
             <!-- Menu Principale e Selezione -->
             <div id="team-menu" class="overlay-screen">
                 <h2>🎮 SELECT MODE</h2>
-                <div style="display:flex; width:100%; gap:8px; margin-bottom:15px;">
+                <div style="display:flex; width:100%; gap:8px; margin-bottom:10px;">
                     <button id="btn-1p" class="mode-btn active">1 PLAYER</button>
                     <button id="btn-2p" class="mode-btn">2 PLAYERS</button>
                 </div>
 
-                <h3 style="margin:5px 0 10px 0; font-size:14px; color:#00FF66; text-transform:uppercase; letter-spacing: 2px;">🟢 Player 1 Team</h3>
-                <div class="grid-options" id="p1-grid"></div>
+                <div id="teams-scroll-area" style="width: 100%; max-height: 45vh; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;">
+                    <h3 style="margin:0 0 10px 0; font-size:14px; color:#00FF66; text-transform:uppercase; letter-spacing: 2px;">🟢 Player 1 Team</h3>
+                    <div class="grid-options" id="p1-grid" style="margin-bottom: 10px;"></div>
 
-                <div id="p2-container" class="hidden" style="width:100%;">
-                    <h3 style="margin:10px 0; font-size:14px; color:#FF0055; text-transform:uppercase; letter-spacing: 2px;">🔴 Player 2 Team</h3>
-                    <div class="grid-options" id="p2-grid"></div>
+                    <div id="p2-container" class="hidden" style="width:100%;">
+                        <h3 style="margin:10px 0; font-size:14px; color:#FF0055; text-transform:uppercase; letter-spacing: 2px;">🔴 Player 2 Team</h3>
+                        <div class="grid-options" id="p2-grid" style="margin-bottom: 5px;"></div>
+                    </div>
                 </div>
 
-                <button id="start-btn" class="action-btn" style="margin-top:15px;">▶️ START MATCH</button>
+                <button id="start-btn" class="action-btn">▶️ PLAY</button>
             </div>
 
             <!-- Game Over -->
@@ -275,7 +289,6 @@
         const ctx = canvas.getContext('2d', { alpha: false }); 
         
         function initDisplay() {
-            // CAPPING DPR a 2: Oltre 2 rallenta enormemente gli smartphone e la differenza visiva è minima.
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = GAME_WIDTH * dpr;
             canvas.height = GAME_HEIGHT * dpr;
@@ -462,7 +475,7 @@
 
         let hitStopFrames = 0; 
         let particles = [], floatingTexts = [];
-        const MAX_PARTICLES = 60; // Abbassato per massima fluidità su mobile
+        const MAX_PARTICLES = 60; 
         let shakeTime = 0, shakeMagnitude = 0;
         const impactWords = ["BAM!", "SMASH!", "BOOM!", "CRASH!", "ZAP!"];
 
@@ -523,7 +536,7 @@
                 if (this.life <= 0) return;
                 ctx.save(); ctx.globalAlpha = this.life;
                 ctx.font = '900 24px Chakra Petch'; ctx.fillStyle = this.color; ctx.textAlign = 'center';
-                ctx.shadowBlur = 10; ctx.shadowColor = this.color; // Ridotto blur
+                ctx.shadowBlur = 10; ctx.shadowColor = this.color;
                 let scale = 1 + (1 - this.life) * 0.5; ctx.translate(this.x, this.y); ctx.scale(scale, scale);
                 ctx.fillText(this.text, 0, 0); ctx.restore();
             }
@@ -552,10 +565,10 @@
             }
         }
 
-        // --- FUNZIONI DI RENDERING DEFINITE NEL ROOT ---
+        // --- FUNZIONI DI RENDERING SU CANVAS ---
         function drawAnodizedPuck(ctx, x, y, radius, teamColor, isDark) {
             ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2);
-            ctx.fillStyle = '#000'; ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowOffsetY = 4; ctx.fill(); // Ottimizzato blur
+            ctx.fillStyle = '#000'; ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowOffsetY = 4; ctx.fill();
             ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
 
             let rimGrad = ctx.createLinearGradient(x - radius, y - radius, x + radius, y + radius);
@@ -564,7 +577,7 @@
             ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2); ctx.fill();
 
             ctx.lineWidth = 2.5; ctx.strokeStyle = teamColor;
-            ctx.shadowBlur = 8; ctx.shadowColor = teamColor; // Ottimizzato
+            ctx.shadowBlur = 8; ctx.shadowColor = teamColor; 
             ctx.beginPath(); ctx.arc(x, y, radius * 0.88, 0, PI2); ctx.stroke();
             ctx.shadowBlur = 0;
 
@@ -606,36 +619,58 @@
             ctx.restore();
         }
 
+        // Questo Disegna L'IA ed E' la trasposizione identica su Canvas del Logo dell'Immagine
         function drawAiToken(ctx, x, y, radius) {
             ctx.save(); 
             let isDrag = (dragTarget && dragTarget.x === x && dragTarget.y === y);
-            drawAnodizedPuck(ctx, x, y, radius, isDrag ? '#ffffff' : '#444444', true);
-
-            ctx.fillStyle = '#fff';
-            ctx.beginPath();
-            ctx.moveTo(x - radius*0.35, y - radius*0.25);
-            ctx.lineTo(x + radius*0.35, y - radius*0.25);
-            ctx.lineTo(x, y + radius*0.4);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            ctx.moveTo(x - radius*0.18, y - radius*0.15);
-            ctx.lineTo(x + radius*0.18, y - radius*0.15);
-            ctx.lineTo(x, y + radius*0.18);
-            ctx.closePath();
-            ctx.fill();
             
-            ctx.beginPath(); ctx.arc(x, y - radius*0.02, radius*0.08, 0, PI2); 
-            ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 10; ctx.shadowColor = '#ffffff'; ctx.fill();
+            // Base shadow
+            ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2);
+            ctx.fillStyle = '#000'; ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowOffsetY = 4; ctx.fill();
+            ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+            
+            // Sfondo metallico silver identico al logo (Linear Gradient diagonale)
+            let rimGrad = ctx.createLinearGradient(x - radius, y - radius, x + radius, y + radius);
+            rimGrad.addColorStop(0, '#e0e0e0'); rimGrad.addColorStop(0.25, '#ffffff'); rimGrad.addColorStop(0.5, '#999999'); rimGrad.addColorStop(0.75, '#cccccc'); rimGrad.addColorStop(1, '#666666');
+            
+            // Forma della Ruota Dentata (Gear)
+            ctx.translate(x, y);
+            const rOuter = radius * 0.95;
+            const rValley = radius * 0.75;
+            const teeth = 8;
+            ctx.beginPath();
+            for (let i = 0; i < teeth * 2; i++) {
+                const angle = (i * Math.PI) / teeth;
+                const r = (i % 2 === 0) ? rOuter : rValley;
+                if (i === 0) ctx.moveTo(r * Math.cos(angle), r * Math.sin(angle));
+                else ctx.lineTo(r * Math.cos(angle), r * Math.sin(angle));
+            }
+            ctx.closePath();
+            ctx.fillStyle = rimGrad;
+            ctx.fill();
+
+            if (isDrag) { ctx.lineWidth = 2; ctx.strokeStyle = '#ffffff'; ctx.stroke(); }
+
+            // Nucleo Centrale Nero
+            ctx.beginPath(); ctx.arc(0, 0, radius * 0.5, 0, PI2);
+            ctx.fillStyle = '#000000'; ctx.fill();
+
+            // Fessura a forma di foglia (Slit) Verde Acceso
+            ctx.beginPath();
+            let l = radius * 0.35; // Lunghezza punta-punta
+            let w = radius * 0.15; // Larghezza pancia
+            ctx.moveTo(-l, l);
+            ctx.quadraticCurveTo(-w, -w, l, -l);
+            ctx.quadraticCurveTo(w, w, -l, l);
+            ctx.fillStyle = '#39FF14'; 
+            ctx.fill();
+
             ctx.restore();
         }
 
         function drawField() {
             ctx.fillStyle = '#030408'; ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
             
-            // Griglia Leggera - ottimizzata riducendo le linee
             ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
             for (let i = 0; i <= GAME_WIDTH; i += 60) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, GAME_HEIGHT); ctx.stroke(); }
             for (let i = 0; i <= GAME_HEIGHT; i += 60) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(GAME_WIDTH, i); ctx.stroke(); }
@@ -643,14 +678,12 @@
             ctx.save(); 
             ctx.lineCap = 'square'; ctx.lineJoin = 'miter';
             
-            // CHEAP NEON TRICK: Linea larga semi-trasparente + Linea fine solida (Niente costoso shadowBlur)
             const drawNeonLines = (drawPathFunc, color, isP2) => {
                 ctx.beginPath(); drawPathFunc();
                 ctx.lineWidth = 6; ctx.strokeStyle = isP2 && gameMode===2 ? 'rgba(255,0,85,0.2)' : (isP2 ? 'rgba(255,255,255,0.1)' : 'rgba(0,255,102,0.2)'); ctx.stroke();
                 ctx.lineWidth = 2; ctx.strokeStyle = color; ctx.stroke();
             };
 
-            // Campo Esterno e Metà Campo (Bianco tenue)
             drawNeonLines(() => {
                 ctx.rect(mSide, mTop, GAME_WIDTH - mSide * 2, GAME_HEIGHT - mTop - mBot);
                 const midY = mTop + (GAME_HEIGHT - mTop - mBot) / 2;
@@ -658,20 +691,17 @@
                 ctx.arc(GAME_WIDTH / 2, midY, 80, 0, PI2);
             }, 'rgba(255,255,255,0.15)', false);
             
-            // Aree Rigore P2 (Top)
             let p2Color = gameMode === 2 ? '#FF0055' : '#ffffff';
             drawNeonLines(() => {
                 ctx.rect(GAME_WIDTH / 2 - 130, mTop, 260, 140);
                 ctx.rect(GAME_WIDTH / 2 - 60, mTop, 120, 50);
             }, p2Color, true);
 
-            // Aree Rigore P1 (Bottom)
             drawNeonLines(() => {
                 ctx.rect(GAME_WIDTH / 2 - 130, GAME_HEIGHT - mBot - 140, 260, 140);
                 ctx.rect(GAME_WIDTH / 2 - 60, GAME_HEIGHT - mBot - 50, 120, 50);
             }, '#00FF66', false);
 
-            // Porte
             const gx = GAME_WIDTH / 2 - goalWidth / 2;
             let p2Fill = gameMode === 2 ? 'rgba(255, 0, 85, 0.15)' : 'rgba(255, 255, 255, 0.15)';
             ctx.fillStyle = p2Fill; ctx.fillRect(gx, mTop - 20, goalWidth, 20); 
@@ -708,7 +738,6 @@
                 super.update(); let speed = Math.hypot(this.vx, this.vy);
                 if (speed > 2) this.trail.push({x: this.x, y: this.y, life: 10, speed: speed});
                 
-                // Ottimizzazione rimozione scia O(1) invece di splice
                 for (let i = this.trail.length - 1; i >= 0; i--) { 
                     this.trail[i].life--; 
                     if (this.trail[i].life <= 0) {
@@ -970,28 +999,33 @@
                 setTimeout(() => {
                     hideMessage();
                     
-                    const crystalTrophyHTML = `
-                        <div class="crystal-trophy-container">
+                    const goldCupHTML = `
+                        <div class="cup-trophy-container">
+                            <div class="cup-handle handle-left"></div>
+                            <div class="cup-handle handle-right"></div>
+                            <div class="cup-stem"></div>
+                            <div class="cup-base-top"></div>
                             <div class="trophy-base">
                                 <div class="base-plate">CHAMPION</div>
                             </div>
-                            <div class="crystal-sphere">
-                                <svg class="holo-logo-inner" viewBox="0 0 100 100"><use href="#gear-gold"></use></svg>
-                                <div class="sparkle s1"></div>
-                                <div class="sparkle s2"></div>
-                                <div class="sparkle s3"></div>
+                            <div class="cup-bowl">
+                                <!-- Incisione del logo originale sulla coppa -->
+                                <svg class="cup-logo-inner" viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
+                                <div class="cup-sparkle s1"></div>
+                                <div class="cup-sparkle s2"></div>
+                                <div class="cup-sparkle s3"></div>
                             </div>
                         </div>
                     `;
 
                     if (winner === 1) {
                         gameState = GAME_STATE_OVER; gameOverTitleEl.innerText = "PLAYER 1 WINS!"; gameOverTitleEl.style.color = "#00FF66";
-                        gameOverIconEl.innerHTML = crystalTrophyHTML; gameOverScreenEl.classList.remove('hidden');
+                        gameOverIconEl.innerHTML = goldCupHTML; gameOverScreenEl.classList.remove('hidden');
                     } else {
                         gameState = GAME_STATE_OVER; 
                         gameOverTitleEl.innerText = gameMode === 2 ? "PLAYER 2 WINS!" : "SYSTEM WINS"; 
                         gameOverTitleEl.style.color = gameMode === 2 ? "#FF0055" : "#ffffff";
-                        gameOverIconEl.innerHTML = crystalTrophyHTML; gameOverScreenEl.classList.remove('hidden');
+                        gameOverIconEl.innerHTML = goldCupHTML; gameOverScreenEl.classList.remove('hidden');
                     }
                 }, 2500); 
             } else {
