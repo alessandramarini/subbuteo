@@ -5,592 +5,424 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Soccer Pong - Verde vs Grigio</title>
-    <!-- Importazione Font da Gaming -->
+    <title>CyberTorneo - TV Broadcast Edition</title>
+    <!-- Font Premium -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* Anti-Glitch Globale per Smartphone */
-        * {
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            -webkit-user-select: none;
-            outline: none;
-            box-sizing: border-box;
-        }
+        /* Anti-Glitch e Ottimizzazione App Nativa */
+        * { -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; outline: none; box-sizing: border-box; }
 
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #050505;
-            color: #39FF14;
-            font-family: 'Orbitron', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            height: 100dvh;
-            width: 100vw;
-            overflow: hidden;
-            touch-action: none; /* Blocca scorrimento nativo */
-            overscroll-behavior: none;
-        }
-
-        .icon {
-            width: 1em;
-            height: 1em;
-            vertical-align: middle;
-            display: inline-block;
-            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
-            -webkit-filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
-        }
-        
-        .icon.medal {
-            width: 1.5em;
-            height: 1.5em;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.4));
-            -webkit-filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.4));
+            margin: 0; padding: 0; background: radial-gradient(circle at center, #0a110a 0%, #000000 100%);
+            color: #39FF14; font-family: 'Orbitron', sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; height: 100dvh; width: 100vw; overflow: hidden; touch-action: none; overscroll-behavior: none;
         }
 
         @keyframes neonPulse {
-            0% { box-shadow: 0 0 30px rgba(57, 255, 20, 0.2), inset 0 0 10px rgba(57, 255, 20, 0.1); }
-            100% { box-shadow: 0 0 70px rgba(57, 255, 20, 0.6), inset 0 0 20px rgba(57, 255, 20, 0.3); }
+            0% { box-shadow: 0 0 30px rgba(57, 255, 20, 0.1), inset 0 0 20px rgba(57, 255, 20, 0.05); border-color: rgba(57, 255, 20, 0.5); }
+            100% { box-shadow: 0 0 60px rgba(57, 255, 20, 0.4), inset 0 0 40px rgba(57, 255, 20, 0.2); border-color: rgba(57, 255, 20, 1); }
         }
 
-        /* Proporzioni perfette Responsive (Mobile & Desktop) */
+        /* Container del Gioco (Portrait Ottimizzato) */
         #game-container {
-            position: relative;
-            width: 100vw;
-            height: calc(100vw * (550 / 900));
-            max-width: calc(100vh * (900 / 550));
-            max-width: calc(100dvh * (900 / 550));
-            max-height: 100vh;
-            max-height: 100dvh;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 2px solid #39FF14;
-            box-sizing: border-box;
-            animation: neonPulse 2s infinite alternate;
-            background-color: #080a0c;
+            position: relative; width: 100vw; height: calc(100vw * (900 / 600));
+            max-height: 100vh; max-height: 100dvh; max-width: calc(100vh * (600 / 900)); max-width: calc(100dvh * (600 / 900));
+            border-radius: 12px; overflow: hidden; border: 2px solid #39FF14; background-color: #020a04;
+            animation: neonPulse 3s infinite alternate; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
-
         @media (min-aspect-ratio: 900/550) {
-            #game-container {
-                height: 100vh;
-                height: 100dvh;
-                width: calc(100vh * 900 / 550);
-                width: calc(100dvh * 900 / 550);
-            }
+            #game-container { height: 100vh; height: 100dvh; width: calc(100vh * 900 / 550); width: calc(100dvh * 900 / 550); }
         }
+        canvas { display: block; width: 100%; height: 100%; z-index: 1; touch-action: none; }
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
+        /* Effetti Visivi Ambientali */
+        #screen-flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; pointer-events: none; z-index: 8; opacity: 0; transition: opacity 0.05s ease-out; }
+        #scanlines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2)); background-size: 100% 4px; pointer-events: none; z-index: 5; }
+        #vignette { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.7) 100%); pointer-events: none; z-index: 6; }
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; z-index: 10; }
 
-        /* Flash Screen (Hit Stop) */
-        #screen-flash {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: white;
-            pointer-events: none;
-            z-index: 8;
-            opacity: 0;
-            transition: opacity 0.1s;
-        }
-
-        /* Effetto Monitor da Gaming */
-        #scanlines {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 51%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 5;
-            opacity: 0.7;
-        }
-
-        #ui-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none; /* Il canvas sotto riceve i tocchi */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            z-index: 10;
-        }
-
-        #top-hud {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 10px 20px;
-        }
-
+        /* Top HUD */
+        #top-hud { display: flex; justify-content: center; align-items: flex-start; padding: 10px; }
         #score-board {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: clamp(30px, 6vmin, 54px);
-            font-weight: 900;
-            font-style: italic;
-            text-shadow: 0 0 20px rgba(0,0,0,1);
-            gap: 5vw;
+            display: flex; justify-content: center; align-items: center; font-size: clamp(24px, 5vmin, 36px); font-weight: 900;
+            background: rgba(0, 10, 0, 0.6); border: 1px solid rgba(57, 255, 20, 0.3); border-radius: 10px; padding: 5px 15px; backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(57, 255, 20, 0.1); gap: 15px; pointer-events: auto;
         }
-
-        .score-p1 { color: #39FF14; text-shadow: 0 0 15px #39FF14, 0 0 30px #39FF14; }
-        .score-p2 { color: #ffffff; text-shadow: 0 0 15px #ffffff, 0 0 30px #a8a9ad; }
-
+        .score-p1 { color: #39FF14; text-shadow: 0 0 20px rgba(57,255,20,0.8); }
+        .score-p2 { color: #ffffff; text-shadow: 0 0 20px rgba(255,255,255,0.8); }
         #turn-indicator {
-            font-size: clamp(16px, 3.5vmin, 28px);
-            padding: 5px 25px;
-            border: 2px solid #39FF14;
-            background: linear-gradient(90deg, rgba(0,0,0,0.9), rgba(10,30,10,0.8), rgba(0,0,0,0.9));
-            text-align: center;
-            color: #39FF14;
-            min-width: 120px;
-            text-shadow: 0 0 10px #39FF14;
-            transition: all 0.3s ease;
-            -webkit-clip-path: polygon(15px 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 15px 100%, 0 50%);
-            clip-path: polygon(15px 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 15px 100%, 0 50%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            font-size: clamp(12px, 3vmin, 18px); padding: 5px 10px; border-radius: 5px; background: rgba(57, 255, 20, 0.1); border: 1px solid #39FF14;
+            color: #39FF14; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 5px;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.3); transition: all 0.3s ease; min-width: 80px;
         }
 
-        #message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: clamp(30px, 7vmin, 70px);
-            font-weight: 900;
-            font-style: italic;
-            text-align: center;
-            background: repeating-linear-gradient(45deg, rgba(5,5,5,0.95), rgba(5,5,5,0.95) 10px, rgba(15,25,15,0.95) 10px, rgba(15,25,15,0.95) 20px);
-            padding: 5% 8%;
-            width: 80%;
-            max-width: 600px;
-            border: 2px solid #39FF14;
-            color: #39FF14;
-            transition: opacity 0.3s;
-            text-transform: uppercase;
-            box-shadow: inset 0 0 20px rgba(57, 255, 20, 0.3), 0 0 30px rgba(57, 255, 20, 0.5);
-            z-index: 10;
-            -webkit-clip-path: polygon(0 20px, 20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
-            clip-path: polygon(0 20px, 20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
-            text-shadow: 0 0 15px #39FF14;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
+        /* Overlay Standard */
         .overlay-screen {
-            position: absolute;
-            top: 10%;
-            left: 50%;
-            transform: translate(-50%, 0);
-            background: rgba(0, 15, 0, 0.9);
-            border: 2px solid #39FF14;
-            padding: 20px;
-            text-align: center;
-            pointer-events: auto; /* I menu possono essere cliccati */
-            -webkit-clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
-            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
-            box-shadow: inset 0 0 30px rgba(57, 255, 20, 0.15), 0 0 50px rgba(0,0,0,0.8);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            width: 85%;
-            max-width: 650px;
-            z-index: 20;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(5, 12, 5, 0.85); border: 1px solid rgba(57, 255, 20, 0.4);
+            border-radius: 20px; padding: 25px 15px; text-align: center; pointer-events: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9), inset 0 0 0 1px rgba(255,255,255,0.05), inset 0 0 30px rgba(57,255,20,0.1);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); width: 90%; max-width: 400px; z-index: 20; display: flex; flex-direction: column; align-items: center;
+        }
+        .hidden { display: none !important; }
+        .overlay-screen h2 {
+            margin: 0 0 20px 0; font-size: clamp(20px, 5vmin, 32px); text-transform: uppercase; letter-spacing: 2px;
+            background: linear-gradient(to bottom, #ffffff, #39FF14); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 5px 15px rgba(57,255,20,0.4);
         }
 
-        .overlay-screen h3 {
-            margin-top: 0;
-            color: #39FF14;
-            font-size: clamp(24px, 5vmin, 40px);
-            text-shadow: 0 0 10px #39FF14;
-            border-bottom: 1px solid rgba(57, 255, 20, 0.4);
-            padding-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
+        /* Sponsor Bumper Broadcast TV */
+        #sponsor-bumper {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
+            background: radial-gradient(circle at center, #112a11 0%, #000 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
         }
-
-        .grid-options {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .cyber-btn {
-            background: linear-gradient(135deg, rgba(20, 30, 20, 0.8), rgba(0, 0, 0, 0.9));
-            color: #aaa;
-            border: 1px solid rgba(57, 255, 20, 0.3);
-            padding: 10px 20px;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
-            font-size: clamp(16px, 3vmin, 22px);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            -webkit-clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5);
-            min-width: 90px;
-        }
-
-        .cyber-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(57, 255, 20, 0.5), transparent);
-            transform: skewX(-25deg);
-            transition: 0.5s;
-        }
-
-        @media (hover: hover) {
-            .cyber-btn:hover::before { left: 150%; }
-            .cyber-btn:hover {
-                border-color: #39FF14;
-                color: #ffffff;
-                box-shadow: 0 0 20px rgba(57,255,20,0.5), inset 0 0 15px rgba(57,255,20,0.3);
-                transform: translateY(-3px) scale(1.05);
-                background: linear-gradient(135deg, rgba(30, 60, 30, 0.9), rgba(0, 20, 0, 0.9));
-            }
-        }
-
-        .cyber-btn.active {
-            background: rgba(57, 255, 20, 0.25);
-            color: #ffffff;
-            border: 2px solid #39FF14;
-            text-shadow: 0 0 12px #39FF14;
-            box-shadow: 0 0 25px rgba(57,255,20,0.7), inset 0 0 25px rgba(57,255,20,0.5);
-            transform: scale(1.1);
-            z-index: 2;
-        }
-
-        /* Divise Nazionali CSS */
-        .mini-jersey {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.6), 0 0 5px rgba(0,0,0,0.8);
-        }
+        #sponsor-bumper.active { opacity: 1; pointer-events: auto; animation: tvGlitch 2s forwards; }
         
-        .jersey-ita { background: #0055A4; border: 2px solid #FFFFFF; }
-        .jersey-mex { background: #006847; border: 2px solid #FFFFFF; }
-        .jersey-bra { background: #FFDF00; border: 2px solid #009B3A; }
-        .jersey-eng { 
-            background: 
-                linear-gradient(90deg, transparent 42%, #CE1124 42%, #CE1124 58%, transparent 58%), 
-                linear-gradient(180deg, transparent 42%, #CE1124 42%, #CE1124 58%, transparent 58%), 
-                #FFFFFF; 
-            border: 2px solid #CE1124; 
-        }
-        .jersey-esp { background: #C60B1E; border: 2px solid #FFC400; }
+        .sponsor-logo { width: clamp(100px, 20vmin, 150px); height: clamp(100px, 20vmin, 150px); margin-bottom: 20px; filter: drop-shadow(0 0 20px #FFD700); }
+        .sponsor-title { font-size: clamp(26px, 6vmin, 45px); color: #FFD700; font-weight: 900; letter-spacing: 3px; text-align: center; text-transform: uppercase; text-shadow: 0 0 20px rgba(255,215,0,0.6); margin-bottom: 10px; }
+        .sponsor-copy { font-size: clamp(12px, 3vmin, 18px); color: #39FF14; font-weight: 700; letter-spacing: 2px; text-align: center; text-transform: uppercase; text-shadow: 0 0 10px #39FF14; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; border: 1px solid #39FF14;}
 
-        #controls-info {
-            text-align: center;
-            padding: 10px;
-            font-size: clamp(16px, 3.5vmin, 24px);
-            color: #39FF14;
-            background: linear-gradient(180deg, rgba(57,255,20,0.1) 0%, rgba(0,0,0,0.9) 100%);
-            border-top: 2px solid #39FF14;
+        @keyframes tvGlitch {
+            0% { filter: contrast(1) brightness(1) sepia(1) hue-rotate(0deg); transform: scale(1.05); }
+            5% { filter: contrast(1.5) brightness(1.2) sepia(0.5) hue-rotate(50deg); transform: scale(1); }
+            10% { filter: contrast(1) brightness(1) sepia(1) hue-rotate(0deg); }
+            100% { filter: contrast(1) brightness(1) sepia(1) hue-rotate(0deg); }
         }
 
-        #bracket-screen, #game-over-screen {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 5, 0, 0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 30;
-            pointer-events: auto;
+        /* Griglia Selezione Squadre */
+        .grid-options { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 25px; width: 100%; }
+        .team-btn {
+            background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 10px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; transition: all 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 85px;
         }
-
-        .stage-box {
-            font-size: clamp(30px, 8vmin, 60px);
-            margin: 15px;
-            padding: 15px 30px;
-            border: 2px solid #555;
-            border-radius: 8px;
-            background: #111;
-            color: #555;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            transition: all 0.3s;
-            -webkit-clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+        .team-btn .flag-container { width: 50px; height: 34px; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.2); position: relative; }
+        .team-btn .flag-container::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 100%); }
+        .team-btn span { color: #aaa; font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: bold; letter-spacing: 1px; transition: color 0.3s; }
+        @media (hover: hover) {
+            .team-btn:hover { transform: translateY(-3px); border-color: rgba(57, 255, 20, 0.5); background: rgba(57, 255, 20, 0.05); }
+            .team-btn:hover span { color: #fff; }
         }
+        .team-btn.active { background: rgba(57, 255, 20, 0.15); border: 2px solid #39FF14; transform: translateY(-3px) scale(1.05); box-shadow: 0 10px 25px rgba(57, 255, 20, 0.3); }
+        .team-btn.active span { color: #39FF14; text-shadow: 0 0 10px #39FF14; }
+        .flag { width: 100%; height: 100%; display: block; object-fit: cover; }
 
-        .stage-box.active {
-            border-color: #39FF14;
-            color: #39FF14;
-            box-shadow: 0 0 30px rgba(57, 255, 20, 0.4);
-            background: rgba(57, 255, 20, 0.1);
-            transform: scale(1.1);
-        }
-
-        .stage-box.passed { border-color: #aaa; color: #aaa; }
-
+        /* Bottoni Azione */
         .action-btn {
-            margin-top: 20px;
-            font-size: clamp(30px, 6vmin, 50px);
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #39FF14;
-            color: #39FF14;
-            padding: 10px 40px;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
-            pointer-events: auto;
-            -webkit-clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            font-family: inherit;
+            background: linear-gradient(135deg, #112a11, #051105); border: 1px solid #39FF14; color: #39FF14; padding: 12px 30px; font-size: clamp(18px, 4vmin, 24px); font-family: 'Orbitron', sans-serif;
+            font-weight: 900; letter-spacing: 2px; text-transform: uppercase; border-radius: 50px; cursor: pointer; pointer-events: auto; box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 15px rgba(57, 255, 20, 0.2); transition: all 0.2s; width: 80%;
         }
+        .action-btn:active { transform: scale(0.95); box-shadow: 0 5px 10px rgba(0,0,0,0.8), inset 0 0 30px rgba(57, 255, 20, 0.4); }
 
-        .action-btn:active { transform: scale(0.9); }
+        /* Tabellone Stages */
+        .stage-box {
+            font-size: clamp(18px, 4vmin, 30px); margin: 8px; padding: 12px 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: rgba(0,0,0,0.5); color: #555;
+            display: flex; align-items: center; justify-content: space-between; gap: 15px; width: 100%; transition: all 0.3s;
+        }
+        .stage-box.active { border-color: #39FF14; color: #fff; box-shadow: 0 0 30px rgba(57, 255, 20, 0.2); background: rgba(57, 255, 20, 0.1); transform: scale(1.05); }
+        .stage-box.passed { border-color: rgba(255,255,255,0.3); color: #aaa; }
+
+        /* Messaggi In-Game */
+        #message {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: clamp(30px, 8vmin, 70px); font-weight: 900; font-style: italic; text-align: center; color: #fff; text-transform: uppercase; z-index: 10;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px #39FF14; opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s;
+            background: rgba(0,20,0,0.6); padding: 15px 30px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(57,255,20,0.5); width: 90%;
+        }
+        #message.active { opacity: 1; transform: translate(-50%, -50%) scale(1.1); animation: popBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popBounce { 0% { transform: translate(-50%, -50%) scale(0.5); } 100% { transform: translate(-50%, -50%) scale(1.1); } }
+
+        #rotate-device-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #050505; color: #39FF14; z-index: 99999;
+            flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;
+        }
+        #rotate-device-overlay svg { width: 80px; height: 80px; margin-bottom: 20px; animation: rotatePhone 2s ease-in-out infinite; }
+        @keyframes rotatePhone { 0%, 20% { transform: rotate(0deg); } 50%, 80% { transform: rotate(90deg); } 100% { transform: rotate(0deg); } }
+        @media (min-aspect-ratio: 1/1) { #rotate-device-overlay { display: flex; } #game-container { display: none !important; } }
+
+        .icon { width: 1em; height: 1em; vertical-align: middle; display: inline-block; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2)); }
+        .icon.medal { width: 1.5em; height: 1.5em; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.4)); }
     </style>
 </head>
 <body>
 
-    <!-- SVG Libreria -->
+    <div id="rotate-device-overlay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#39FF14" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        <h2>ROTATE DEVICE 📱</h2>
+        <p>Portrait mode required.</p>
+    </div>
+
+    <!-- Libreria SVG Vettoriale -->
     <svg style="display: none;">
         <defs>
-            <radialGradient id="gradMetallic" cx="30%" cy="30%" r="70%">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="50%" stop-color="#a8a9ad"/>
-                <stop offset="100%" stop-color="#444444"/>
-            </radialGradient>
-            <radialGradient id="gradBronze" cx="30%" cy="30%" r="70%">
-                <stop offset="0%" stop-color="#ffcda5"/>
-                <stop offset="50%" stop-color="#cd7f32"/>
-                <stop offset="100%" stop-color="#5c3a16"/>
-            </radialGradient>
-            <radialGradient id="gradSilver" cx="30%" cy="30%" r="70%">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="50%" stop-color="#e0e0e0"/>
-                <stop offset="100%" stop-color="#888888"/>
-            </radialGradient>
-            <radialGradient id="gradGold" cx="30%" cy="30%" r="70%">
-                <stop offset="0%" stop-color="#ffffcc"/>
-                <stop offset="50%" stop-color="#ffd700"/>
-                <stop offset="100%" stop-color="#996500"/>
-            </radialGradient>
-
+            <radialGradient id="gradMetallic" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#a8a9ad"/><stop offset="100%" stop-color="#222222"/></radialGradient>
+            <radialGradient id="gradGold" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffcc"/><stop offset="50%" stop-color="#ffd700"/><stop offset="100%" stop-color="#996500"/></radialGradient>
             <polygon id="gear-shape" points="100,50 84.6,64.3 85.3,85.3 64.3,84.6 50,100 35.7,84.6 14.7,85.3 15.4,64.3 0,50 15.4,35.7 14.7,14.7 35.7,15.4 50,0 64.3,15.4 85.3,14.7 84.6,35.7"/>
-            <circle id="gear-inner" cx="50" cy="50" r="30" fill="#000000"/>
+            <circle id="gear-inner" cx="50" cy="50" r="30" fill="#050505"/>
             <ellipse id="gear-leaf" cx="50" cy="50" rx="22.5" ry="6" fill="#39FF14" transform="rotate(-45 50 50)"/>
-
-            <g id="gear-metallic">
-                <use href="#gear-shape" fill="url(#gradMetallic)"/>
-                <use href="#gear-inner"/>
-                <use href="#gear-leaf"/>
-            </g>
-            <g id="gear-bronze">
-                <use href="#gear-shape" fill="url(#gradBronze)"/>
-                <use href="#gear-inner"/>
-                <use href="#gear-leaf"/>
-            </g>
-            <g id="gear-silver">
-                <use href="#gear-shape" fill="url(#gradSilver)"/>
-                <use href="#gear-inner"/>
-                <use href="#gear-leaf"/>
-            </g>
-            <g id="gear-gold">
-                <use href="#gear-shape" fill="url(#gradGold)"/>
-                <use href="#gear-inner"/>
-                <use href="#gear-leaf"/>
-            </g>
+            <g id="gear-ai"><use href="#gear-shape" fill="url(#gradMetallic)"/><use href="#gear-inner"/><use href="#gear-leaf"/></g>
+            <g id="gear-gold"><use href="#gear-shape" fill="url(#gradGold)"/><use href="#gear-inner"/><use href="#gear-leaf"/></g>
+            
+            <radialGradient id="gradBronze" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffcda5"/><stop offset="50%" stop-color="#cd7f32"/><stop offset="100%" stop-color="#5c3a16"/></radialGradient>
+            <radialGradient id="gradSilver" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#e0e0e0"/><stop offset="100%" stop-color="#888888"/></radialGradient>
+            <g id="gear-bronze"><use href="#gear-shape" fill="url(#gradBronze)"/><use href="#gear-inner"/><use href="#gear-leaf"/></g>
+            <g id="gear-silver"><use href="#gear-shape" fill="url(#gradSilver)"/><use href="#gear-inner"/><use href="#gear-leaf"/></g>
         </defs>
     </svg>
 
     <div id="game-container">
-        <canvas id="gameCanvas" width="900" height="550"></canvas>
-        <div id="screen-flash"></div> <!-- Effetto lampo -->
+        <canvas id="gameCanvas" width="600" height="900"></canvas>
+        <div id="screen-flash"></div> 
+        <div id="scanlines"></div>
+        <div id="vignette"></div>
         
+        <!-- TV Broadcast Sponsor Bumper -->
+        <div id="sponsor-bumper">
+            <svg class="sponsor-logo"><use href="#gear-gold"></use></svg>
+            <div class="sponsor-title">BETTING EXCHANGE ROOM</div>
+            <div class="sponsor-copy">Telegram Betting Exchange Signal Active</div>
+        </div>
+
         <div id="ui-layer">
-            <div id="scanlines"></div>
             <div id="top-hud">
                 <div id="score-board">
                     <span id="score1" class="score-p1">0</span>
-                    <div id="turn-indicator">🟢 ◀</div>
+                    <div id="turn-indicator">⏳</div>
                     <span id="score2" class="score-p2">0</span>
                 </div>
             </div>
 
-            <!-- Menu Squadre -->
+            <!-- Menu Selezione Squadre -->
             <div id="team-menu" class="overlay-screen">
-                <h3>👕</h3>
+                <h2>🌍 SELECT TEAM</h2>
                 <div class="grid-options">
-                    <button class="cyber-btn active" data-team="ITA">
-                        <div class="mini-jersey jersey-ita"></div>
-                        <span>ITA</span>
+                    <button class="team-btn active" data-team="ITA">
+                        <div class="flag-container"><svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="100" height="200" fill="#009246"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE2B37"/></svg></div><span>ITA</span>
                     </button>
-                    <button class="cyber-btn" data-team="MEX">
-                        <div class="mini-jersey jersey-mex"></div>
-                        <span>MEX</span>
+                    <button class="team-btn" data-team="MEX">
+                        <div class="flag-container"><svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="100" height="200" fill="#006847"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE1126"/><circle cx="150" cy="100" r="20" fill="#8B4513"/></svg></div><span>MEX</span>
                     </button>
-                    <button class="cyber-btn" data-team="BRA">
-                        <div class="mini-jersey jersey-bra"></div>
-                        <span>BRA</span>
+                    <button class="team-btn" data-team="BRA">
+                        <div class="flag-container"><svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="300" height="200" fill="#009B3A"/><polygon points="150,20 280,100 150,180 20,100" fill="#FEDF00"/><circle cx="150" cy="100" r="45" fill="#002776"/></svg></div><span>BRA</span>
                     </button>
-                    <button class="cyber-btn" data-team="ENG">
-                        <div class="mini-jersey jersey-eng"></div>
-                        <span>ENG</span>
+                    <button class="team-btn" data-team="ENG">
+                        <div class="flag-container"><svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="300" height="200" fill="#ffffff"/><rect x="130" width="40" height="200" fill="#CF081F"/><rect y="80" width="300" height="40" fill="#CF081F"/></svg></div><span>ENG</span>
                     </button>
-                    <button class="cyber-btn" data-team="ESP">
-                        <div class="mini-jersey jersey-esp"></div>
-                        <span>ESP</span>
+                    <button class="team-btn" data-team="ESP">
+                        <div class="flag-container"><svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="300" height="50" fill="#AA151B"/><rect y="50" width="300" height="100" fill="#F1BF00"/><rect y="150" width="300" height="50" fill="#AA151B"/><circle cx="80" cy="100" r="25" fill="#AA151B"/></svg></div><span>ESP</span>
                     </button>
                 </div>
-                <button id="start-btn" class="action-btn">▶️</button>
+                <button id="start-btn" class="action-btn">▶️ PLAY</button>
             </div>
 
-            <!-- Tabellone Campionato -->
-            <div id="bracket-screen" class="hidden">
-                <h2 style="color: #39FF14; font-size: clamp(40px, 8vmin, 60px); margin: 0 0 20px 0; text-shadow: 0 0 20px #39FF14;">🏆</h2>
-                <div id="stage-1" class="stage-box">1️⃣ <svg class="icon medal"><use href="#gear-bronze"></use></svg></div>
-                <div id="stage-2" class="stage-box">2️⃣ <svg class="icon medal"><use href="#gear-silver"></use></svg></div>
-                <div id="stage-3" class="stage-box">3️⃣ <svg class="icon medal"><use href="#gear-gold"></use></svg></div>
-                <button id="next-match-btn" class="action-btn">▶️</button>
+            <!-- Tabellone Torneo -->
+            <div id="bracket-screen" class="overlay-screen hidden">
+                <h2>🏆 GAUNTLET</h2>
+                <div id="stage-1" class="stage-box"><span>STAGE 1</span> <svg class="icon medal"><use href="#gear-bronze"></use></svg></div>
+                <div id="stage-2" class="stage-box"><span>STAGE 2</span> <svg class="icon medal"><use href="#gear-silver"></use></svg></div>
+                <div id="stage-3" class="stage-box"><span>FINAL</span> <svg class="icon medal"><use href="#gear-gold"></use></svg></div>
+                <button id="next-match-btn" class="action-btn" style="margin-top: 20px;">⚔️ NEXT</button>
             </div>
 
             <!-- Game Over -->
-            <div id="game-over-screen" class="hidden">
-                <div id="game-over-icon" style="font-size: clamp(80px, 15vmin, 120px); filter: drop-shadow(0 0 20px #39FF14); margin-bottom: 20px;"></div>
-                <button id="restart-btn" class="action-btn">🔄</button>
+            <div id="game-over-screen" class="overlay-screen hidden">
+                <h2 id="game-over-title" style="font-size: clamp(30px, 6vmin, 50px);">MATCH OVER</h2>
+                <div id="game-over-icon" style="font-size: 80px; margin-bottom: 20px;"></div>
+                <button id="restart-btn" class="action-btn">🏠 MENU</button>
             </div>
 
-            <!-- Messaggi in Gioco -->
-            <div id="message" class="hidden"></div>
-            
-            <div id="controls-info">👆 ↔️ 🟢 🚀</div>
+            <div id="message"></div>
         </div>
     </div>
 
     <script>
-        // Blocco Scorrimento per Mobile Gaming perfetto
-        document.addEventListener('touchmove', e => { 
-            if(e.cancelable) e.preventDefault(); 
-        }, { passive: false });
-        window.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
+        // --- PREVENZIONE GLITCH ---
+        window.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('touchmove', e => { if(e.cancelable) e.preventDefault(); }, { passive: false });
 
+        // Nomi Squadre in Inglese per l'Annunciatore
+        const teamNamesEn = { 'ITA': 'Italy', 'MEX': 'Mexico', 'BRA': 'Brazil', 'ENG': 'England', 'ESP': 'Spain' };
+
+        // --- SETUP AUDIO PROCEDURALE & TTS (Telecronista) ---
+        let audioCtx = null;
+        let crowdGainNode = null;
+
+        function initAudio() {
+            // Sblocca Speech Synthesis su mobile (richiede interazione utente)
+            if ('speechSynthesis' in window) {
+                let silentMsg = new SpeechSynthesisUtterance('');
+                window.speechSynthesis.speak(silentMsg);
+            }
+
+            if (audioCtx) return;
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+            
+            const bufferSize = audioCtx.sampleRate * 2;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+            
+            const noiseSource = audioCtx.createBufferSource();
+            noiseSource.buffer = noiseBuffer; noiseSource.loop = true;
+
+            const filter1 = audioCtx.createBiquadFilter();
+            filter1.type = 'bandpass'; filter1.frequency.value = 350; filter1.Q.value = 0.8;
+            const filter2 = audioCtx.createBiquadFilter();
+            filter2.type = 'lowpass'; filter2.frequency.value = 800;
+
+            crowdGainNode = audioCtx.createGain(); crowdGainNode.gain.value = 0.15; 
+
+            const lfo = audioCtx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.15;
+            const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 0.05;
+            
+            lfo.connect(lfoGain); lfoGain.connect(crowdGainNode.gain); lfo.start();
+            noiseSource.connect(filter1); filter1.connect(filter2); filter2.connect(crowdGainNode); crowdGainNode.connect(audioCtx.destination);
+            noiseSource.start();
+        }
+
+        // Voce del telecronista (TTS)
+        function commentatorSpeak(text, rate = 1.1, pitch = 1.1) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stoppa dialoghi precedenti
+                let msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US'; // TV Broadcast in Inglese
+                msg.rate = rate; 
+                msg.pitch = pitch;
+                msg.volume = 1.0;
+                window.speechSynthesis.speak(msg);
+            }
+        }
+
+        // Bumper Sponsor TV
+        function playSponsorBumper(isStart, callback) {
+            const bumper = document.getElementById('sponsor-bumper');
+            bumper.classList.remove('hidden');
+            void bumper.offsetWidth; // Trigger reflow
+            bumper.classList.add('active');
+            
+            if (isStart) {
+                commentatorSpeak("Sponsored by Betting Exchange Room.", 1.0, 1.0);
+            } else {
+                commentatorSpeak("Match statistics brought to you by Betting Exchange Room.", 1.0, 1.0);
+            }
+
+            setTimeout(() => {
+                bumper.classList.remove('active');
+                setTimeout(() => {
+                    bumper.classList.add('hidden');
+                    if (callback) callback();
+                }, 500); // fade out
+            }, 2500); // durata spot
+        }
+
+        function playImpactSound(intensity, isGoal = false) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            const baseFreq = 528;
+            
+            if (isGoal) {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(baseFreq * 2, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(baseFreq, audioCtx.currentTime + 0.5);
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+                
+                if(crowdGainNode) {
+                    crowdGainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+                    crowdGainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                    crowdGainNode.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 3);
+                }
+            } else {
+                osc.type = intensity > 15 ? 'square' : 'triangle';
+                osc.frequency.setValueAtTime(baseFreq * 1.5, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(baseFreq, audioCtx.currentTime + 0.1);
+                let vol = Math.min(intensity / 30, 0.4);
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            }
+
+            filter.type = 'lowpass'; filter.frequency.setValueAtTime(2000, audioCtx.currentTime);
+            if(!isGoal) filter.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.2);
+
+            osc.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + (isGoal ? 1.5 : 0.3));
+        }
+
+        // --- SISTEMA DI GIOCO ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const score1El = document.getElementById('score1');
-        const score2El = document.getElementById('score2');
-        const messageEl = document.getElementById('message');
-        const turnIndicatorEl = document.getElementById('turn-indicator');
-        const teamMenuEl = document.getElementById('team-menu');
-        const bracketScreenEl = document.getElementById('bracket-screen');
-        const gameOverScreenEl = document.getElementById('game-over-screen');
-        const gameOverIconEl = document.getElementById('game-over-icon');
-        const screenFlash = document.getElementById('screen-flash');
+        const score1El = document.getElementById('score1'), score2El = document.getElementById('score2');
+        const messageEl = document.getElementById('message'), turnIndicatorEl = document.getElementById('turn-indicator');
+        const teamMenuEl = document.getElementById('team-menu'), bracketScreenEl = document.getElementById('bracket-screen');
+        const gameOverScreenEl = document.getElementById('game-over-screen'), gameOverIconEl = document.getElementById('game-over-icon'), gameOverTitleEl = document.getElementById('game-over-title');
 
-        // Stati
-        const GAME_STATE_MENU = 0;
-        const GAME_STATE_BRACKET = 1;
-        const GAME_STATE_PLAYING = 2;
-        const GAME_STATE_GOAL = 3;
-        const GAME_STATE_OVER = 4;
+        const GAME_STATE_MENU = 0, GAME_STATE_BRACKET = 1, GAME_STATE_PLAYING = 2, GAME_STATE_GOAL = 3, GAME_STATE_OVER = 4;
         let gameState = GAME_STATE_MENU;
+        let currentStage = 1, maxStages = 3;
+        let currentTurn = 1, isMoving = false; 
 
-        let currentStage = 1;
-        const maxStages = 3;
-        let currentTurn = 1; 
-        let isMoving = false; 
+        let hitStopFrames = 0; 
+        let particles = [], floatingTexts = [];
+        let shakeTime = 0, shakeMagnitude = 0;
+        const impactWords = ["BAM!", "SMASH!", "BOOM!", "CRASH!", "ZAP!"];
 
-        // Emozioni & Game Feel (Juice)
-        let hitStopFrames = 0; // Congelamento schermo per colpi duri
-        let particles = [];
-        let shakeTime = 0;
-        let shakeMagnitude = 0;
-
-        // Fisica e Controllo
-        const goalHeight = 160;
-        const goalWidth = 20;
-        const friction = 0.96; 
-        const ballFriction = 0.985; 
-        const maxBallSpeed = 22; // Aumentato per "Super Tiri"
-        const maxDragPull = 120; // Elastico più lungo
+        const mTop = 90, mBot = 50, mSide = 20; 
+        const goalWidth = 200, goalHeight = 20; 
+        
+        const friction = 0.96, ballFriction = 0.985; 
+        const maxBallSpeed = 26; const maxDragPull = 150; 
+        
         let pointer = { x: 0, y: 0, active: false };
-        let dragTarget = null;
-        let scoreP1 = 0;
-        let scoreP2 = 0;
-        let aiTimer = 60;
+        let activePointerId = null; let dragTarget = null;
+        let scoreP1 = 0, scoreP2 = 0; let aiTimer = 60;
+        let lastTime = 0, accumulator = 0; const timeStep = 1000 / 60; 
 
-        // Nazionali
-        const teamsData = {
-            'ITA': { primary: '#0055A4', secondary: '#FFFFFF', type: 'solid' },
-            'MEX': { primary: '#006847', secondary: '#FFFFFF', type: 'solid' },
-            'BRA': { primary: '#FFDF00', secondary: '#009B3A', type: 'solid' },
-            'ENG': { primary: '#FFFFFF', secondary: '#CE1124', type: 'cross' },
-            'ESP': { primary: '#C60B1E', secondary: '#FFC400', type: 'solid' }
-        };
         let selectedTeam = 'ITA';
 
-        // --- SISTEMA MENU ---
-        document.querySelectorAll('#team-menu .cyber-btn').forEach(btn => {
+        // --- MENU INTERAZIONI ---
+        document.querySelectorAll('#team-menu .team-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                document.querySelectorAll('#team-menu .cyber-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('#team-menu .team-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 selectedTeam = btn.getAttribute('data-team');
             });
         });
 
         document.getElementById('start-btn').addEventListener('click', () => {
-            currentStage = 1;
-            teamMenuEl.classList.add('hidden');
+            initAudio(); 
+            currentStage = 1; 
+            teamMenuEl.classList.add('hidden'); 
             showBracket();
         });
 
         document.getElementById('next-match-btn').addEventListener('click', () => {
             bracketScreenEl.classList.add('hidden');
-            currentTurn = 1;
-            resetPositions();
-            scoreP1 = 0; scoreP2 = 0;
-            score1El.innerText = 0; score2El.innerText = 0;
-            gameState = GAME_STATE_PLAYING;
-            showMessage("");
+            
+            // Lancia lo Sponsor Bumper prima del fischio d'inizio
+            playSponsorBumper(true, () => {
+                currentTurn = 1; resetPositions();
+                scoreP1 = 0; scoreP2 = 0; score1El.innerText = 0; score2El.innerText = 0;
+                gameState = GAME_STATE_PLAYING; 
+                hideMessage();
+                
+                // Telecronaca di inizio match
+                commentatorSpeak(`The match begins! ${teamNamesEn[selectedTeam]} against The System!`, 1.1, 1.2);
+            });
         });
 
         document.getElementById('restart-btn').addEventListener('click', () => {
-            gameOverScreenEl.classList.add('hidden');
-            teamMenuEl.classList.remove('hidden');
-            currentStage = 1;
-            scoreP1 = 0; scoreP2 = 0;
-            score1El.innerText = 0; score2El.innerText = 0;
-            gameState = GAME_STATE_MENU;
-            showMessage("");
+            gameOverScreenEl.classList.add('hidden'); teamMenuEl.classList.remove('hidden');
+            gameState = GAME_STATE_MENU; hideMessage();
         });
 
         function showBracket() {
-            gameState = GAME_STATE_BRACKET;
-            bracketScreenEl.classList.remove('hidden');
+            gameState = GAME_STATE_BRACKET; bracketScreenEl.classList.remove('hidden');
             for (let i = 1; i <= maxStages; i++) {
                 let box = document.getElementById(`stage-${i}`);
                 box.className = 'stage-box';
@@ -599,402 +431,263 @@
             }
         }
 
-        function showMessage(htmlContent) {
-            if (htmlContent === "") {
-                messageEl.classList.add('hidden');
-            } else {
-                messageEl.innerHTML = htmlContent;
-                messageEl.classList.remove('hidden');
+        function showMessage(html) { messageEl.innerHTML = html; messageEl.classList.add('active'); }
+        function hideMessage() { messageEl.classList.remove('active'); }
+
+        // --- EFFETTI VISIVI ---
+        function triggerFlash(intensity) {
+            const flash = document.getElementById('screen-flash');
+            flash.style.transition = 'none'; flash.style.opacity = intensity;
+            setTimeout(() => { flash.style.transition = 'opacity 0.1s'; flash.style.opacity = 0; }, 10);
+        }
+        function triggerScreenShake(dur, mag) { shakeTime = dur; shakeMagnitude = mag; }
+
+        class FloatingText {
+            constructor(x, y, text, color) { this.x = x; this.y = y; this.text = text; this.color = color; this.life = 1.0; this.vy = -1.5; }
+            update() { this.y += this.vy; this.life -= 0.02; }
+            draw(ctx) {
+                if (this.life <= 0) return;
+                ctx.save(); ctx.globalAlpha = this.life;
+                ctx.font = '900 24px Orbitron'; ctx.fillStyle = this.color; ctx.textAlign = 'center';
+                ctx.shadowBlur = 15; ctx.shadowColor = this.color;
+                let scale = 1 + (1 - this.life) * 0.5; ctx.translate(this.x, this.y); ctx.scale(scale, scale);
+                ctx.fillText(this.text, 0, 0); ctx.restore();
             }
         }
 
-        // Funzioni visive (Flash, Shake)
-        function triggerFlash(intensity = 0.5) {
-            screenFlash.style.opacity = intensity;
-            setTimeout(() => { screenFlash.style.opacity = 0; }, 50);
+        class Particle {
+            constructor(x, y, color, speed, size, life) {
+                this.x = x; this.y = y;
+                this.vx = (Math.random() - 0.5) * speed; this.vy = (Math.random() - 0.5) * speed;
+                this.color = color; this.size = size; this.life = life; this.maxLife = life;
+            }
+            update() { this.x += this.vx; this.y += this.vy; this.life--; this.size *= 0.95; }
+            draw(ctx) {
+                ctx.globalAlpha = Math.max(0, this.life / this.maxLife); ctx.fillStyle = this.color;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1.0;
+            }
         }
+        function createExplosion(x, y, color, amount, speed, size, life) { for (let i = 0; i < amount; i++) particles.push(new Particle(x, y, color, speed, size, life)); }
 
-        function triggerScreenShake(duration, magnitude) {
-            shakeTime = duration; shakeMagnitude = magnitude;
-        }
-
-        // --- GRAFICA E RENDERING ---
-        function drawGearLogo(ctx, x, y, radius) {
+        // --- GRAFICA ENTITA ---
+        function drawNationToken(ctx, x, y, radius, teamCode) {
             ctx.save();
-            let gradient = ctx.createRadialGradient(x-radius*0.2, y-radius*0.2, 1, x, y, radius);
-            gradient.addColorStop(0, '#ffffff');
-            gradient.addColorStop(0.5, '#a8a9ad');
-            gradient.addColorStop(1, '#444444');
+            ctx.beginPath(); ctx.arc(x, y, radius + 2, 0, Math.PI * 2); ctx.fillStyle = '#111'; ctx.shadowBlur = 15; ctx.shadowColor = '#000'; ctx.fill(); ctx.shadowBlur = 0;
+            ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.clip();
 
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            const teeth = 8;
-            const outerRadius = radius;
-            const innerRadius = radius * 0.75;
+            if (teamCode === 'ITA') { ctx.fillStyle = '#009246'; ctx.fillRect(x - radius, y - radius, radius*0.66, radius*2); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - radius + radius*0.66, y - radius, radius*0.66, radius*2); ctx.fillStyle = '#CE2B37'; ctx.fillRect(x - radius + radius*1.33, y - radius, radius*0.66, radius*2); } 
+            else if (teamCode === 'MEX') { ctx.fillStyle = '#006847'; ctx.fillRect(x - radius, y - radius, radius*0.66, radius*2); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - radius + radius*0.66, y - radius, radius*0.66, radius*2); ctx.fillStyle = '#CE1126'; ctx.fillRect(x - radius + radius*1.33, y - radius, radius*0.66, radius*2); ctx.fillStyle = '#8B4513'; ctx.beginPath(); ctx.arc(x, y, radius*0.25, 0, Math.PI*2); ctx.fill(); } 
+            else if (teamCode === 'BRA') { ctx.fillStyle = '#009B3A'; ctx.fillRect(x - radius, y - radius, radius*2, radius*2); ctx.fillStyle = '#FEDF00'; ctx.beginPath(); ctx.moveTo(x, y - radius*0.8); ctx.lineTo(x + radius*0.8, y); ctx.lineTo(x, y + radius*0.8); ctx.lineTo(x - radius*0.8, y); ctx.fill(); ctx.fillStyle = '#002776'; ctx.beginPath(); ctx.arc(x, y, radius*0.4, 0, Math.PI*2); ctx.fill(); } 
+            else if (teamCode === 'ENG') { ctx.fillStyle = '#ffffff'; ctx.fillRect(x - radius, y - radius, radius*2, radius*2); ctx.fillStyle = '#CF081F'; ctx.fillRect(x - radius*0.2, y - radius, radius*0.4, radius*2); ctx.fillRect(x - radius, y - radius*0.2, radius*2, radius*0.4); } 
+            else if (teamCode === 'ESP') { ctx.fillStyle = '#AA151B'; ctx.fillRect(x - radius, y - radius, radius*2, radius*0.5); ctx.fillRect(x - radius, y + radius*0.5, radius*2, radius*0.5); ctx.fillStyle = '#F1BF00'; ctx.fillRect(x - radius, y - radius*0.5, radius*2, radius); ctx.fillStyle = '#AA151B'; ctx.beginPath(); ctx.arc(x - radius*0.3, y, radius*0.2, 0, Math.PI*2); ctx.fill(); }
+
+            let gloss = ctx.createRadialGradient(x - radius*0.3, y - radius*0.3, radius*0.1, x, y, radius);
+            gloss.addColorStop(0, 'rgba(255,255,255,0.7)'); gloss.addColorStop(0.5, 'rgba(255,255,255,0.1)'); gloss.addColorStop(1, 'rgba(0,0,0,0.6)');
+            ctx.fillStyle = gloss; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+
+            ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.lineWidth = 3;
+            if (dragTarget && dragTarget.x === x && dragTarget.y === y) { ctx.strokeStyle = '#ffffff'; ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; } 
+            else { ctx.strokeStyle = '#39FF14'; ctx.shadowBlur = 10; ctx.shadowColor = '#39FF14'; }
+            ctx.stroke(); ctx.shadowBlur = 0;
+        }
+
+        function drawAiToken(ctx, x, y, radius) {
+            ctx.save(); ctx.beginPath(); ctx.arc(x, y, radius + 2, 0, Math.PI * 2); ctx.fillStyle = '#000'; ctx.shadowBlur = 15; ctx.shadowColor = '#ffffff'; ctx.fill(); ctx.shadowBlur = 0;
+            let gradient = ctx.createRadialGradient(x-radius*0.3, y-radius*0.3, 2, x, y, radius);
+            gradient.addColorStop(0, '#ffffff'); gradient.addColorStop(0.4, '#a8a9ad'); gradient.addColorStop(1, '#222');
+            ctx.fillStyle = gradient; ctx.beginPath();
+            const teeth = 8; const oR = radius; const iR = radius * 0.75;
             for (let i = 0; i < teeth * 2; i++) {
-                const angle = (i * Math.PI) / teeth;
-                const r = i % 2 === 0 ? outerRadius : innerRadius;
-                if (i === 0) ctx.moveTo(x + r * Math.cos(angle), y + r * Math.sin(angle));
-                else ctx.lineTo(x + r * Math.cos(angle), y + r * Math.sin(angle));
+                const a = (i * Math.PI) / teeth; const r = i % 2 === 0 ? oR : iR;
+                if (i===0) ctx.moveTo(x + r*Math.cos(a), y + r*Math.sin(a)); else ctx.lineTo(x + r*Math.cos(a), y + r*Math.sin(a));
             }
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.arc(x, y, radius * 0.6, 0, Math.PI * 2);
-            ctx.fillStyle = '#000000';
-            ctx.fill();
-
-            ctx.translate(x, y);
-            ctx.rotate(-Math.PI / 4); 
-            ctx.beginPath();
-            ctx.ellipse(0, 0, radius * 0.45, radius * 0.12, 0, 0, Math.PI * 2);
-            ctx.fillStyle = '#39FF14';
-            ctx.fill();
-
+            ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.arc(x, y, radius * 0.55, 0, Math.PI * 2); ctx.fillStyle = '#050505'; ctx.fill();
+            ctx.translate(x, y); ctx.rotate(-Math.PI / 4); 
+            ctx.beginPath(); ctx.ellipse(0, 0, radius * 0.4, radius * 0.1, 0, 0, Math.PI * 2); ctx.fillStyle = '#39FF14'; ctx.shadowBlur = 10; ctx.shadowColor = '#39FF14'; ctx.fill();
             ctx.restore();
         }
 
-        function drawJersey(ctx, x, y, radius, teamCode) {
-            const team = teamsData[teamCode] || teamsData['ITA'];
-            ctx.save();
+        function drawField() {
+            ctx.fillStyle = '#020a04'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI*2);
-            ctx.clip();
+            const stripeHeight = 60;
+            for (let i = 0; i < canvas.height; i += stripeHeight) {
+                ctx.fillStyle = (i / stripeHeight) % 2 === 0 ? '#020f05' : '#031708';
+                ctx.fillRect(0, i, canvas.width, stripeHeight);
+            }
+            
+            let time = performance.now() / 40; ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(57, 255, 20, 0.08)';
+            let offsetX = time % 40; for(let i = -40 + offsetX; i < canvas.width; i += 40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
+            let offsetY = (time / 2) % 40; for(let i = -40 + offsetY; i < canvas.height; i += 40) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke(); }
 
-            if (team.type === 'stripes') {
-                ctx.fillStyle = team.secondary;
-                ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
-                ctx.fillStyle = team.primary;
-                for (let i = -radius; i < radius; i += 12) {
-                    ctx.fillRect(x + i, y - radius, 6, radius * 2);
+            ctx.save(); 
+            ctx.lineWidth = 4; ctx.strokeStyle = '#39FF14'; ctx.shadowBlur = 20; ctx.shadowColor = '#39FF14';
+            
+            // Campo Interno
+            ctx.strokeRect(mSide, mTop, canvas.width - mSide * 2, canvas.height - mTop - mBot); 
+            
+            // Metà Campo
+            const midY = mTop + (canvas.height - mTop - mBot) / 2;
+            ctx.beginPath(); ctx.moveTo(mSide, midY); ctx.lineTo(canvas.width - mSide, midY); ctx.stroke();
+            ctx.beginPath(); ctx.arc(canvas.width / 2, midY, 80, 0, Math.PI * 2); ctx.stroke(); 
+            ctx.beginPath(); ctx.arc(canvas.width / 2, midY, 5, 0, Math.PI * 2); ctx.fillStyle = '#39FF14'; ctx.fill(); 
+            
+            // Aree Rigore (AI in alto, Player in basso)
+            ctx.strokeRect(canvas.width / 2 - 130, mTop, 260, 140); ctx.strokeRect(canvas.width / 2 - 60, mTop, 120, 50);
+            ctx.strokeRect(canvas.width / 2 - 130, canvas.height - mBot - 140, 260, 140); ctx.strokeRect(canvas.width / 2 - 60, canvas.height - mBot - 50, 120, 50);
+
+            // Porte Olografiche
+            const gx = canvas.width / 2 - goalWidth / 2;
+            
+            // Porta AI (Top)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'; ctx.fillRect(gx, mTop - 20, goalWidth, 20); 
+            ctx.strokeStyle = '#ffffff'; ctx.shadowColor = '#ffffff'; ctx.strokeRect(gx, mTop - 20, goalWidth, 20);
+            
+            // Porta Player (Bottom)
+            ctx.fillStyle = 'rgba(57, 255, 20, 0.1)'; ctx.fillRect(gx, canvas.height - mBot, goalWidth, 20); 
+            ctx.strokeStyle = '#39FF14'; ctx.shadowColor = '#39FF14'; ctx.strokeRect(gx, canvas.height - mBot, goalWidth, 20);
+            
+            ctx.restore();
+        }
+
+        // --- FISICA E CLASSI ---
+        class CircleEntity {
+            constructor(x, y, radius, mass) { this.x = x; this.y = y; this.vx = 0; this.vy = 0; this.radius = radius; this.mass = mass; }
+            applyFriction(f) { this.vx *= f; this.vy *= f; }
+            update() { this.x += this.vx; this.y += this.vy; }
+        }
+
+        class Player extends CircleEntity {
+            constructor(x, y, isP1) { super(x, y, 24, 2.5); this.isP1 = isP1; this.startX = x; this.startY = y; }
+            resetPosition() { this.x = this.startX; this.y = this.startY; this.vx = 0; this.vy = 0; }
+            draw(ctx) { if (this.isP1) drawNationToken(ctx, this.x, this.y, this.radius, selectedTeam); else drawAiToken(ctx, this.x, this.y, this.radius); }
+        }
+
+        class Ball extends CircleEntity {
+            constructor(x, y) { super(x, y, 15, 0.8); this.trail = []; }
+            update() {
+                super.update(); let speed = Math.hypot(this.vx, this.vy);
+                if (speed > 3) this.trail.push({x: this.x, y: this.y, life: 10, speed: speed});
+                for (let i = this.trail.length - 1; i >= 0; i--) { this.trail[i].life--; if (this.trail[i].life <= 0) this.trail.splice(i, 1); }
+            }
+            draw(ctx) {
+                ctx.save();
+                this.trail.forEach((t) => {
+                    ctx.beginPath(); ctx.arc(t.x, t.y, this.radius * (t.life / 10), 0, Math.PI * 2);
+                    let isFire = t.speed > 18; 
+                    ctx.fillStyle = isFire ? `rgba(255, 50, 0, ${t.life / 10})` : `rgba(57, 255, 20, ${t.life / 15})`;
+                    ctx.shadowBlur = isFire ? 20 : 10; ctx.shadowColor = isFire ? '#FF3200' : '#39FF14'; ctx.fill();
+                });
+                
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                let currentSpeed = Math.hypot(this.vx, this.vy);
+                let grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                if (currentSpeed > 18) { grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.5, '#ffffaa'); grad.addColorStop(1, '#FF3200'); ctx.shadowColor = '#FF3200'; } 
+                else { grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.5, '#ccffcc'); grad.addColorStop(1, '#39FF14'); ctx.shadowColor = '#39FF14'; }
+                ctx.fillStyle = grad; ctx.shadowBlur = 25; ctx.fill();
+                
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius * 0.3, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 0; ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        const team1 = [ new Player(300, 800, true), new Player(180, 680, true), new Player(420, 680, true), new Player(200, 520, true), new Player(400, 520, true) ];
+        const team2 = [ new Player(300, 150, false), new Player(180, 270, false), new Player(420, 270, false), new Player(200, 430, false), new Player(400, 430, false) ];
+        const ball = new Ball(300, 475);
+
+        // --- SISTEMA DI INPUT (Pointer Capture) ---
+        function updatePointerCoords(clientX, clientY) {
+            const rect = canvas.getBoundingClientRect();
+            pointer.x = (clientX - rect.left) * (canvas.width / rect.width);
+            pointer.y = (clientY - rect.top) * (canvas.height / rect.height);
+        }
+
+        function handlePointerDown(e) {
+            if (activePointerId !== null || gameState !== GAME_STATE_PLAYING || currentTurn !== 1 || isMoving || hitStopFrames > 0) return;
+            updatePointerCoords(e.clientX, e.clientY);
+            for (let p of team1) {
+                let dx = pointer.x - p.x, dy = pointer.y - p.y;
+                if (dx * dx + dy * dy <= (p.radius * 3.5) ** 2) {
+                    activePointerId = e.pointerId; canvas.setPointerCapture(e.pointerId); pointer.active = true;
+                    dragTarget = p; dragTarget.dragStartX = p.x; dragTarget.dragStartY = p.y; dragTarget.vx = 0; dragTarget.vy = 0; break;
                 }
-            } else if (team.type === 'cross') {
-                ctx.fillStyle = team.primary;
-                ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
-                ctx.fillStyle = team.secondary;
-                ctx.fillRect(x - radius, y - 3, radius * 2, 6);
-                ctx.fillRect(x - 3, y - radius, 6, radius * 2);
-            } else {
-                ctx.fillStyle = team.primary;
-                ctx.fill();
-                ctx.beginPath();
-                ctx.arc(x, y, radius * 0.4, 0, Math.PI*2);
-                ctx.strokeStyle = team.secondary;
-                ctx.lineWidth = 3;
-                ctx.stroke();
             }
-            
-            let gloss = ctx.createLinearGradient(x - radius, y - radius, x + radius, y + radius);
-            gloss.addColorStop(0, 'rgba(255,255,255,0.4)');
-            gloss.addColorStop(0.5, 'rgba(255,255,255,0.0)');
-            ctx.fillStyle = gloss;
-            ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
-
-            ctx.restore();
         }
 
+        function handlePointerMove(e) { if (pointer.active && e.pointerId === activePointerId) updatePointerCoords(e.clientX, e.clientY); }
+
+        function handlePointerUp(e) {
+            if (e.pointerId === activePointerId) {
+                if (dragTarget && pointer.active) {
+                    let dx = dragTarget.dragStartX - dragTarget.x, dy = dragTarget.dragStartY - dragTarget.y;
+                    isMoving = true; dragTarget.vx = dx * 0.45; dragTarget.vy = dy * 0.45; 
+                    createExplosion(dragTarget.dragStartX, dragTarget.dragStartY, '#39FF14', 15, 8, 4, 30);
+                    triggerScreenShake(4, 3); dragTarget = null;
+                }
+                pointer.active = false; canvas.releasePointerCapture(e.pointerId); activePointerId = null;
+            }
+        }
+
+        canvas.addEventListener('pointerdown', handlePointerDown);
+        canvas.addEventListener('pointermove', handlePointerMove);
+        canvas.addEventListener('pointerup', handlePointerUp);
+        canvas.addEventListener('pointercancel', handlePointerUp);
+
+        // --- LOGICA DI GIOCO E IA ---
         function updateTurnUI() {
             if (currentTurn === 1) {
-                turnIndicatorEl.innerHTML = "🟢 ◀";
-                turnIndicatorEl.style.color = "#39FF14";
-                turnIndicatorEl.style.borderColor = "#39FF14";
-                turnIndicatorEl.style.textShadow = "0 0 10px #39FF14";
-                turnIndicatorEl.style.boxShadow = "0 0 15px rgba(57, 255, 20, 0.3)";
+                turnIndicatorEl.innerHTML = "🟢 ◀"; turnIndicatorEl.style.color = "#39FF14"; turnIndicatorEl.style.borderColor = "#39FF14"; turnIndicatorEl.style.boxShadow = "0 0 15px rgba(57, 255, 20, 0.4)";
             } else {
-                turnIndicatorEl.innerHTML = `▶ <svg class="icon"><use href="#gear-metallic"></use></svg>`;
-                turnIndicatorEl.style.color = "#ffffff";
-                turnIndicatorEl.style.borderColor = "#ffffff";
-                turnIndicatorEl.style.textShadow = "0 0 10px #ffffff";
-                turnIndicatorEl.style.boxShadow = "0 0 15px rgba(255, 255, 255, 0.3)";
+                turnIndicatorEl.innerHTML = `▶ <svg class="icon"><use href="#gear-metallic"></use></svg>`; turnIndicatorEl.style.color = "#ffffff"; turnIndicatorEl.style.borderColor = "#ffffff"; turnIndicatorEl.style.boxShadow = "0 0 15px rgba(255, 255, 255, 0.4)";
             }
         }
 
         function switchTurn() {
             if (gameState !== GAME_STATE_PLAYING) return;
-            currentTurn = currentTurn === 1 ? 2 : 1;
-            aiTimer = 60 - (currentStage * 10); 
-            updateTurnUI();
+            currentTurn = currentTurn === 1 ? 2 : 1; aiTimer = 50 - (currentStage * 10); updateTurnUI();
         }
-
-        // --- SISTEMA DI INPUT (Mouse + Touch Universale) ---
-        function updatePointer(clientX, clientY) {
-            const rect = canvas.getBoundingClientRect();
-            if (clientX !== undefined && clientY !== undefined) {
-                pointer.x = (clientX - rect.left) * (canvas.width / rect.width);
-                pointer.y = (clientY - rect.top) * (canvas.height / rect.height);
-            }
-        }
-
-        function startDrag() {
-            if (gameState !== GAME_STATE_PLAYING || currentTurn !== 1 || isMoving || hitStopFrames > 0) return;
-
-            for (let p of team1) {
-                let dx = pointer.x - p.x;
-                let dy = pointer.y - p.y;
-                let hitRadius = p.radius * 3; // Hitbox gigante per Mobile
-                if (dx * dx + dy * dy <= hitRadius * hitRadius) {
-                    dragTarget = p;
-                    dragTarget.dragStartX = p.x;
-                    dragTarget.dragStartY = p.y;
-                    dragTarget.vx = 0;
-                    dragTarget.vy = 0;
-                    break;
-                }
-            }
-        }
-
-        function endDrag() {
-            if (dragTarget && pointer.active) {
-                let dx = dragTarget.dragStartX - dragTarget.x;
-                let dy = dragTarget.dragStartY - dragTarget.y;
-                
-                isMoving = true;
-                // Moltiplicatore spinta leggermente aumentato per gioco più esplosivo
-                dragTarget.vx = dx * 0.40;
-                dragTarget.vy = dy * 0.40;
-                
-                createExplosion(dragTarget.dragStartX, dragTarget.dragStartY, '#39FF14', 10, 6, 4, 20);
-                triggerScreenShake(4, 3);
-
-                dragTarget = null;
-            }
-            pointer.active = false;
-        }
-
-        // Listener Mouse
-        canvas.addEventListener('mousedown', (e) => { 
-            updatePointer(e.clientX, e.clientY);
-            pointer.active = true;
-            startDrag();
-        });
-        window.addEventListener('mousemove', (e) => { 
-            if (pointer.active) updatePointer(e.clientX, e.clientY); 
-        });
-        window.addEventListener('mouseup', endDrag);
-
-        // Listener Touch
-        canvas.addEventListener('touchstart', (e) => { 
-            if(e.touches.length > 0) {
-                updatePointer(e.touches[0].clientX, e.touches[0].clientY);
-                pointer.active = true;
-                startDrag();
-            }
-        }, {passive: false});
-        window.addEventListener('touchmove', (e) => { 
-            if (pointer.active && e.touches.length > 0) {
-                updatePointer(e.touches[0].clientX, e.touches[0].clientY);
-            }
-        }, {passive: false});
-        window.addEventListener('touchend', endDrag);
-        window.addEventListener('touchcancel', endDrag);
-
-
-        // --- ENTITA' E FISICA ---
-        class Particle {
-            constructor(x, y, color, speed, size, life) {
-                this.x = x; this.y = y;
-                this.vx = (Math.random() - 0.5) * speed;
-                this.vy = (Math.random() - 0.5) * speed;
-                this.color = color; this.size = size;
-                this.life = life; this.maxLife = life;
-            }
-            update() {
-                this.x += this.vx; this.y += this.vy;
-                this.life--; this.size *= 0.95;
-            }
-            draw(ctx) {
-                ctx.globalAlpha = Math.max(0, this.life / this.maxLife);
-                ctx.fillStyle = this.color;
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-                ctx.globalAlpha = 1.0;
-            }
-        }
-
-        function createExplosion(x, y, color, amount, speed, size, life) {
-            for (let i = 0; i < amount; i++) particles.push(new Particle(x, y, color, speed, size, life));
-        }
-
-        class CircleEntity {
-            constructor(x, y, radius, mass) {
-                this.x = x; this.y = y; this.vx = 0; this.vy = 0;
-                this.radius = radius; this.mass = mass;
-            }
-            applyFriction(f) {
-                this.vx *= f; this.vy *= f;
-            }
-            update() {
-                this.x += this.vx; this.y += this.vy;
-            }
-        }
-
-        class Player extends CircleEntity {
-            constructor(x, y, isP1) {
-                super(x, y, 22, 2.5);
-                this.isP1 = isP1;
-                this.startX = x; this.startY = y;
-            }
-            resetPosition() {
-                this.x = this.startX; this.y = this.startY; this.vx = 0; this.vy = 0;
-            }
-            draw(ctx) {
-                ctx.save();
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
-                if (dragTarget === this) {
-                    ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 25; ctx.shadowColor = '#ffffff';
-                } else {
-                    ctx.fillStyle = this.isP1 ? 'rgba(57, 255, 20, 0.3)' : 'rgba(255, 255, 255, 0.3)';
-                    ctx.shadowBlur = 15; ctx.shadowColor = this.isP1 ? '#39FF14' : '#ffffff';
-                }
-                ctx.fill();
-
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.isP1 ? '#111' : '#222'; ctx.fill();
-                ctx.lineWidth = 2; ctx.strokeStyle = this.isP1 ? '#39FF14' : '#888'; ctx.stroke();
-                
-                if (this.isP1) drawJersey(ctx, this.x, this.y, this.radius * 0.75, selectedTeam);
-                else drawGearLogo(ctx, this.x, this.y, this.radius * 0.85);
-                ctx.restore();
-            }
-        }
-
-        class Ball extends CircleEntity {
-            constructor(x, y) {
-                super(x, y, 14, 0.8);
-                this.trail = [];
-            }
-            update() {
-                super.update();
-                let speed = Math.hypot(this.vx, this.vy);
-                if (speed > 3) this.trail.push({x: this.x, y: this.y, life: 10, speed: speed});
-                for (let i = this.trail.length - 1; i >= 0; i--) {
-                    this.trail[i].life--;
-                    if (this.trail[i].life <= 0) this.trail.splice(i, 1);
-                }
-            }
-            draw(ctx) {
-                ctx.save();
-                
-                // Scia infuocata per i super-tiri
-                this.trail.forEach((t) => {
-                    ctx.beginPath(); 
-                    ctx.arc(t.x, t.y, this.radius * (t.life / 10), 0, Math.PI * 2);
-                    let isFire = t.speed > 15; // Soglia per il plasma
-                    ctx.fillStyle = isFire ? `rgba(255, 80, 0, ${t.life / 15})` : `rgba(57, 255, 20, ${t.life / 20})`;
-                    ctx.shadowBlur = isFire ? 15 : 10; 
-                    ctx.shadowColor = isFire ? '#FF5000' : '#39FF14'; 
-                    ctx.fill();
-                });
-
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                let currentSpeed = Math.hypot(this.vx, this.vy);
-                
-                let grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
-                if (currentSpeed > 15) {
-                    // Palla incandescente
-                    grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.5, '#ffffaa'); grad.addColorStop(1, '#FF5000');
-                    ctx.shadowColor = '#FF5000';
-                } else {
-                    grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.5, '#aaffaa'); grad.addColorStop(1, '#39FF14');
-                    ctx.shadowColor = '#39FF14';
-                }
-                
-                ctx.fillStyle = grad; ctx.shadowBlur = 20; ctx.fill();
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius * 0.4, 0, Math.PI * 2);
-                ctx.fillStyle = '#ffffff'; ctx.fill();
-                ctx.restore();
-            }
-        }
-
-        const team1 = [
-            new Player(120, canvas.height / 2, true),
-            new Player(250, canvas.height / 2 - 120, true),
-            new Player(250, canvas.height / 2 + 120, true),
-            new Player(400, canvas.height / 2 - 70, true),
-            new Player(400, canvas.height / 2 + 70, true)
-        ];
-        
-        const team2 = [
-            new Player(canvas.width - 120, canvas.height / 2, false),
-            new Player(canvas.width - 250, canvas.height / 2 - 120, false),
-            new Player(canvas.width - 250, canvas.height / 2 + 120, false),
-            new Player(canvas.width - 400, canvas.height / 2 - 70, false),
-            new Player(canvas.width - 400, canvas.height / 2 + 70, false)
-        ];
-        const ball = new Ball(canvas.width / 2, canvas.height / 2);
 
         function resetPositions() {
-            ball.x = canvas.width / 2; ball.y = canvas.height / 2;
-            ball.vx = 0; ball.vy = 0;
+            ball.x = canvas.width / 2; ball.y = 475; ball.vx = 0; ball.vy = 0;
             team1.forEach(p => p.resetPosition()); team2.forEach(p => p.resetPosition());
-            dragTarget = null; isMoving = false; hitStopFrames = 0;
-            updateTurnUI();
+            dragTarget = null; isMoving = false; hitStopFrames = 0; updateTurnUI();
         }
 
-        function drawField() {
-            ctx.fillStyle = '#080a0c'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            let time = performance.now() / 40;
-            ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(57, 255, 20, 0.15)';
-            let offsetX = (time / 2) % 40;
-            for(let i = -40 + offsetX; i < canvas.width; i += 40) {
-                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
-            }
-            let offsetY = time % 40;
-            for(let i = -40 + offsetY; i < canvas.height; i += 40) {
-                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
-            }
-
-            ctx.save();
-            ctx.lineWidth = 3; ctx.strokeStyle = '#39FF14'; ctx.shadowBlur = 15; ctx.shadowColor = '#39FF14';
-            ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
-            ctx.beginPath(); ctx.moveTo(canvas.width / 2, 20); ctx.lineTo(canvas.width / 2, canvas.height - 20); ctx.stroke();
-            ctx.beginPath(); ctx.arc(canvas.width / 2, canvas.height / 2, 70, 0, Math.PI * 2); ctx.stroke();
-            ctx.beginPath(); ctx.arc(canvas.width / 2, canvas.height / 2, 4, 0, Math.PI * 2); ctx.fillStyle = '#39FF14'; ctx.fill();
-            ctx.strokeRect(20, canvas.height / 2 - 140, 120, 280); ctx.strokeRect(20, canvas.height / 2 - 60, 40, 120);
-            ctx.strokeRect(canvas.width - 140, canvas.height / 2 - 140, 120, 280); ctx.strokeRect(canvas.width - 60, canvas.height / 2 - 60, 40, 120);
-
-            const goalYStart = canvas.height / 2 - goalHeight / 2;
-            ctx.fillStyle = 'rgba(57, 255, 20, 0.1)'; ctx.fillRect(0, goalYStart, 20, goalHeight); ctx.strokeRect(0, goalYStart, 20, goalHeight);
-            ctx.strokeStyle = '#ffffff'; ctx.shadowColor = '#ffffff'; ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.fillRect(canvas.width - 20, goalYStart, 20, goalHeight); ctx.strokeRect(canvas.width - 20, goalYStart, 20, goalHeight);
-            ctx.restore();
-        }
+        function forceStopAll(entities) { entities.forEach(e => { e.vx = 0; e.vy = 0; }); }
 
         function handleAI() {
-            if (gameState !== GAME_STATE_PLAYING || currentTurn !== 2 || isMoving || hitStopFrames > 0) return;
+            if (gameState !== GAME_STATE_PLAYING || currentTurn !== 2 || isMoving) return;
             aiTimer--;
             if (aiTimer <= 0) {
                 let bestPlayer = null, minDist = Infinity;
                 for (let p of team2) {
                     let d = Math.hypot(ball.x - p.x, ball.y - p.y);
-                    if (p.x > ball.x - 15) d *= 0.6; 
+                    if (p.y < ball.y - 15) d *= 0.5; // IA è sopra, preferisce pedine "dietro" la palla (y minore)
                     if (d < minDist) { minDist = d; bestPlayer = p; }
                 }
                 if (bestPlayer) { 
                     let dx = ball.x - bestPlayer.x, dy = ball.y - bestPlayer.y;
                     let errorMargin = 30 - (currentStage * 10); 
                     dx += (Math.random() - 0.5) * errorMargin; dy += (Math.random() - 0.5) * errorMargin;
-                    let dist = Math.sqrt(dx * dx + dy * dy);
-                    let powerMultiplier = 5.0 - (currentStage * 0.8);
-                    let power = Math.min((dist / powerMultiplier), 20 + (currentStage * 3)); 
+                    let dist = Math.hypot(dx, dy);
+                    let powerMultiplier = 4.2 - (currentStage * 0.8);
+                    let maxPwr = 22 + (currentStage * 4); 
+                    let power = Math.min((dist / powerMultiplier), maxPwr); 
                     bestPlayer.vx = (dx / dist) * power; bestPlayer.vy = (dy / dist) * power;
-                    isMoving = true; aiTimer = 40 - (currentStage * 5); // IA più aggressiva
-                    createExplosion(bestPlayer.x, bestPlayer.y, '#ffffff', 8, 5, 3, 20);
+                    isMoving = true; aiTimer = 60;
+                    createExplosion(bestPlayer.x, bestPlayer.y, '#ffffff', 12, 6, 3, 20);
                 }
             }
         }
 
         function resolveCollision(e1, e2) {
             let dx = e2.x - e1.x, dy = e2.y - e1.y;
-            let dist = Math.sqrt(dx * dx + dy * dy);
-            let minDist = e1.radius + e2.radius;
+            let dist = Math.hypot(dx, dy), minDist = e1.radius + e2.radius;
             if (dist < minDist) {
-                let overlap = minDist - dist;
-                let nx = dx / dist, ny = dy / dist;
-                let totalMass = e1.mass + e2.mass;
-                let m1Ratio = e2.mass / totalMass, m2Ratio = e1.mass / totalMass;
+                let overlap = minDist - dist, nx = dx / dist, ny = dy / dist;
+                let totalMass = e1.mass + e2.mass, m1Ratio = e2.mass / totalMass, m2Ratio = e1.mass / totalMass;
                 e1.x -= nx * overlap * m1Ratio; e1.y -= ny * overlap * m1Ratio;
                 e2.x += nx * overlap * m2Ratio; e2.y += ny * overlap * m2Ratio;
                 
@@ -1005,66 +698,43 @@
                 
                 let imp = Math.abs(p);
                 if (imp > 5) {
-                    createExplosion(e1.x + nx * e1.radius, e1.y + ny * e1.radius, (e1===ball||e2===ball)?'#39FF14':'#ffffff', Math.min(imp*2, 20), imp, 3, 20);
+                    playImpactSound(imp); 
+                    let c = (e1===ball||e2===ball) ? '#39FF14' : '#ffffff';
+                    createExplosion(e1.x + nx * e1.radius, e1.y + ny * e1.radius, c, Math.min(imp*2, 25), imp, 3, 20);
                     
-                    // HIT STOP & FLASH: Effetti adrenalinici per colpi devastanti
-                    if (imp > 15) {
-                        triggerScreenShake(10, imp * 0.4); 
-                        hitStopFrames = 4; // Congela il gioco per 4 frame
-                        triggerFlash(0.3); // Flash bianco
-                    } else if (imp > 8) {
-                        triggerScreenShake(5, imp * 0.2); 
+                    if (imp > 20) {
+                        triggerScreenShake(15, imp * 0.5); hitStopFrames = 6; triggerFlash(0.5); 
+                        floatingTexts.push(new FloatingText(e1.x + nx*e1.radius, e1.y + ny*e1.radius, impactWords[Math.floor(Math.random()*impactWords.length)], '#FF3200'));
+                    } else if (imp > 10) {
+                        triggerScreenShake(6, imp * 0.2); 
+                        floatingTexts.push(new FloatingText(e1.x + nx*e1.radius, e1.y + ny*e1.radius, "CLANG!", '#ffffff'));
                     }
                 }
             }
         }
 
-        function forceStopAll(entities) {
-            entities.forEach(e => { e.vx = 0; e.vy = 0; });
-        }
-
         function updatePhysics() {
-            if (gameState !== GAME_STATE_PLAYING) return;
-            
-            // Hit Stop: Se attivo, non aggiornare la fisica
-            if (hitStopFrames > 0) {
-                hitStopFrames--;
-                return; 
-            }
-
             if (dragTarget && pointer.active) {
                 let dx = pointer.x - dragTarget.dragStartX, dy = pointer.y - dragTarget.dragStartY;
                 let dist = Math.hypot(dx, dy);
                 if (dist > maxDragPull) { dx = (dx / dist) * maxDragPull; dy = (dy / dist) * maxDragPull; }
                 dragTarget.x = dragTarget.dragStartX + dx; dragTarget.y = dragTarget.dragStartY + dy;
             }
+
             const allEnt = [...team1, ...team2, ball];
             for (let e of allEnt) {
                 if (e === dragTarget) continue;
                 e.applyFriction(e === ball ? ballFriction : friction);
-                if (e === ball) {
-                    let s = Math.hypot(ball.vx, ball.vy);
-                    if (s > maxBallSpeed) { ball.vx = (ball.vx/s)*maxBallSpeed; ball.vy = (ball.vy/s)*maxBallSpeed; }
-                }
+                if (e === ball) { let s = Math.hypot(ball.vx, ball.vy); if (s > maxBallSpeed) { ball.vx = (ball.vx/s)*maxBallSpeed; ball.vy = (ball.vy/s)*maxBallSpeed; } }
                 e.update();
             }
 
-            // Snappy Turns: Soglia alzata a 0.2 per fermare le pedine ed evitare scivolamenti infiniti
             let isAnythingMoving = false;
-            for (let e of allEnt) {
-                if (Math.hypot(e.vx, e.vy) > 0.2) {
-                    isAnythingMoving = true;
-                    break;
-                }
-            }
+            for (let e of allEnt) { if (Math.hypot(e.vx, e.vy) > 0.25) { isAnythingMoving = true; break; } }
 
             if (isMoving && !isAnythingMoving && !dragTarget) {
-                forceStopAll(allEnt); // Inchioda tutto
-                isMoving = false; 
-                switchTurn();
-            } else if (!isMoving && isAnythingMoving) {
-                isMoving = true;
-            }
+                forceStopAll(allEnt); isMoving = false; switchTurn();
+            } else if (!isMoving && isAnythingMoving) { isMoving = true; }
 
             for (let i = 0; i < allEnt.length; i++) {
                 for (let j = i + 1; j < allEnt.length; j++) {
@@ -1073,105 +743,134 @@
                 }
             }
 
-            [...team1, ...team2].forEach(p => {
-                if (p.x < p.radius + 20) { p.x = p.radius + 20; p.vx *= -0.5; }
-                if (p.x > canvas.width - p.radius - 20) { p.x = canvas.width - p.radius - 20; p.vx *= -0.5; }
-                if (p.y < p.radius + 20) { p.y = p.radius + 20; p.vy *= -0.5; }
-                if (p.y > canvas.height - p.radius - 20) { p.y = canvas.height - p.radius - 20; p.vy *= -0.5; }
+            // Muri Lateral
+            [...team1, ...team2, ball].forEach(p => {
+                if (p.x < p.radius + mSide) { p.x = p.radius + mSide; p.vx *= -0.5; }
+                if (p.x > canvas.width - p.radius - mSide) { p.x = canvas.width - p.radius - mSide; p.vx *= -0.5; }
             });
 
-            if (ball.y < ball.radius + 20) { ball.y = ball.radius + 20; ball.vy *= -0.8; }
-            if (ball.y > canvas.height - ball.radius - 20) { ball.y = canvas.height - ball.radius - 20; ball.vy *= -0.8; }
+            // Muri Sopra/Sotto e Goal
+            [...team1, ...team2].forEach(p => {
+                if (p.y < p.radius + mTop) { p.y = p.radius + mTop; p.vy *= -0.5; }
+                if (p.y > canvas.height - p.radius - mBot) { p.y = canvas.height - p.radius - mBot; p.vy *= -0.5; }
+            });
 
-            const gy1 = canvas.height/2 - goalHeight/2, gy2 = canvas.height/2 + goalHeight/2;
-            if (ball.x < ball.radius + 20) {
-                if (ball.y > gy1 && ball.y < gy2) scoreGoal(2); else { ball.x = ball.radius + 20; ball.vx *= -0.8; }
+            const gx1 = canvas.width/2 - goalWidth/2, gx2 = canvas.width/2 + goalWidth/2;
+            
+            // Porta Top (Player 1 Segna)
+            if (ball.y < ball.radius + mTop) {
+                if (ball.x > gx1 && ball.x < gx2) { scoreGoal(1); } 
+                else { ball.y = ball.radius + mTop; ball.vy *= -0.8; }
             }
-            if (ball.x > canvas.width - ball.radius - 20) {
-                if (ball.y > gy1 && ball.y < gy2) scoreGoal(1); else { ball.x = canvas.width - ball.radius - 20; ball.vx *= -0.8; }
+            // Porta Bottom (Player 2/AI Segna)
+            if (ball.y > canvas.height - ball.radius - mBot) {
+                if (ball.x > gx1 && ball.x < gx2) { scoreGoal(2); } 
+                else { ball.y = canvas.height - ball.radius - mBot; ball.vy *= -0.8; }
             }
         }
 
         function scoreGoal(playerScored) {
             gameState = GAME_STATE_GOAL; isMoving = false; 
-            hitStopFrames = 10; // Congela pesantemente al gol
-            triggerFlash(0.8);
-            triggerScreenShake(30, 12); // Mega Shake
-            
+            hitStopFrames = 20; triggerFlash(1); triggerScreenShake(40, 15); 
             forceStopAll([...team1, ...team2, ball]);
+            playImpactSound(30, true); 
 
             if (playerScored === 1) {
                 scoreP1++; score1El.innerText = scoreP1; currentTurn = 2; 
-                createExplosion(canvas.width - 20, canvas.height/2, '#39FF14', 200, 25, 6, 100);
-                showMessage(`<div>⚽ 🟢</div>`);
+                createExplosion(canvas.width / 2, mTop, '#39FF14', 400, 35, 8, 150);
+                showMessage(`GOAL!`); messageEl.style.color = '#39FF14'; messageEl.style.textShadow = "0 0 20px #39FF14";
+                commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! ${teamNamesEn[selectedTeam]} scores!`, 1.3, 1.4);
             } else {
                 scoreP2++; score2El.innerText = scoreP2; currentTurn = 1;
-                createExplosion(20, canvas.height/2, '#ffffff', 200, 25, 6, 100);
-                showMessage(`<div>⚽ <svg class="icon" style="font-size:1.2em;"><use href="#gear-metallic"></use></svg></div>`);
+                createExplosion(canvas.width / 2, canvas.height - mBot, '#ffffff', 400, 35, 8, 150);
+                showMessage(`SYSTEM OVERRIDE`); messageEl.style.color = '#ffffff'; messageEl.style.textShadow = "0 0 20px #ffffff";
+                commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! The System scores!`, 1.3, 0.8);
             }
             updateTurnUI();
 
             if (scoreP1 >= 5 || scoreP2 >= 5) {
                 let winner = scoreP1 >= 5 ? 1 : 2;
                 setTimeout(() => {
-                    if (winner === 1) {
-                        if (currentStage >= maxStages) {
-                            gameState = GAME_STATE_OVER;
-                            gameOverIconEl.innerHTML = `🏆 <svg class="icon"><use href="#gear-gold"></use></svg> 🏆`;
-                            gameOverScreenEl.classList.remove('hidden');
+                    hideMessage();
+                    
+                    // Trigger Sponsor Outro Bumper prima della schermata finale
+                    playSponsorBumper(false, () => {
+                        if (winner === 1) {
+                            if (currentStage >= maxStages) {
+                                gameState = GAME_STATE_OVER; gameOverTitleEl.innerText = "CHAMPION 🏆"; gameOverTitleEl.style.color = "#39FF14";
+                                gameOverIconEl.innerHTML = `🏆 <svg class="icon"><use href="#gear-gold"></use></svg> 🏆`; gameOverScreenEl.classList.remove('hidden');
+                            } else {
+                                showMessage(`✅ CLEARED`);
+                                setTimeout(() => { hideMessage(); currentStage++; showBracket(); }, 2000);
+                            }
                         } else {
-                            showMessage(`<div>🏆 🟢</div>`);
-                            setTimeout(() => { currentStage++; showBracket(); }, 2000);
+                            gameState = GAME_STATE_OVER; gameOverTitleEl.innerText = "SYSTEM FAILURE 💀"; gameOverTitleEl.style.color = "red";
+                            gameOverIconEl.innerHTML = `💀 <svg class="icon"><use href="#gear-metallic"></use></svg>`; gameOverScreenEl.classList.remove('hidden');
                         }
-                    } else {
-                        gameState = GAME_STATE_OVER;
-                        gameOverIconEl.innerHTML = `💀 <svg class="icon"><use href="#gear-metallic"></use></svg>`;
-                        gameOverScreenEl.classList.remove('hidden');
-                    }
-                }, 1500);
+                    });
+                }, 2500); // Aspetta che il gol finisca
             } else {
-                setTimeout(() => {
-                    if (gameState === GAME_STATE_GOAL) { resetPositions(); gameState = GAME_STATE_PLAYING; showMessage(""); }
-                }, 2000);
+                setTimeout(() => { if (gameState === GAME_STATE_GOAL) { resetPositions(); gameState = GAME_STATE_PLAYING; hideMessage(); } }, 3500);
             }
         }
 
-        function drawSlingshot() {
+        function drawSlingshotLine() {
             if (dragTarget && pointer.active && currentTurn === 1) {
                 let dx = dragTarget.dragStartX - dragTarget.x, dy = dragTarget.dragStartY - dragTarget.y;
-                ctx.beginPath(); ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY); ctx.lineTo(dragTarget.x, dragTarget.y);
-                ctx.strokeStyle = 'rgba(57, 255, 20, 0.5)'; ctx.lineWidth = 6; ctx.stroke();
-                ctx.beginPath(); ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, 5, 0, Math.PI*2); ctx.fillStyle = '#39FF14'; ctx.fill();
                 let pullDist = Math.hypot(dx, dy);
+                
+                ctx.save(); ctx.beginPath(); ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY); ctx.lineTo(dragTarget.x, dragTarget.y);
+                let grad = ctx.createLinearGradient(dragTarget.dragStartX, dragTarget.dragStartY, dragTarget.x, dragTarget.y);
+                grad.addColorStop(0, 'rgba(57, 255, 20, 0.9)'); grad.addColorStop(1, 'rgba(57, 255, 20, 0.1)');
+                ctx.strokeStyle = grad; ctx.lineWidth = 6 + (pullDist / maxDragPull) * 8; ctx.shadowBlur = 20; ctx.shadowColor = '#39FF14'; ctx.stroke();
+                
+                ctx.beginPath(); ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, 8, 0, Math.PI*2); ctx.fillStyle = '#ffffff'; ctx.fill();
+                
                 if (pullDist > 10) {
-                    ctx.fillStyle = 'rgba(57, 255, 20, 0.8)';
+                    ctx.fillStyle = 'rgba(57, 255, 20, 0.8)'; ctx.shadowBlur = 10;
                     for (let i = 1; i <= 6; i++) {
-                        ctx.beginPath(); ctx.arc(dragTarget.dragStartX + (dx * 0.8 * i), dragTarget.dragStartY + (dy * 0.8 * i), Math.max(1, 8 - i), 0, Math.PI*2); ctx.fill();
+                        ctx.beginPath(); ctx.arc(dragTarget.dragStartX + (dx * 0.8 * i), dragTarget.dragStartY + (dy * 0.8 * i), Math.max(1, 9 - i), 0, Math.PI*2); ctx.fill();
                     }
                 }
+                ctx.restore();
             }
         }
 
-        function gameLoop() {
-            ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
-            if (shakeTime > 0) {
-                ctx.translate((Math.random() - 0.5) * shakeMagnitude, (Math.random() - 0.5) * shakeMagnitude);
-                shakeTime--; shakeMagnitude *= 0.9;
-            }
-            drawField(); handleAI(); updatePhysics();
-            for (let i = particles.length - 1; i >= 0; i--) {
-                particles[i].update(); particles[i].draw(ctx);
-                if (particles[i].life <= 0) particles.splice(i, 1);
-            }
-            drawSlingshot(); 
-            team1.forEach(p => p.draw(ctx)); team2.forEach(p => p.draw(ctx)); ball.draw(ctx);
-            ctx.restore();
+        // --- GAME LOOP ---
+        function gameLoop(time) {
             requestAnimationFrame(gameLoop);
+
+            if (!lastTime) lastTime = time;
+            let dt = time - lastTime; lastTime = time;
+            if (dt > 250) dt = 250; 
+            accumulator += dt;
+
+            while (accumulator >= timeStep) {
+                if (shakeTime > 0) shakeTime--;
+                if (hitStopFrames > 0) { hitStopFrames--; } 
+                else { handleAI(); updatePhysics(); }
+
+                for (let i = particles.length - 1; i >= 0; i--) { particles[i].update(); if (particles[i].life <= 0) particles.splice(i, 1); }
+                for (let i = floatingTexts.length - 1; i >= 0; i--) { floatingTexts[i].update(); if (floatingTexts[i].life <= 0) floatingTexts.splice(i, 1); }
+                accumulator -= timeStep;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            ctx.save();
+            if (shakeTime > 0) ctx.translate((Math.random() - 0.5) * shakeMagnitude, (Math.random() - 0.5) * shakeMagnitude);
+            
+            drawField(); 
+            for (let p of particles) p.draw(ctx);
+            drawSlingshotLine(); 
+            team1.forEach(p => p.draw(ctx)); team2.forEach(p => p.draw(ctx)); ball.draw(ctx);
+            for (let ft of floatingTexts) ft.draw(ctx);
+            
+            ctx.restore();
         }
 
         updateTurnUI();
         requestAnimationFrame(gameLoop);
+
     </script>
 </body>
 </html>
