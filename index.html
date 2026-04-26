@@ -9,6 +9,7 @@
     <!-- OTTIMIZZAZIONI DI CARICAMENTO (Preconnect & Preload) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="video" href="itcyborgscommettestake.mp4">
     <link rel="preload" as="video" href="inglesepresentbettingexchangeroom.mp4">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,700;1,700&family=Montserrat:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet">
     
@@ -111,7 +112,7 @@
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-bottom: 2px solid var(--p1-neon);
-            box-shadow: 0 15px 25px rgba(0,0,0,0.9);
+            box-shadow: none; /* Rimossa ombreggiatura dal video */
             overflow: hidden;
             background: #000;
             position: relative;
@@ -140,6 +141,7 @@
             padding: 2px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             border-left: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: none; /* Rimossa ombreggiatura dal logo dello sponsor */
         }
         .watermark-cover img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
@@ -340,7 +342,7 @@
                     
                     <div class="menu-video-container">
                         <video class="menu-video" autoplay muted playsinline preload="auto" id="intro-video">
-                            <source src="inglesepresentbettingexchangeroom.mp4" type="video/mp4">
+                            <source src="itcyborgscommettestake.mp4" type="video/mp4">
                         </video>
                         <div class="watermark-cover">
                             <img src="logo sfondo nero betting exchange room.jpeg" alt="Logo">
@@ -1016,7 +1018,7 @@
                     let color = currentTurn === 1 ? '#00FF66' : '#FF0055';
                     createExplosion(dragTarget.dragStartX, dragTarget.dragStartY, color, 12, 8, 4, 30);
                     triggerScreenShake(4, 3); dragTarget = null;
-                    playShootSound(); // Elettrizzante sound scatto!
+                    playShootSound(); 
                 }
                 pointer.active = false; activePointerId = null;
                 try { canvas.releasePointerCapture(e.pointerId); } catch(err) {}
@@ -1106,7 +1108,7 @@
                     bestPlayer.vx = (dx / dist) * power; bestPlayer.vy = (dy / dist) * power;
                     isMoving = true; aiTimer = 60;
                     createExplosion(bestPlayer.x, bestPlayer.y, '#ffffff', 10, 8, 4, 25);
-                    playShootSound(); // Elettrizzante sound scatto per CPU
+                    playShootSound(); 
                 }
             }
         }
@@ -1123,7 +1125,7 @@
                 
                 let kx = (e1.vx - e2.vx), ky = (e1.vy - e2.vy);
                 let p = (1 + 0.8) * (nx * kx + ny * ky) / totalMass;
-                e1.vx -= p * e2.mass * nx; e1.vx -= p * e2.mass * nx; // Flat dynamics
+                e1.vx -= p * e2.mass * nx; e1.vx -= p * e2.mass * nx; 
                 e1.vy -= p * e2.mass * ny; e2.vx += p * e1.mass * nx; e2.vy += p * e1.mass * ny;
                 
                 let imp = Math.abs(p);
@@ -1269,13 +1271,12 @@
                 </div>
             `;
             
-            // Video per la vittoria del Sistema come richiesto
             const systemWinsVideoHTML = `
-                <div class="menu-video-container" style="max-width: 180px; margin-bottom: 10px; border-color: #ffffff; box-shadow: 0 5px 25px rgba(255,255,255,0.4);">
+                <div class="menu-video-container" style="max-width: 180px; margin-bottom: 10px; border-color: #ffffff; box-shadow: none;">
                     <video class="menu-video" autoplay muted playsinline preload="auto" loop>
                         <source src="inglesepresentbettingexchangeroom.mp4" type="video/mp4">
                     </video>
-                    <div class="watermark-cover" style="width: 30px; height: 30px; border-radius: 4px 0 0 0;">
+                    <div class="watermark-cover" style="width: 30px; height: 30px; border-radius: 4px 0 0 0; box-shadow: none;">
                         <img src="logo sfondo nero betting exchange room.jpeg" alt="Logo">
                     </div>
                 </div>
@@ -1297,7 +1298,6 @@
                     gameOverTitleEl.style.color = "#FF0055";
                     gameOverIconEl.innerHTML = goldCupHTML; 
                 } else {
-                    // SE VINCE IL SISTEMA, MOSTRA IL VIDEO
                     winnerFlagContainerEl.innerHTML = systemWinsVideoHTML;
                     gameOverTitleEl.innerText = "SYSTEM WINS"; 
                     gameOverTitleEl.style.color = "#ffffff";
@@ -1353,39 +1353,79 @@
         function drawSlingshotLine() {
             if (dragTarget && pointer.active) {
                 let dx = dragTarget.dragStartX - dragTarget.x, dy = dragTarget.dragStartY - dragTarget.y;
-                let rgb = currentTurn === 1 ? '0, 255, 102' : '255, 0, 85';
                 let dist = Math.hypot(dx, dy);
                 let maxD = maxDragPull;
                 let intensity = Math.min(dist / maxD, 1);
                 
+                let r, g, b;
+                if (currentTurn === 1) {
+                    r = Math.floor(0 + intensity * 255);
+                    g = 255;
+                    b = Math.floor(102 + intensity * 153);
+                } else {
+                    r = 255;
+                    g = Math.floor(0 + intensity * 255);
+                    b = Math.floor(85 + intensity * 170);
+                }
+                let rgb = `${r}, ${g}, ${b}`;
+                
                 ctx.save(); 
                 
-                // Laser line tratteggiato ed animato
+                if (intensity > 0.85) {
+                    ctx.translate((Math.random() - 0.5) * 3, (Math.random() - 0.5) * 3);
+                }
+
+                let auraRadius = dragTarget.radius + 5 + (Math.sin(performance.now() / (100 - intensity * 80)) * 15 * intensity);
+                ctx.beginPath();
+                ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, auraRadius, 0, PI2);
+                ctx.fillStyle = `rgba(${rgb}, ${0.1 + intensity * 0.2})`;
+                ctx.fill();
+
+                if (intensity > 0.7) {
+                    ctx.beginPath();
+                    ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, auraRadius * 1.2, 0, PI2);
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${Math.random() * 0.8 * intensity})`;
+                    ctx.stroke();
+                }
+
+                if (intensity > 0.4 && Math.random() < intensity) {
+                    let sparkX = dragTarget.dragStartX + (Math.random() - 0.5) * 50;
+                    let sparkY = dragTarget.dragStartY + (Math.random() - 0.5) * 50;
+                    for(let i=0; i<particlePool.length; i++) {
+                        if(!particlePool[i].active) {
+                            particlePool[i].spawn(sparkX, sparkY, `rgba(${rgb}, 1)`, 2 + intensity * 5, 1 + intensity * 2, 10 + intensity * 10);
+                            break;
+                        }
+                    }
+                }
+
                 ctx.beginPath(); 
                 ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY); 
                 ctx.lineTo(dragTarget.x, dragTarget.y);
-                ctx.lineWidth = 2 + intensity * 2; 
+                ctx.lineWidth = 2 + intensity * 6; 
                 ctx.setLineDash([10, 10]);
-                ctx.lineDashOffset = -performance.now() / 20;
-                ctx.strokeStyle = `rgba(${rgb}, ${0.4 + intensity * 0.6})`; 
+                ctx.lineDashOffset = -performance.now() / (30 - intensity * 25);
+                ctx.strokeStyle = `rgba(${rgb}, ${0.5 + intensity * 0.5})`; 
+                ctx.shadowBlur = 10 + intensity * 20;
+                ctx.shadowColor = `rgba(${rgb}, 1)`;
                 ctx.stroke(); 
                 
-                // Mirino Reticolo Animato
-                ctx.beginPath(); 
-                let crosshairRadius = 12 + Math.sin(performance.now() / 150) * 3;
-                ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, crosshairRadius, 0, PI2); 
-                ctx.lineWidth = 3; 
+                ctx.shadowBlur = 0;
                 ctx.setLineDash([]);
+                
+                ctx.beginPath(); 
+                let crosshairRadius = 12 + Math.sin(performance.now() / (150 - intensity * 100)) * (3 + intensity * 5);
+                ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, crosshairRadius, 0, PI2); 
+                ctx.lineWidth = 3 + intensity * 2; 
                 ctx.strokeStyle = `rgba(${rgb}, 1)`; 
                 ctx.stroke();
                 
-                // Centro del Mirino
                 ctx.beginPath(); 
-                ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, 3, 0, PI2); 
+                ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, 3 + intensity * 3, 0, PI2); 
                 ctx.fillStyle = `rgba(${rgb}, 1)`; 
                 ctx.fill();
                 
-                // Segni direzionali del mirino
                 let offset = crosshairRadius + 4;
                 ctx.beginPath(); 
                 ctx.moveTo(dragTarget.dragStartX - offset, dragTarget.dragStartY); 
@@ -1396,9 +1436,16 @@
                 ctx.lineTo(dragTarget.dragStartX, dragTarget.dragStartY - offset + 5); 
                 ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY + offset); 
                 ctx.lineTo(dragTarget.dragStartX, dragTarget.dragStartY + offset - 5); 
-                ctx.lineWidth = 2; 
+                ctx.lineWidth = 2 + intensity * 2; 
                 ctx.stroke();
                 
+                ctx.font = '900 16px Chakra Petch';
+                ctx.fillStyle = `rgba(${rgb}, ${0.6 + intensity * 0.4})`;
+                ctx.textAlign = 'center';
+                let powerPercent = Math.floor(intensity * 100);
+                let powerText = powerPercent === 100 ? 'MAX POWER' : powerPercent + '%';
+                ctx.fillText(powerText, dragTarget.dragStartX, dragTarget.dragStartY - 40 - intensity * 15);
+
                 ctx.restore();
             }
         }
@@ -1423,7 +1470,6 @@
         function gameLoop(time) {
             if(!window.gameLoopRunning) return;
             
-            // PREVENZIONE BUG E RISPARMIO BATTERIA SE IL GIOCO NON E' A SCHERMO (VISIBILITY API)
             if (!isTabActive) {
                 requestAnimationFrame(gameLoop);
                 return;
@@ -1444,15 +1490,13 @@
                     handleAI(); 
                     updatePhysics(); 
                     
-                    // GESTIONE REGOLA 5 SECONDI PER TIRO
                     if (gameState === GAME_STATE_PLAYING && !isMoving) {
                         if (gameMode === 1 && currentTurn === 2) {
-                            turnTimeRemaining = 5.0; // CPU usa il suo AiTimer
+                            turnTimeRemaining = 5.0; 
                         } else {
                             turnTimeRemaining -= timeStep / 1000;
                             if (turnTimeRemaining <= 0) {
                                 turnTimeRemaining = 0;
-                                // Interrompe il trascinamento e fa scadere il tempo
                                 if (dragTarget) {
                                     dragTarget.x = dragTarget.dragStartX;
                                     dragTarget.y = dragTarget.dragStartY;
