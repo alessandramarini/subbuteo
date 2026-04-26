@@ -29,7 +29,7 @@
             height: 100vh; height: 100dvh; width: 100vw; overflow: hidden; touch-action: none; overscroll-behavior: none;
         }
 
-        /* Container del Gioco - Ora FULL SCREEN su tutti i dispositivi, nessun bordo */
+        /* Container del Gioco - FULL SCREEN su tutti i dispositivi */
         #game-container {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
             background-color: var(--bg-dark); overflow: hidden;
@@ -46,25 +46,33 @@
 
         /* Top HUD */
         #top-hud { display: flex; justify-content: center; align-items: flex-start; padding: 15px; }
+        
         #score-board {
-            display: flex; justify-content: center; align-items: center; font-size: clamp(28px, 6vmin, 45px); font-weight: 900;
-            background: rgba(5, 8, 12, 0.95); border: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 2px solid var(--p1-neon); padding: 5px 30px; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.8); gap: 30px; pointer-events: auto; clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
-            will-change: transform;
+            display: flex; justify-content: center; align-items: center; font-size: clamp(20px, 5vmin, 32px); font-weight: 900;
+            background: rgba(5, 8, 12, 0.95); border: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 2px solid var(--p1-neon); padding: 5px 15px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.8); gap: 12px; pointer-events: auto; clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
+            will-change: transform; margin-top: -1px;
         }
+        
+        .sb-flag-container {
+            width: 36px; height: 24px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; background: #000;
+        }
+        .sb-flag-container svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
         #timer-display {
-            font-family: 'Chakra Petch', sans-serif; font-size: 22px; font-weight: 900;
+            font-family: 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 900;
             background: rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.2); border-bottom: none;
             padding: 4px 20px; border-radius: 4px 4px 0 0; color: #fff;
             text-shadow: 0 0 10px rgba(255,255,255,0.8); letter-spacing: 2px;
-            margin-bottom: -1px; z-index: 1; position: relative;
+            margin-bottom: 0; z-index: 1; position: relative;
         }
-        .score-p1 { color: var(--p1-neon); text-shadow: 0 0 15px rgba(0,255,102,0.6); }
-        .score-p2 { color: #ffffff; text-shadow: 0 0 15px rgba(255,255,255,0.6); }
+        .score-p1 { color: var(--p1-neon); text-shadow: 0 0 15px rgba(0,255,102,0.6); min-width: 25px; text-align: center; }
+        .score-p2 { color: #ffffff; text-shadow: 0 0 15px rgba(255,255,255,0.6); min-width: 25px; text-align: center; }
         #turn-indicator {
-            font-family: 'Chakra Petch', sans-serif; font-size: clamp(12px, 3vmin, 16px); padding: 4px 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #888; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; gap: 6px;
-            transition: all 0.3s ease; min-width: 80px; border-radius: 2px;
+            font-family: 'Chakra Petch', sans-serif; font-size: clamp(10px, 2.5vmin, 14px); padding: 4px 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 4px;
+            transition: all 0.3s ease; min-width: 70px; border-radius: 2px;
         }
 
         /* Overlay A Schermo Intero */
@@ -111,25 +119,27 @@
             pointer-events: none;
         }
 
-        /* Logo copri-watermark perfettamente allineato e sfumato */
+        /* Logo copri-watermark piccolo, poco trasparente, rotella tutta visibile */
         .watermark-cover {
             position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 85px;
-            height: 60px;
+            bottom: 4px;
+            right: 4px;
+            width: 48px;
+            height: 48px;
             z-index: 10;
-            overflow: hidden;
-            /* Maschera radiale che parte solida in basso a destra e sfuma dolcemente verso alto e sinistra */
-            -webkit-mask-image: radial-gradient(ellipse at 100% 100%, black 60%, transparent 100%);
-            mask-image: radial-gradient(ellipse at 100% 100%, black 60%, transparent 100%);
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.85); /* Molto meno trasparente per coprire bene */
+            box-shadow: 0 0 8px rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px;
         }
         .watermark-cover img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain; /* Rotella interamente visibile, non tagliata */
             display: block;
-            transform: scale(1.2); /* Ingrandisce per nascondere i margini originali dell'immagine */
         }
 
         /* Scrollbar rimossa per un look più pulito, scroll touch mantenuto */
@@ -140,11 +150,11 @@
         }
         #teams-scroll-area::-webkit-scrollbar { display: none; }
 
-        /* Sponsor Bumper Broadcast TV con Sfondo Immagine Animato */
+        /* Sponsor Bumper Broadcast TV - Stile Mini Spot Professionale */
         #sponsor-bumper {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+            background-color: #030408; opacity: 0; pointer-events: none; transition: opacity 0.8s ease;
             overflow: hidden;
         }
         #sponsor-bumper::before {
@@ -152,42 +162,33 @@
             background-color: #000;
             background-image: url('logocyborgwinner.jpeg');
             background-size: cover; background-position: center;
-            z-index: -1; will-change: transform, filter;
+            opacity: 0.3; z-index: -1; transform: scale(1); transition: transform 5s linear;
         }
         #sponsor-bumper.active { opacity: 1; pointer-events: auto; }
-        #sponsor-bumper.active::before { animation: gentlePulse 2.5s infinite alternate ease-in-out; }
+        #sponsor-bumper.active::before { transform: scale(1.08); }
+        
+        .sponsor-content {
+            text-align: center; transform: translateY(15px); opacity: 0;
+            transition: all 1s cubic-bezier(0.25, 1, 0.5, 1) 0.3s;
+        }
+        #sponsor-bumper.active .sponsor-content { transform: translateY(0); opacity: 1; }
+        
+        .sponsor-subtitle {
+            font-family: 'Montserrat', sans-serif; font-size: clamp(10px, 3vmin, 14px); 
+            letter-spacing: 6px; color: #cccccc; margin-bottom: 5px; text-transform: uppercase;
+        }
+        .sponsor-divider {
+            width: 0; height: 2px; background: linear-gradient(90deg, transparent, #39FF14, transparent);
+            margin: 15px auto; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.8s;
+        }
+        #sponsor-bumper.active .sponsor-divider { width: 150px; }
         
         .sponsor-title { 
-            position: relative; font-family: 'Chakra Petch', sans-serif; font-size: clamp(30px, 8vmin, 60px); 
-            color: #ffffff; font-weight: 900; letter-spacing: 4px; line-height: 1.1; text-align: center; 
-            text-transform: uppercase; text-shadow: 0 10px 30px rgba(0,0,0,1), 0 0 20px rgba(255,255,255,0.3); 
-            transform: translateY(30px); opacity: 0; z-index: 1;
+            font-family: 'Chakra Petch', sans-serif; font-size: clamp(26px, 7vmin, 50px); 
+            color: #ffffff; font-weight: 900; letter-spacing: 4px; line-height: 1.1; 
+            text-transform: uppercase; text-shadow: 0 10px 30px rgba(0,0,0,1); 
         }
-        .sponsor-title span { color: #39FF14; text-shadow: 0 10px 30px rgba(0,0,0,1), 0 0 25px rgba(57,255,20,0.9); }
-        
-        /* Animazioni Ingresso Cinematografiche */
-        #sponsor-bumper.active .sponsor-title { animation: epicDrop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s forwards; }
-        
-        /* Effetto Riflesso Lente (Shine) sul Titolo */
-        .sponsor-title::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-20deg); animation: stadiumShine 3.5s infinite 1s; pointer-events: none; mix-blend-mode: overlay;
-        }
-
-        @keyframes epicDrop {
-            0% { opacity: 0; transform: scale(1.4) translateY(-20px); filter: blur(10px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
-        }
-        @keyframes stadiumShine {
-            0% { left: -100%; }
-            15% { left: 200%; }
-            100% { left: 200%; }
-        }
-        @keyframes gentlePulse {
-            0% { transform: scale(1); filter: brightness(1) contrast(1); }
-            100% { transform: scale(1.05); filter: brightness(1.15) contrast(1.05); }
-        }
+        .sponsor-title span { color: #39FF14; }
 
         /* Griglia Selezione Modalità e Squadre */
         .mode-btn {
@@ -441,9 +442,13 @@
         <div id="scanlines"></div>
         <div id="vignette"></div>
         
-        <!-- TV Broadcast Sponsor Bumper -->
-        <div id="sponsor-bumper">
-            <div class="sponsor-title">BETTING<br><span>EXCHANGE</span> ROOM</div>
+        <!-- TV Broadcast Sponsor Bumper (Elegante Mini-Spot) -->
+        <div id="sponsor-bumper" class="hidden">
+            <div class="sponsor-content">
+                <div class="sponsor-subtitle">PROUDLY SPONSORED BY</div>
+                <div class="sponsor-divider"></div>
+                <div class="sponsor-title">BETTING<br><span>EXCHANGE</span> ROOM</div>
+            </div>
         </div>
 
         <div id="ui-layer">
@@ -451,9 +456,11 @@
                 <div style="display: flex; flex-direction: column; align-items: center;">
                     <div id="timer-display">03:00</div>
                     <div id="score-board">
+                        <div id="sb-flag-1" class="sb-flag-container"></div>
                         <span id="score1" class="score-p1">0</span>
                         <div id="turn-indicator">⏳</div>
                         <span id="score2" class="score-p2">0</span>
+                        <div id="sb-flag-2" class="sb-flag-container"></div>
                     </div>
                 </div>
             </div>
@@ -547,7 +554,7 @@
         let GAME_HEIGHT = 900;
         const PI2 = Math.PI * 2; 
         
-        let mTop = 130, mBot = 60, mSide = 20; 
+        let mTop = 140, mBot = 70, mSide = 20; 
         const goalWidth = 200, goalHeight = 20; 
         const friction = 0.96, ballFriction = 0.985; 
         const maxBallSpeed = 26; const maxDragPull = 150; 
@@ -659,8 +666,9 @@
             GAME_HEIGHT = GAME_WIDTH * effectiveRatio;
             
             // Imposta i margini del campo dinamicamente in base all'altezza
-            mTop = Math.max(100, GAME_HEIGHT * 0.12);
-            mBot = Math.max(60, GAME_HEIGHT * 0.08);
+            // Aumentato per evitare che la porta superiore venga coperta dal tabellone
+            mTop = Math.max(140, GAME_HEIGHT * 0.15);
+            mBot = Math.max(70, GAME_HEIGHT * 0.08);
 
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = GAME_WIDTH * dpr;
@@ -810,8 +818,8 @@
 
             setTimeout(() => {
                 bumper.classList.remove('active');
-                setTimeout(() => { bumper.classList.add('hidden'); if (callback) callback(); }, 500); 
-            }, 3000); 
+                setTimeout(() => { bumper.classList.add('hidden'); if (callback) callback(); }, 800); 
+            }, 3500); 
         }
 
         // Effetti sonori procedurali
@@ -881,6 +889,14 @@
         document.getElementById('start-btn').addEventListener('click', () => {
             initAudio(); 
             teamMenuEl.classList.add('hidden'); 
+            
+            // Imposta le bandiere nel tabellone punteggio
+            document.getElementById('sb-flag-1').innerHTML = flagsSVG[selectedTeamP1];
+            if (gameMode === 2) {
+                document.getElementById('sb-flag-2').innerHTML = flagsSVG[selectedTeamP2];
+            } else {
+                document.getElementById('sb-flag-2').innerHTML = `<div style="font-size: 16px; margin-top:-2px;">🤖</div>`;
+            }
             
             if (gameMode === 2) {
                 score2El.style.color = '#FF0055';
