@@ -58,6 +58,13 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.8); gap: 30px; pointer-events: auto; clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
             will-change: transform;
         }
+        #timer-display {
+            font-family: 'Chakra Petch', sans-serif; font-size: 22px; font-weight: 900;
+            background: rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.2); border-bottom: none;
+            padding: 4px 20px; border-radius: 4px 4px 0 0; color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8); letter-spacing: 2px;
+            margin-bottom: -1px; z-index: 1; position: relative;
+        }
         .score-p1 { color: var(--p1-neon); text-shadow: 0 0 15px rgba(0,255,102,0.6); }
         .score-p2 { color: #ffffff; text-shadow: 0 0 15px rgba(255,255,255,0.6); }
         #turn-indicator {
@@ -74,10 +81,11 @@
         }
         
         .overlay-content {
-            background: #080a10; border: 1px solid rgba(255, 255, 255, 0.05); border-top: 3px solid var(--p1-neon);
-            padding: 20px 10px; text-align: center; pointer-events: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            width: 95%; max-width: 400px; display: flex; flex-direction: column; align-items: center;
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+            background: linear-gradient(145deg, #0f121b 0%, #050609 100%);
+            border: 1px solid rgba(255, 255, 255, 0.06); border-top: 1px solid rgba(255, 255, 255, 0.15); border-bottom: 3px solid var(--p1-neon);
+            border-radius: 16px;
+            padding: 25px 15px; text-align: center; pointer-events: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0, 255, 102, 0.08);
+            width: 92%; max-width: 380px; display: flex; flex-direction: column; align-items: center;
         }
 
         .hidden { display: none !important; }
@@ -86,6 +94,13 @@
             margin: 0 0 10px 0; font-size: clamp(20px, 5vmin, 30px); text-transform: uppercase; letter-spacing: 3px; font-style: italic;
             background: linear-gradient(to right, #ffffff, #aaaaaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 5px rgba(255,255,255,0.2));
         }
+
+        /* Nuovi Stili per il Pallone HD nel Menu (Realistico e Statico) */
+        .menu-ball-container {
+            width: 100px; height: 100px; margin: 0 auto 20px auto;
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.15));
+        }
+        .hd-soccer-ball { width: 100%; height: 100%; display: block; }
 
         /* Scrollbar rimossa per un look più pulito, scroll touch mantenuto */
         #teams-scroll-area {
@@ -144,24 +159,24 @@
             100% { transform: scale(1.05); filter: brightness(1.15) contrast(1.05); }
         }
 
-        /* Griglia Selezione Modalità e Squadre */
+        /* Griglia Selezione Modalità e Squadre - Stile Moderno e Pulito */
         .mode-btn {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #999;
-            padding: 10px; font-size: 13px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px;
-            border-radius: 4px; cursor: pointer; flex: 1; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #888;
+            padding: 12px; font-size: 13px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px;
+            border-radius: 8px; cursor: pointer; flex: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-transform: uppercase;
         }
-        .mode-btn.active { background: rgba(0, 255, 102, 0.15); border-color: var(--p1-neon); color: var(--p1-neon); text-shadow: 0 0 8px rgba(0,255,102,0.6); }
+        .mode-btn.active { background: rgba(0, 255, 102, 0.12); border-color: var(--p1-neon); color: var(--p1-neon); text-shadow: 0 0 8px rgba(0,255,102,0.6); box-shadow: 0 0 15px rgba(0,255,102,0.15); }
 
-        .grid-options { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; width: 100%; padding: 0 2px;}
+        .grid-options { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; width: 100%; padding: 0 2px;}
         
-        /* Bandiere ancora più piccole per due righe perfette */
+        /* Bandiere proporzionate */
         .team-btn {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 4px; padding: 4px; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; transition: all 0.2s; width: 42px;
+            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 5px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 44px;
         }
         .team-btn .flag-container { 
-            width: 28px; height: 18px; border-radius: 2px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); 
-            position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.5); 
+            width: 30px; height: 20px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); 
+            position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.6); 
         }
         .team-btn .flag-container::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.4) 100%); mix-blend-mode: overlay; pointer-events: none;}
         .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; transition: color 0.3s; }
@@ -195,8 +210,8 @@
             will-change: transform, box-shadow;
         }
         .logo-start-btn svg {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             filter: drop-shadow(0 0 5px rgba(0,255,102,0.5));
             margin-bottom: 2px;
         }
@@ -256,7 +271,7 @@
         #message.active { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: glitchPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes glitchPop { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
 
-        /* Trophy - Metal Golden Cup with Engraved Logo */
+        /* Trophy - Metal Golden Cup - Ridiseignata, senza logo, più bella */
         .cup-trophy-container {
             position: relative; width: 160px; height: 180px; margin: 0 auto 20px auto;
         }
@@ -269,11 +284,15 @@
         .handle-right { right: 15px; border-left: none; border-top-left-radius: 0; border-bottom-left-radius: 0;}
         .cup-bowl {
             position: absolute; top: 10px; left: 35px; width: 90px; height: 90px;
-            background: linear-gradient(135deg, #FFDF00 0%, #FFF8A0 25%, #DAA520 50%, #B8860B 80%, #FFDF00 100%);
+            background: linear-gradient(135deg, #FFDF00 0%, #FFF8A0 20%, #DAA520 45%, #B8860B 80%, #FFDF00 100%);
             border-radius: 5px 5px 45px 45px;
-            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.4), inset 5px 5px 15px rgba(255,255,255,0.8), 0 15px 20px rgba(0,0,0,0.6);
-            display: flex; align-items: center; justify-content: center; z-index: 3;
-            border-top: 5px solid #FFF8A0;
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.4), inset 5px 5px 15px rgba(255,255,255,0.9), 0 15px 25px rgba(0,0,0,0.7);
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 3;
+            border-top: 6px solid #FFF8A0; overflow: hidden;
+        }
+        .cup-band {
+            width: 100%; height: 8px; background: linear-gradient(90deg, #B8860B, #FFF8A0, #DAA520);
+            margin-top: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.5); border-bottom: 1px solid rgba(0,0,0,0.2);
         }
         .cup-stem {
             position: absolute; top: 95px; left: 70px; width: 20px; height: 45px;
@@ -297,16 +316,12 @@
             font-size: 8px; color: #fff; font-family: 'Chakra Petch', sans-serif; letter-spacing: 2px; font-weight: 700;
             background: #050505; padding: 2px 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.2);
         }
-        .cup-logo-inner {
-            width: 48px; height: 48px;
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6)); 
-        }
         .cup-sparkle {
             position: absolute; width: 4px; height: 4px; background: white; border-radius: 50%;
             box-shadow: 0 0 8px 2px white, 0 0 15px 4px #FFDF00; opacity: 0; z-index: 4; pointer-events: none;
         }
         .s1 { top: 20px; left: 15px; animation: sparkleAnim 2s infinite 0s; }
-        .s2 { top: 40px; right: 10px; animation: sparkleAnim 2.5s infinite 0.7s; }
+        .s2 { top: 45px; right: 15px; animation: sparkleAnim 2.5s infinite 0.7s; }
         .s3 { bottom: 15px; left: 40px; animation: sparkleAnim 1.8s infinite 1.2s; }
         @keyframes sparkleAnim { 0% { transform: scale(0) rotate(0deg); opacity: 0; } 50% { transform: scale(1.5) rotate(180deg); opacity: 1; } 100% { transform: scale(0) rotate(360deg); opacity: 0; } }
     </style>
@@ -329,6 +344,19 @@
                 <circle cx="50" cy="50" r="24" fill="#000000"/>
                 <path d="M 34 66 Q 45 40 66 34 Q 55 60 34 66 Z" fill="#39FF14"/>
             </g>
+
+            <!-- Nuovo Simbolo Gamepad / Joystick per i pulsanti PLAY -->
+            <g id="gamepad-icon">
+                <!-- Base del controller -->
+                <path d="M 15 45 C 15 30 25 25 40 25 L 60 25 C 75 25 85 30 85 45 C 85 65 90 75 75 75 C 65 75 60 60 50 60 C 40 60 35 75 25 75 C 10 75 15 65 15 45 Z" fill="url(#gradMetallic)" stroke="#cccccc" stroke-width="2"/>
+                <!-- D-PAD (Croce direzionale) -->
+                <path d="M 25 45 h 12 m -6 -6 v 12" stroke="#222222" stroke-width="4" stroke-linecap="round"/>
+                <!-- Bottoni d'azione -->
+                <circle cx="68" cy="50" r="4" fill="#39FF14"/>
+                <circle cx="76" cy="42" r="4" fill="#FF0055"/>
+                <circle cx="60" cy="42" r="4" fill="#1E90FF"/>
+                <circle cx="68" cy="34" r="4" fill="#FFD700"/>
+            </g>
         </defs>
     </svg>
 
@@ -345,31 +373,72 @@
 
         <div id="ui-layer">
             <div id="top-hud">
-                <div id="score-board">
-                    <span id="score1" class="score-p1">0</span>
-                    <div id="turn-indicator">⏳</div>
-                    <span id="score2" class="score-p2">0</span>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div id="timer-display">03:00</div>
+                    <div id="score-board">
+                        <span id="score1" class="score-p1">0</span>
+                        <div id="turn-indicator">⏳</div>
+                        <span id="score2" class="score-p2">0</span>
+                    </div>
                 </div>
             </div>
 
             <!-- Menu Principale e Selezione a Schermo Intero -->
             <div id="team-menu" class="overlay-screen">
                 <div class="overlay-content">
-                    <h2>🎮 SELECT MODE</h2>
+                    <!-- Pallone Ultra Realistico 3D HD -->
+                    <div class="menu-ball-container">
+                        <svg viewBox="0 0 512 512" class="hd-soccer-ball">
+                            <defs>
+                                <radialGradient id="sphereGrad" cx="30%" cy="30%" r="70%">
+                                    <stop offset="0%" stop-color="#ffffff"/>
+                                    <stop offset="40%" stop-color="#f0f0f0"/>
+                                    <stop offset="80%" stop-color="#a0a0a0"/>
+                                    <stop offset="100%" stop-color="#333333"/>
+                                </radialGradient>
+                                <radialGradient id="panelGrad" cx="30%" cy="30%" r="70%">
+                                    <stop offset="0%" stop-color="#3a3a3a"/>
+                                    <stop offset="50%" stop-color="#1a1a1a"/>
+                                    <stop offset="100%" stop-color="#000000"/>
+                                </radialGradient>
+                                <radialGradient id="innerShadow" cx="50%" cy="50%" r="50%">
+                                    <stop offset="75%" stop-color="rgba(0,0,0,0)"/>
+                                    <stop offset="100%" stop-color="rgba(0,0,0,0.85)"/>
+                                </radialGradient>
+                                <linearGradient id="specular" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="rgba(255,255,255,0.7)"/>
+                                    <stop offset="25%" stop-color="rgba(255,255,255,0.1)"/>
+                                    <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Base bianca ombreggiata -->
+                            <circle cx="256" cy="256" r="248" fill="url(#sphereGrad)" />
+                            
+                            <!-- Esagoni/Pentagoni Neri -->
+                            <path d="M256 126.6l-85.3 62 32.6 100.3h105.4l32.6-100.3-85.3-62zm-113.6 82.5L46.8 145.4C22.6 186.2 8 233.4 8 282.8c0 30.1 5.3 59.3 15.3 86.8l89.6-65.1-5-95.4zm227.2 0l-5 95.4 89.6 65.1c10-27.5 15.3-56.7 15.3-86.8 0-49.4-14.6-96.6-38.8-137.4l-95.6 63.7zM116.4 397l84.9 61.7c17.5 5.5 36 8.5 54.7 8.5s37.2-3 54.7-8.5l84.9-61.7-52.6-82H169l-52.6 82zm-20.9-281.3l91.6 66.6L256 89.5l68.9 92.8 91.6-66.6C378.8 65.4 320.1 32 256 32s-122.8 33.4-160.5 83.7z" fill="url(#panelGrad)" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round"/>
+                            
+                            <!-- Cuciture strutturali per il realismo -->
+                            <path d="M256 32 v94 m-113.6 82.5 L46.8 145.4 m322.8 63.7 L465.2 145.4 m-52.6 169.6 L395.6 397 m-226.6-82 L116.4 397 M256 461.4 v45" stroke="rgba(0,0,0,0.25)" stroke-width="5" stroke-linecap="round"/>
+                            
+                            <!-- Volume tridimensionale (Ambient Occlusion + Riflesso speculare superiore) -->
+                            <circle cx="256" cy="256" r="248" fill="url(#innerShadow)" />
+                            <circle cx="256" cy="256" r="248" fill="url(#specular)" />
+                        </svg>
+                    </div>
                     
                     <!-- Indicatore First To 3 Wins -->
-                    <div style="font-family: 'Chakra Petch', sans-serif; font-size: 13px; color: #fff; margin-bottom: 12px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,255,102,0.8); font-weight: 700; text-transform: uppercase; background: rgba(0,255,102,0.15); padding: 6px 20px; border-radius: 4px; border: 1px solid var(--p1-neon); box-shadow: 0 0 15px rgba(0,255,102,0.2);">
-                        🏆 3 GOALS TO WIN
+                    <div style="font-family: 'Chakra Petch', sans-serif; font-size: 13px; color: #fff; margin-bottom: 15px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,255,102,0.8); font-weight: 700; text-transform: uppercase; background: rgba(0,255,102,0.15); padding: 6px 20px; border-radius: 4px; border: 1px solid var(--p1-neon); box-shadow: 0 0 15px rgba(0,255,102,0.2); text-align: center;">
+                        ⏱️ 3 MIN OR 3 GOALS
                     </div>
 
-                    <div style="display:flex; width:100%; gap:8px; margin-bottom:10px;">
+                    <div style="display:flex; width:100%; gap:8px; margin-bottom:12px;">
                         <button id="btn-1p" class="mode-btn active">1 PLAYER</button>
                         <button id="btn-2p" class="mode-btn">2 PLAYERS</button>
                     </div>
 
                     <div id="teams-scroll-area">
                         <h3 style="margin:0 0 8px 0; font-size:12px; color:#00FF66; text-transform:uppercase; letter-spacing: 2px;">🟢 Player 1 Team</h3>
-                        <div class="grid-options" id="p1-grid" style="margin-bottom: 10px;"></div>
+                        <div class="grid-options" id="p1-grid" style="margin-bottom: 12px;"></div>
 
                         <div id="p2-container" class="hidden" style="width:100%;">
                             <h3 style="margin:10px 0 8px 0; font-size:12px; color:#FF0055; text-transform:uppercase; letter-spacing: 2px;">🔴 Player 2 Team</h3>
@@ -377,11 +446,10 @@
                         </div>
                     </div>
 
-                    <!-- Bottone Play Logo -->
-                    <button id="start-btn" class="logo-start-btn">
-                        <svg viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
+                    <!-- Bottone Play con Icona Joystick (Senza Manina) -->
+                    <button id="start-btn" class="logo-start-btn" style="margin-top: 10px;">
+                        <svg viewBox="0 0 100 100"><use href="#gamepad-icon"></use></svg>
                         <span>PLAY</span>
-                        <div class="finger-icon">👆</div>
                     </button>
                 </div>
             </div>
@@ -389,17 +457,20 @@
             <!-- Game Over a Schermo Intero -->
             <div id="game-over-screen" class="overlay-screen hidden">
                 <div class="overlay-content">
-                    <h2 id="game-over-title" style="font-size: clamp(26px, 6vmin, 40px);">MATCH OVER</h2>
+                    <!-- Spazio per mostrare la Bandiera Altissima Definizione del Vincitore -->
+                    <div id="winner-flag-container"></div>
+
+                    <h2 id="game-over-title" style="font-size: clamp(26px, 6vmin, 40px); margin-bottom: 5px;">MATCH OVER</h2>
                     <div id="game-over-icon" style="margin-bottom: 10px;"></div>
                     
                     <div style="display: flex; gap: 15px; justify-content: center; align-items: center; width: 100%;">
-                        <!-- Bottone per rigiocare -->
+                        <!-- Bottone per rigiocare con Joystick -->
                         <button id="restart-btn" class="logo-start-btn" style="margin-top: 5px;">
-                            <svg viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
+                            <svg viewBox="0 0 100 100"><use href="#gamepad-icon"></use></svg>
                             <span>PLAY</span>
                         </button>
 
-                        <!-- Bottone Landing Page Dorato -->
+                        <!-- Bottone Landing Page Dorato con Logo originale -->
                         <a href="https://betting-exchange-room-landing-page.vercel.app/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
                             <button class="logo-start-btn gold-btn" style="margin-top: 5px;">
                                 <svg viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
@@ -532,15 +603,17 @@
             const noiseSource = audioCtx.createBufferSource();
             noiseSource.buffer = noiseBuffer; noiseSource.loop = true;
 
+            // Filtri audio più realistici per simulare il rombo lontano di uno stadio
             const filter1 = audioCtx.createBiquadFilter();
-            filter1.type = 'bandpass'; filter1.frequency.value = 350; filter1.Q.value = 0.8;
+            filter1.type = 'lowpass'; filter1.frequency.value = 350; filter1.Q.value = 1.5;
             const filter2 = audioCtx.createBiquadFilter();
-            filter2.type = 'lowpass'; filter2.frequency.value = 800;
+            filter2.type = 'highpass'; filter2.frequency.value = 120;
 
             crowdGainNode = audioCtx.createGain(); crowdGainNode.gain.value = 0.15; 
 
-            const lfo = audioCtx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.15;
-            const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 0.05;
+            // Leggero swelling per mimare i "cori"
+            const lfo = audioCtx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.1;
+            const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 0.08;
             
             lfo.connect(lfoGain); lfoGain.connect(crowdGainNode.gain); lfo.start();
             noiseSource.connect(filter1); filter1.connect(filter2); filter2.connect(crowdGainNode); crowdGainNode.connect(audioCtx.destination);
@@ -566,7 +639,7 @@
             bumper.classList.add('active');
             
             if (!sponsorVoicePlayed) {
-                commentatorSpeak("Sponsored by Betting Exchange Room. 3 goals to win.", 1.0, 1.0);
+                commentatorSpeak("Sponsored by Betting Exchange Room. 3 minutes on the clock. First to 3 goals wins.", 1.0, 1.0);
                 sponsorVoicePlayed = true; 
             }
 
@@ -587,25 +660,37 @@
             const baseFreq = 528;
             
             if (isGoal) {
-                const horn1 = audioCtx.createOscillator();
-                const horn2 = audioCtx.createOscillator();
+                // Trombette da stadio ultra realiste: accordo di Air Horn
                 const hornGain = audioCtx.createGain();
-                horn1.type = 'sawtooth'; horn2.type = 'sawtooth';
-                horn1.frequency.value = 233; 
-                horn2.frequency.value = 238; 
+                const freqs = [150, 153, 225, 230, 305]; // Accordo dissonante classico
                 
+                freqs.forEach(f => {
+                    let h = audioCtx.createOscillator();
+                    h.type = 'sawtooth';
+                    h.frequency.value = f;
+                    h.connect(hornGain);
+                    h.start(); h.stop(audioCtx.currentTime + 2.5);
+                });
+                
+                // Inviluppo potente e sostenuto per la tromba
                 hornGain.gain.setValueAtTime(0, audioCtx.currentTime);
-                hornGain.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.1);
-                hornGain.gain.setValueAtTime(0.4, audioCtx.currentTime + 1.2);
-                hornGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 2.0);
+                hornGain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.05);
+                hornGain.gain.setValueAtTime(0.15, audioCtx.currentTime + 1.2);
+                hornGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2.5);
                 
-                horn1.connect(hornGain); horn2.connect(hornGain); hornGain.connect(audioCtx.destination);
-                horn1.start(); horn2.start();
-                horn1.stop(audioCtx.currentTime + 2.0); horn2.stop(audioCtx.currentTime + 2.0);
+                // Filtro passa-basso globale per dare tridimensionalità
+                const hornFilter = audioCtx.createBiquadFilter();
+                hornFilter.type = 'lowpass';
+                hornFilter.frequency.setValueAtTime(2500, audioCtx.currentTime);
+                hornFilter.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 2.5);
+                
+                hornGain.connect(hornFilter);
+                hornFilter.connect(audioCtx.destination);
 
+                // Aumenta fragorosamente il boato del pubblico
                 if(crowdGainNode) {
                     crowdGainNode.gain.cancelScheduledValues(audioCtx.currentTime);
-                    crowdGainNode.gain.setValueAtTime(0.8, audioCtx.currentTime); 
+                    crowdGainNode.gain.setValueAtTime(0.9, audioCtx.currentTime); 
                     crowdGainNode.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 4);
                 }
                 
@@ -629,7 +714,7 @@
             if(!isGoal) filter.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.2);
 
             osc.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + (isGoal ? 2.0 : 0.3));
+            osc.start(); osc.stop(audioCtx.currentTime + (isGoal ? 2.5 : 0.3));
         }
 
         // --- MOTORE GIOCO E OBJECT POOLING PER FLUIDITÀ ---
@@ -637,6 +722,7 @@
         const messageEl = document.getElementById('message'), turnIndicatorEl = document.getElementById('turn-indicator');
         const teamMenuEl = document.getElementById('team-menu');
         const gameOverScreenEl = document.getElementById('game-over-screen'), gameOverIconEl = document.getElementById('game-over-icon'), gameOverTitleEl = document.getElementById('game-over-title');
+        const winnerFlagContainerEl = document.getElementById('winner-flag-container');
 
         const GAME_STATE_MENU = 0, GAME_STATE_PLAYING = 2, GAME_STATE_GOAL = 3, GAME_STATE_OVER = 4;
         let gameState = GAME_STATE_MENU;
@@ -655,6 +741,10 @@
         let scoreP1 = 0, scoreP2 = 0; let aiTimer = 60;
         let lastTime = 0, accumulator = 0; const timeStep = 1000 / 60; 
 
+        let matchDuration = 180; 
+        let timeRemaining = matchDuration;
+        let timerInterval = null;
+
         document.getElementById('start-btn').addEventListener('click', () => {
             initAudio(); 
             teamMenuEl.classList.add('hidden'); 
@@ -672,8 +762,10 @@
             playSponsorBumper(() => {
                 currentTurn = 1; resetPositions();
                 scoreP1 = 0; scoreP2 = 0; score1El.innerText = 0; score2El.innerText = 0;
+                timeRemaining = matchDuration; updateTimerUI();
                 gameState = GAME_STATE_PLAYING; 
                 hideMessage();
+                startTimer();
                 
                 let vsText = gameMode === 2 ? teamNamesEn[selectedTeamP2] : "The System";
                 commentatorSpeak(`The match begins! ${teamNamesEn[selectedTeamP1]} against ${vsText}!`, 1.1, 1.2);
@@ -688,7 +780,7 @@
 
         document.getElementById('restart-btn').addEventListener('click', () => {
             gameOverScreenEl.classList.add('hidden'); teamMenuEl.classList.remove('hidden');
-            gameState = GAME_STATE_MENU; hideMessage();
+            gameState = GAME_STATE_MENU; hideMessage(); stopTimer();
             window.gameLoopRunning = false; 
             ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT); // Svuota completamente la grafica
             particlePool.forEach(p => p.active = false);
@@ -1159,6 +1251,102 @@
             }
         }
 
+        function startTimer() {
+            if(timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (gameState === GAME_STATE_PLAYING) {
+                    timeRemaining--;
+                    updateTimerUI();
+                    if (timeRemaining <= 0) {
+                        clearInterval(timerInterval);
+                        timeUp();
+                    }
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if(timerInterval) clearInterval(timerInterval);
+        }
+
+        function updateTimerUI() {
+            let m = Math.floor(timeRemaining / 60);
+            let s = timeRemaining % 60;
+            const timerEl = document.getElementById('timer-display');
+            timerEl.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+            if (timeRemaining <= 10 && timeRemaining > 0) {
+                timerEl.style.color = '#FF0055';
+                timerEl.style.textShadow = '0 0 15px #FF0055';
+            } else {
+                timerEl.style.color = '#ffffff';
+                timerEl.style.textShadow = '0 0 10px rgba(255,255,255,0.8)';
+            }
+        }
+
+        function timeUp() {
+            gameState = GAME_STATE_OVER;
+            isMoving = false;
+            forceStopAll([...team1, ...team2, ball]);
+            triggerFlash(1);
+            showMessage("TIME UP!");
+            messageEl.style.color = '#FFD700'; messageEl.style.setProperty('--accent-color', '#FFD700');
+            commentatorSpeak("Time is up!", 1.1, 1.0);
+            
+            setTimeout(() => {
+                hideMessage();
+                showEndScreen();
+            }, 2500);
+        }
+
+        function showEndScreen() {
+            const goldCupHTML = `
+                <div class="cup-trophy-container">
+                    <div class="cup-handle handle-left"></div>
+                    <div class="cup-handle handle-right"></div>
+                    <div class="cup-stem"></div>
+                    <div class="cup-base-top"></div>
+                    <div class="trophy-base">
+                        <div class="base-plate">CHAMPION</div>
+                    </div>
+                    <div class="cup-bowl">
+                        <div class="cup-band"></div>
+                        <div class="cup-sparkle s1"></div>
+                        <div class="cup-sparkle s2"></div>
+                        <div class="cup-sparkle s3"></div>
+                    </div>
+                </div>
+            `;
+
+            let winner = 0; // 0=tie, 1=P1, 2=P2
+            if (scoreP1 > scoreP2) winner = 1;
+            else if (scoreP2 > scoreP1) winner = 2;
+
+            if (winner === 1) {
+                winnerFlagContainerEl.innerHTML = `<div class="flag-container" style="width: 100px; height: 60px; margin: 0 auto 15px; border-radius: 6px; overflow: hidden; border: 3px solid #00FF66; box-shadow: 0 5px 25px rgba(0,255,102,0.6);">${flagsSVG[selectedTeamP1]}</div>`;
+                gameOverTitleEl.innerText = teamNamesEn[selectedTeamP1] + " WINS!";
+                gameOverTitleEl.style.color = "#00FF66";
+                gameOverIconEl.innerHTML = goldCupHTML; 
+            } else if (winner === 2) {
+                if (gameMode === 2) {
+                    winnerFlagContainerEl.innerHTML = `<div class="flag-container" style="width: 100px; height: 60px; margin: 0 auto 15px; border-radius: 6px; overflow: hidden; border: 3px solid #FF0055; box-shadow: 0 5px 25px rgba(255,0,85,0.6);">${flagsSVG[selectedTeamP2]}</div>`;
+                    gameOverTitleEl.innerText = teamNamesEn[selectedTeamP2] + " WINS!"; 
+                    gameOverTitleEl.style.color = "#FF0055";
+                } else {
+                    winnerFlagContainerEl.innerHTML = `<div style="font-size: 60px; margin: 0 auto 15px; filter: drop-shadow(0 5px 15px rgba(255,255,255,0.6));">🤖</div>`;
+                    gameOverTitleEl.innerText = "SYSTEM WINS"; 
+                    gameOverTitleEl.style.color = "#ffffff";
+                }
+                gameOverIconEl.innerHTML = goldCupHTML; 
+            } else {
+                winnerFlagContainerEl.innerHTML = `<div style="font-size: 60px; margin: 0 auto 15px; filter: drop-shadow(0 5px 15px rgba(255,255,255,0.6));">🤝</div>`;
+                gameOverTitleEl.innerText = "IT'S A DRAW!"; 
+                gameOverTitleEl.style.color = "#FFD700";
+                gameOverIconEl.innerHTML = ''; // Nessuna coppa se è pareggio
+            }
+            
+            gameOverScreenEl.classList.remove('hidden');
+        }
+
         function scoreGoal(playerScored) {
             gameState = GAME_STATE_GOAL; isMoving = false; 
             hitStopFrames = 20; triggerFlash(1); triggerScreenShake(30, 15); 
@@ -1186,37 +1374,10 @@
             updateTurnUI();
 
             if (scoreP1 >= 3 || scoreP2 >= 3) {
-                let winner = scoreP1 >= 3 ? 1 : 2;
+                stopTimer();
                 setTimeout(() => {
                     hideMessage();
-                    
-                    const goldCupHTML = `
-                        <div class="cup-trophy-container">
-                            <div class="cup-handle handle-left"></div>
-                            <div class="cup-handle handle-right"></div>
-                            <div class="cup-stem"></div>
-                            <div class="cup-base-top"></div>
-                            <div class="trophy-base">
-                                <div class="base-plate">CHAMPION</div>
-                            </div>
-                            <div class="cup-bowl">
-                                <svg class="cup-logo-inner" viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
-                                <div class="cup-sparkle s1"></div>
-                                <div class="cup-sparkle s2"></div>
-                                <div class="cup-sparkle s3"></div>
-                            </div>
-                        </div>
-                    `;
-
-                    if (winner === 1) {
-                        gameState = GAME_STATE_OVER; gameOverTitleEl.innerText = "PLAYER 1 WINS!"; gameOverTitleEl.style.color = "#00FF66";
-                        gameOverIconEl.innerHTML = goldCupHTML; gameOverScreenEl.classList.remove('hidden');
-                    } else {
-                        gameState = GAME_STATE_OVER; 
-                        gameOverTitleEl.innerText = gameMode === 2 ? "PLAYER 2 WINS!" : "SYSTEM WINS"; 
-                        gameOverTitleEl.style.color = gameMode === 2 ? "#FF0055" : "#ffffff";
-                        gameOverIconEl.innerHTML = goldCupHTML; gameOverScreenEl.classList.remove('hidden');
-                    }
+                    showEndScreen();
                 }, 2500); 
             } else {
                 setTimeout(() => { if (gameState === GAME_STATE_GOAL) { resetPositions(); gameState = GAME_STATE_PLAYING; hideMessage(); } }, 3500);
