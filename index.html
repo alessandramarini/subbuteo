@@ -117,6 +117,28 @@
             pointer-events: none; /* Disabilita i controlli utente per un look pulito */
         }
 
+        /* Logo copri-watermark elegante in basso a destra del video */
+        .watermark-cover {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            overflow: hidden;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0,0,0,0.9), 0 0 5px rgba(0,255,102,0.4);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            background-color: #000;
+        }
+        .watermark-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transform: scale(1.1); /* Zoom per evitare piccoli bordi neri originali dell'immagine */
+        }
+
         /* Scrollbar rimossa per un look più pulito, scroll touch mantenuto */
         #teams-scroll-area {
             width: 100%; max-height: 45vh; overflow-y: auto; margin-bottom: 10px;
@@ -263,6 +285,42 @@
             box-shadow: 0 0 10px rgba(0,255,102,0.5);
         }
 
+        /* Pulsante PLAY solo Joystick (Senza cerchio) */
+        .joystick-btn-only {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            cursor: pointer;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            outline: none;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .joystick-btn-only svg {
+            width: 75px;
+            height: 75px;
+            filter: drop-shadow(0 0 15px rgba(0,255,102,0.6));
+            animation: pulse-joystick 1s infinite alternate ease-in-out;
+            will-change: transform, filter;
+        }
+        @keyframes pulse-joystick {
+            0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(0,255,102,0.4)); }
+            100% { transform: scale(1.15); filter: drop-shadow(0 0 25px rgba(0,255,102,1)); }
+        }
+        @keyframes pulse-joystick-overdrive {
+            0% { transform: scale(1.05); filter: drop-shadow(0 0 15px rgba(57,255,20,0.8)); }
+            100% { transform: scale(1.25); filter: drop-shadow(0 0 35px rgba(57,255,20,1)); }
+        }
+        .joystick-btn-only:active svg {
+            transform: scale(0.9) !important;
+            animation: none;
+        }
+
         /* Variabile Oro per pulsante Landing Page */
         .gold-btn {
             border-color: #FFD700;
@@ -407,6 +465,10 @@
                         <video class="menu-video" autoplay muted playsinline preload="auto" id="intro-video">
                             <source src="inglesepresentbettingexchangeroom.mp4" type="video/mp4">
                         </video>
+                        <!-- Copertura Watermark con Logo Elegante -->
+                        <div class="watermark-cover">
+                            <img src="logo sfondo nero betting exchange room.jpeg" alt="Logo">
+                        </div>
                     </div>
                     
                     <!-- Indicatore First To 3 Wins -->
@@ -429,10 +491,9 @@
                         </div>
                     </div>
 
-                    <!-- Bottone Play con Icona Joystick (Senza Manina) -->
-                    <button id="start-btn" class="logo-start-btn" style="margin-top: 10px;">
+                    <!-- Bottone Play solo Joystick -->
+                    <button id="start-btn" class="joystick-btn-only">
                         <svg viewBox="0 0 100 100"><use href="#gamepad-icon"></use></svg>
-                        <span>PLAY</span>
                     </button>
                 </div>
             </div>
@@ -447,10 +508,9 @@
                     <div id="game-over-icon" style="margin-bottom: 10px;"></div>
                     
                     <div style="display: flex; gap: 15px; justify-content: center; align-items: center; width: 100%;">
-                        <!-- Bottone per rigiocare con Joystick -->
-                        <button id="restart-btn" class="logo-start-btn" style="margin-top: 5px;">
+                        <!-- Bottone per rigiocare solo Joystick -->
+                        <button id="restart-btn" class="joystick-btn-only" style="margin-top: 5px; margin-right: 15px;">
                             <svg viewBox="0 0 100 100"><use href="#gamepad-icon"></use></svg>
-                            <span>PLAY</span>
                         </button>
 
                         <!-- Bottone Landing Page Dorato con Logo originale -->
@@ -504,8 +564,9 @@
         // Dati Squadre (modificati per massimizzare la visibilità in piccoli schermi)
         const teamNamesEn = { 
             'ITA': 'Italy', 'BRA': 'Brazil', 'ENG': 'England', 'ESP': 'Spain',
-            'IRL': 'Ireland', 'ROU': 'Romania', 'AUS': 'Australia', 'COL': 'Colombia', 'PER': 'Peru', 'ALB': 'Albania',
-            'MEX': 'Mexico' 
+            'IRL': 'Ireland', 'ROU': 'Romania', 'COL': 'Colombia', 'PER': 'Peru', 'ALB': 'Albania',
+            'MEX': 'Mexico', 'ARG': 'Argentina', 'CHI': 'Chile', 'ECU': 'Ecuador', 'NZL': 'New Zealand', 'URU': 'Uruguay',
+            'NGA': 'Nigeria', 'CRC': 'Costa Rica', 'IND': 'India', 'CAN': 'Canada'
         };
         const flagsSVG = {
             'ITA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#009246"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE2B37"/></svg>`,
@@ -514,11 +575,19 @@
             'ESP': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="50" fill="#AA151B"/><rect y="50" width="300" height="100" fill="#F1BF00"/><rect y="150" width="300" height="50" fill="#AA151B"/><circle cx="80" cy="100" r="25" fill="#AA151B"/></svg>`,
             'IRL': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#169B62"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#FF883E"/></svg>`,
             'ROU': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#002B7F"/><rect x="100" width="100" height="200" fill="#FCD116"/><rect x="200" width="100" height="200" fill="#CE1126"/></svg>`,
-            'AUS': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#012169"/><rect width="150" height="100" fill="#012169"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#fff" stroke-width="15"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#E4002B" stroke-width="8"/><rect x="65" y="0" width="20" height="100" fill="#fff"/><rect x="0" y="40" width="150" height="20" fill="#fff"/><rect x="70" y="0" width="10" height="100" fill="#E4002B"/><rect x="0" y="45" width="150" height="10" fill="#E4002B"/><circle cx="75" cy="150" r="15" fill="#fff"/><circle cx="250" cy="50" r="8" fill="#fff"/><circle cx="210" cy="80" r="8" fill="#fff"/><circle cx="280" cy="90" r="8" fill="#fff"/><circle cx="240" cy="140" r="8" fill="#fff"/><circle cx="260" cy="110" r="5" fill="#fff"/></svg>`,
             'COL': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="100" fill="#FCD116"/><rect y="100" width="300" height="50" fill="#003893"/><rect y="150" width="300" height="50" fill="#CE1126"/></svg>`,
             'PER': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#D91023"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#D91023"/></svg>`,
             'ALB': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#FF0000"/><path d="M150,50 L120,80 L130,120 L150,150 L170,120 L180,80 Z" fill="#000000"/><circle cx="130" cy="70" r="15" fill="#000"/><circle cx="170" cy="70" r="15" fill="#000"/><path d="M120,80 L80,60 L100,100 Z" fill="#000"/><path d="M180,80 L220,60 L200,100 Z" fill="#000"/></svg>`,
-            'MEX': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#006847"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE1126"/><circle cx="150" cy="100" r="20" fill="#8B4513"/></svg>`
+            'MEX': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#006847"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE1126"/><circle cx="150" cy="100" r="20" fill="#8B4513"/></svg>`,
+            'ARG': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#75AADB"/><rect y="66.6" width="300" height="66.6" fill="#ffffff"/><circle cx="150" cy="100" r="20" fill="#FCBF49"/></svg>`,
+            'CHI': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#ffffff"/><rect y="100" width="300" height="100" fill="#D52B1E"/><rect width="100" height="100" fill="#0039A6"/><polygon points="50,30 55,45 70,45 58,55 62,70 50,60 38,70 42,55 30,45 45,45" fill="#ffffff"/></svg>`,
+            'ECU': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="100" fill="#FFD100"/><rect y="100" width="300" height="50" fill="#0033A0"/><rect y="150" width="300" height="50" fill="#EF3340"/><rect x="135" y="70" width="30" height="40" fill="#00ACC1"/><circle cx="150" cy="90" r="10" fill="#FFD100"/></svg>`,
+            'NZL': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#012169"/><rect width="150" height="100" fill="#012169"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#fff" stroke-width="15"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#CC142B" stroke-width="8"/><rect x="65" y="0" width="20" height="100" fill="#fff"/><rect x="0" y="40" width="150" height="20" fill="#fff"/><rect x="70" y="0" width="10" height="100" fill="#CC142B"/><rect x="0" y="45" width="150" height="10" fill="#CC142B"/><polygon points="225,40 230,50 240,50 232,58 235,68 225,62 215,68 218,58 210,50 220,50" fill="#CC142B" stroke="#fff" stroke-width="2"/><polygon points="260,80 264,88 272,88 266,94 268,102 260,98 252,102 254,94 248,88 256,88" fill="#CC142B" stroke="#fff" stroke-width="2"/><polygon points="225,130 230,140 240,140 232,148 235,158 225,152 215,158 218,148 210,140 220,140" fill="#CC142B" stroke="#fff" stroke-width="2"/><polygon points="190,80 194,88 202,88 196,94 198,102 190,98 182,102 184,94 178,88 186,88" fill="#CC142B" stroke="#fff" stroke-width="2"/></svg>`,
+            'URU': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#ffffff"/><rect y="22.2" width="300" height="22.2" fill="#0038A8"/><rect y="66.6" width="300" height="22.2" fill="#0038A8"/><rect y="111.1" width="300" height="22.2" fill="#0038A8"/><rect y="155.5" width="300" height="22.2" fill="#0038A8"/><rect width="111.1" height="111.1" fill="#ffffff"/><circle cx="55.5" cy="55.5" r="25" fill="#FCD116"/></svg>`,
+            'NGA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#008751"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#008751"/></svg>`,
+            'CRC': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="33.3" fill="#001489"/><rect y="33.3" width="300" height="33.3" fill="#ffffff"/><rect y="66.6" width="300" height="66.6" fill="#DA291C"/><rect y="133.3" width="300" height="33.3" fill="#ffffff"/><rect y="166.6" width="300" height="33.3" fill="#001489"/></svg>`,
+            'IND': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="66.6" fill="#FF9933"/><rect y="66.6" width="300" height="66.6" fill="#ffffff"/><rect y="133.3" width="300" height="66.6" fill="#138808"/><circle cx="150" cy="100" r="22" fill="none" stroke="#000080" stroke-width="4"/><circle cx="150" cy="100" r="4" fill="#000080"/><path d="M150,78 v44 M128,100 h44 M134,84 l32,32 M134,116 l32,-32" stroke="#000080" stroke-width="2"/></svg>`,
+            'CAN': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="75" height="200" fill="#FF0000"/><rect x="75" width="150" height="200" fill="#ffffff"/><rect x="225" width="75" height="200" fill="#FF0000"/><path d="M150,40 L160,70 L185,55 L170,90 L200,95 L170,115 L180,145 L155,130 V170 H145 V130 L120,145 L130,115 L100,95 L130,90 L115,55 L140,70 Z" fill="#FF0000"/></svg>`
         };
 
         let gameMode = 1;
@@ -1405,10 +1474,9 @@
         const startBtn = document.getElementById('start-btn');
         if (introVideo && startBtn) {
             introVideo.addEventListener('ended', () => {
-                // Il video si ferma e il tasto play va in OVERDRIVE per chiamare l'azione
-                startBtn.style.animation = 'pulse-logo-btn 0.5s infinite alternate ease-in-out';
-                startBtn.style.borderColor = '#39FF14';
-                startBtn.style.boxShadow = '0 0 40px rgba(57,255,20,0.9), inset 0 0 25px rgba(57,255,20,0.6)';
+                // Il video si ferma e il joystick va in OVERDRIVE per chiamare l'azione
+                const svgIcon = startBtn.querySelector('svg');
+                if(svgIcon) svgIcon.style.animation = 'pulse-joystick-overdrive 0.3s infinite alternate ease-in-out';
             });
         }
 
