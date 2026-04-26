@@ -67,6 +67,17 @@
             text-shadow: 0 0 10px rgba(255,255,255,0.8); letter-spacing: 2px;
             margin-bottom: 0; z-index: 1; position: relative;
         }
+
+        /* Animazione e classe per il timer in esaurimento */
+        @keyframes pulse-timer {
+            0% { transform: scale(1); text-shadow: 0 0 10px #FF0055; }
+            100% { transform: scale(1.1); text-shadow: 0 0 25px #FF0055, 0 0 10px #FF0055; }
+        }
+        .timer-danger {
+            color: #FF0055 !important;
+            animation: pulse-timer 0.8s infinite alternate ease-in-out;
+        }
+
         .score-p1 { color: var(--p1-neon); text-shadow: 0 0 15px rgba(0,255,102,0.6); min-width: 25px; text-align: center; }
         .score-p2 { color: #ffffff; text-shadow: 0 0 15px rgba(255,255,255,0.6); min-width: 25px; text-align: center; }
         #turn-indicator {
@@ -119,26 +130,28 @@
             pointer-events: none;
         }
 
-        /* Logo copri-watermark piccolo, poco trasparente, rotella tutta visibile */
+        /* Logo copri-watermark ancora più piccolo e incollato all'angolo in basso a destra */
         .watermark-cover {
             position: absolute;
-            bottom: 4px;
-            right: 4px;
-            width: 48px;
-            height: 48px;
+            bottom: 0;
+            right: 0;
+            width: 36px;
+            height: 36px;
             z-index: 10;
-            border-radius: 4px;
-            background-color: rgba(0, 0, 0, 0.85); /* Molto meno trasparente per coprire bene */
-            box-shadow: 0 0 8px rgba(0,0,0,0.9);
+            border-radius: 6px 0 0 0; /* Arrotonda solo l'angolo superiore sinistro per far aderire perfettamente il resto */
+            background-color: rgba(0, 0, 0, 0.85); 
+            box-shadow: -2px -2px 8px rgba(0,0,0,0.6);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 3px;
+            padding: 2px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
         .watermark-cover img {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Rotella interamente visibile, non tagliata */
+            object-fit: contain; 
             display: block;
         }
 
@@ -1384,10 +1397,14 @@
             let s = timeRemaining % 60;
             const timerEl = document.getElementById('timer-display');
             timerEl.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+            
+            // Quando mancano 10 secondi o meno, attiva l'animazione aggiungendo la classe "timer-danger"
             if (timeRemaining <= 10 && timeRemaining > 0) {
-                timerEl.style.color = '#FF0055';
-                timerEl.style.textShadow = '0 0 15px #FF0055';
+                timerEl.classList.add('timer-danger');
+                timerEl.style.color = ''; // Lasciamo gestire il colore alla classe CSS
+                timerEl.style.textShadow = ''; 
             } else {
+                timerEl.classList.remove('timer-danger');
                 timerEl.style.color = '#ffffff';
                 timerEl.style.textShadow = '0 0 10px rgba(255,255,255,0.8)';
             }
