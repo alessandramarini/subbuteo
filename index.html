@@ -398,12 +398,18 @@
     </div>
 
     <script>
-        // --- PREVENZIONE GLITCH TOUCH ---
+        // --- PREVENZIONE GLITCH TOUCH E GESTIONE VISIBILITY ---
         window.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('touchmove', e => { 
             if (e.target.closest('#teams-scroll-area')) return;
             if(e.cancelable) e.preventDefault(); 
         }, { passive: false });
+
+        let isTabActive = true;
+        document.addEventListener("visibilitychange", () => {
+            isTabActive = !document.hidden;
+            if(isTabActive) lastTime = performance.now();
+        });
 
         let GAME_WIDTH = 600;
         let GAME_HEIGHT = 900;
@@ -417,7 +423,7 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d', { alpha: false }); 
 
-        // --- SISTEMA DI CLASSI FISICHE (FLAT 2D) ---
+        // --- SISTEMA DI CLASSI FISICHE E RENDER UHD ---
         class CircleEntity {
             constructor(x, y, radius, mass) { this.x = x; this.y = y; this.vx = 0; this.vy = 0; this.radius = radius; this.mass = mass; }
             applyFriction(f) { this.vx *= f; this.vy *= f; }
@@ -496,7 +502,7 @@
         let timeRemaining = matchDuration;
         let timerInterval = null;
         
-        let turnTimeRemaining = 5.0; // Regola dei 5 secondi
+        let turnTimeRemaining = 5.0; 
         let lastTurnIndicatorText = "";
         let lastTurnIndicatorColor = "";
 
@@ -515,7 +521,9 @@
             canvas.width = GAME_WIDTH * dpr;
             canvas.height = GAME_HEIGHT * dpr;
             ctx.scale(dpr, dpr);
-            ctx.imageSmoothingEnabled = false; // Flat 2D puro
+            // Abilita anti-aliasing per UHD rendering dei vettori (Bandiere HQ)
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             
             resetPositions();
             if(gameState === GAME_STATE_MENU || gameState === GAME_STATE_OVER) drawStaticBackground();
@@ -524,9 +532,9 @@
         window.addEventListener('resize', initDisplay);
 
         const teamNamesEn = { 
-            'ITA': 'Italia', 'BRA': 'Brasile', 'ENG': 'Inghilterra', 'ESP': 'Spagna',
-            'IRL': 'Irlanda', 'ROU': 'Romania', 'COL': 'Colombia', 'PER': 'Perù', 'ALB': 'Albania',
-            'MEX': 'Messico', 'ARG': 'Argentina', 'CHI': 'Cile', 'ECU': 'Ecuador', 'NZL': 'Nuova Zelanda', 
+            'ITA': 'Italy', 'BRA': 'Brazil', 'ENG': 'England', 'ESP': 'Spain',
+            'IRL': 'Ireland', 'ROU': 'Romania', 'COL': 'Colombia', 'PER': 'Peru', 'ALB': 'Albania',
+            'MEX': 'Mexico', 'ARG': 'Argentina', 'CHI': 'Chile', 'ECU': 'Ecuador', 'NZL': 'New Zealand', 
             'URU': 'Uruguay', 'NGA': 'Nigeria', 'CRC': 'Costa Rica', 'IND': 'India', 'CAN': 'Canada', 'GHA': 'Ghana'
         };
         const flagsSVG = {
@@ -647,6 +655,20 @@
                 bumper.classList.remove('active');
                 setTimeout(() => { bumper.classList.add('hidden'); if (callback) callback(); }, 800); 
             }, 3500); 
+        }
+
+        function playShootSound() {
+            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.15);
         }
 
         function playImpactSound(intensity, isGoal = false) {
@@ -813,13 +835,26 @@
             }
         }
 
-        /* Rendering 2D FLAT */
-        function drawFlatPuck(ctx, x, y, radius, teamColor) {
+        /* Rendering 2D FLAT con Effetto UHD sui Giocatori */
+        function drawAnodizedPuck(ctx, x, y, radius, teamColor, isDark) {
             ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2);
-            ctx.fillStyle = '#111'; ctx.fill();
-            ctx.lineWidth = 3; ctx.strokeStyle = teamColor; ctx.stroke();
-            ctx.beginPath(); ctx.arc(x, y, radius * 0.75, 0, PI2);
-            ctx.fillStyle = '#050508'; ctx.fill();
+            ctx.fillStyle = '#000'; ctx.fill();
+
+            let rimGrad = ctx.createLinearGradient(x - radius, y - radius, x + radius, y + radius);
+            rimGrad.addColorStop(0, '#555560'); rimGrad.addColorStop(0.5, '#111115'); rimGrad.addColorStop(1, '#2a2a35');
+            ctx.fillStyle = rimGrad;
+            ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2); ctx.fill();
+
+            ctx.lineWidth = 2.5; ctx.strokeStyle = teamColor;
+            ctx.shadowBlur = 8; ctx.shadowColor = teamColor; 
+            ctx.beginPath(); ctx.arc(x, y, radius * 0.88, 0, PI2); ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            let coreGrad = ctx.createRadialGradient(x, y, 0, x, y, radius * 0.85);
+            coreGrad.addColorStop(0, isDark ? '#111115' : '#22222a');
+            coreGrad.addColorStop(1, '#050508');
+            ctx.fillStyle = coreGrad;
+            ctx.beginPath(); ctx.arc(x, y, radius * 0.85, 0, PI2); ctx.fill();
         }
 
         function drawNationToken(ctx, x, y, radius, teamCode, isP1) {
@@ -829,7 +864,12 @@
 
             ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2);
             ctx.fillStyle = '#111'; ctx.fill();
-            ctx.lineWidth = isDrag ? 4 : 2; ctx.strokeStyle = isDrag ? '#ffffff' : baseColor; ctx.stroke();
+            ctx.lineWidth = isDrag ? 4 : 2; 
+            ctx.strokeStyle = isDrag ? '#ffffff' : baseColor; 
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = isDrag ? '#ffffff' : baseColor;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
             
             const flagR = radius * 0.75;
             ctx.beginPath(); ctx.arc(x, y, flagR, 0, PI2); ctx.clip();
@@ -865,7 +905,10 @@
             
             ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2);
             ctx.fillStyle = '#222'; ctx.fill();
-            ctx.lineWidth = isDrag ? 4 : 2; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+            ctx.lineWidth = isDrag ? 4 : 2; ctx.strokeStyle = '#ffffff'; 
+            ctx.shadowBlur = 10; ctx.shadowColor = '#ffffff';
+            ctx.stroke();
+            ctx.shadowBlur = 0;
             
             ctx.translate(x, y);
             const rOuter = radius * 0.75;
@@ -973,6 +1016,7 @@
                     let color = currentTurn === 1 ? '#00FF66' : '#FF0055';
                     createExplosion(dragTarget.dragStartX, dragTarget.dragStartY, color, 12, 8, 4, 30);
                     triggerScreenShake(4, 3); dragTarget = null;
+                    playShootSound(); // Elettrizzante sound scatto!
                 }
                 pointer.active = false; activePointerId = null;
                 try { canvas.releasePointerCapture(e.pointerId); } catch(err) {}
@@ -1062,6 +1106,7 @@
                     bestPlayer.vx = (dx / dist) * power; bestPlayer.vy = (dy / dist) * power;
                     isMoving = true; aiTimer = 60;
                     createExplosion(bestPlayer.x, bestPlayer.y, '#ffffff', 10, 8, 4, 25);
+                    playShootSound(); // Elettrizzante sound scatto per CPU
                 }
             }
         }
@@ -1223,6 +1268,18 @@
                     </div>
                 </div>
             `;
+            
+            // Video per la vittoria del Sistema come richiesto
+            const systemWinsVideoHTML = `
+                <div class="menu-video-container" style="max-width: 180px; margin-bottom: 10px; border-color: #ffffff; box-shadow: 0 5px 25px rgba(255,255,255,0.4);">
+                    <video class="menu-video" autoplay muted playsinline preload="auto" loop>
+                        <source src="inglesepresentbettingexchangeroom.mp4" type="video/mp4">
+                    </video>
+                    <div class="watermark-cover" style="width: 30px; height: 30px; border-radius: 4px 0 0 0;">
+                        <img src="logo sfondo nero betting exchange room.jpeg" alt="Logo">
+                    </div>
+                </div>
+            `;
 
             let winner = 0; 
             if (scoreP1 > scoreP2) winner = 1;
@@ -1238,12 +1295,14 @@
                     winnerFlagContainerEl.innerHTML = `<div class="flag-container" style="width: 100px; height: 60px; margin: 0 auto 15px; border-radius: 6px; overflow: hidden; border: 3px solid #FF0055; box-shadow: 0 5px 25px rgba(255,0,85,0.6);">${flagsSVG[selectedTeamP2]}</div>`;
                     gameOverTitleEl.innerText = teamNamesEn[selectedTeamP2] + " WINS!"; 
                     gameOverTitleEl.style.color = "#FF0055";
+                    gameOverIconEl.innerHTML = goldCupHTML; 
                 } else {
-                    winnerFlagContainerEl.innerHTML = `<div style="font-size: 60px; margin: 0 auto 15px; filter: drop-shadow(0 5px 15px rgba(255,255,255,0.6));">🤖</div>`;
+                    // SE VINCE IL SISTEMA, MOSTRA IL VIDEO
+                    winnerFlagContainerEl.innerHTML = systemWinsVideoHTML;
                     gameOverTitleEl.innerText = "SYSTEM WINS"; 
                     gameOverTitleEl.style.color = "#ffffff";
+                    gameOverIconEl.innerHTML = ''; 
                 }
-                gameOverIconEl.innerHTML = goldCupHTML; 
             } else {
                 winnerFlagContainerEl.innerHTML = `<div style="font-size: 60px; margin: 0 auto 15px; filter: drop-shadow(0 5px 15px rgba(255,255,255,0.6));">🤝</div>`;
                 gameOverTitleEl.innerText = "IT'S A DRAW!"; 
@@ -1264,6 +1323,7 @@
                 scoreP1++; score1El.innerText = scoreP1; currentTurn = 2; 
                 createExplosion(GAME_WIDTH / 2, mTop, '#00FF66', 40, 30, 8, 150);
                 showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#00FF66');
+                commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! ${teamNamesEn[selectedTeamP1]} scores!`, 1.3, 1.4);
             } else {
                 scoreP2++; score2El.innerText = scoreP2; currentTurn = 1;
                 let color = gameMode === 2 ? '#FF0055' : '#ffffff';
@@ -1271,10 +1331,13 @@
                 
                 if (gameMode === 2) {
                     showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#FF0055');
+                    commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! ${teamNamesEn[selectedTeamP2]} scores!`, 1.3, 1.4);
                 } else {
                     showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#ffffff');
+                    commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! The System scores!`, 1.3, 0.8);
                 }
             }
+            updateTurnUI();
 
             if (scoreP1 >= 3 || scoreP2 >= 3) {
                 stopTimer();
@@ -1291,15 +1354,51 @@
             if (dragTarget && pointer.active) {
                 let dx = dragTarget.dragStartX - dragTarget.x, dy = dragTarget.dragStartY - dragTarget.y;
                 let rgb = currentTurn === 1 ? '0, 255, 102' : '255, 0, 85';
+                let dist = Math.hypot(dx, dy);
+                let maxD = maxDragPull;
+                let intensity = Math.min(dist / maxD, 1);
                 
                 ctx.save(); 
-                ctx.beginPath(); ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY); ctx.lineTo(dragTarget.x, dragTarget.y);
-                ctx.lineWidth = 4; ctx.strokeStyle = `rgba(${rgb}, 0.7)`; ctx.stroke(); // Linea flat più pulita
                 
-                ctx.beginPath(); ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, 6, 0, PI2); ctx.fillStyle = '#ffffff'; ctx.fill();
-                ctx.lineWidth = 2; ctx.strokeStyle = '#ffffff';
-                ctx.beginPath(); ctx.moveTo(dragTarget.dragStartX - 12, dragTarget.dragStartY); ctx.lineTo(dragTarget.dragStartX + 12, dragTarget.dragStartY); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY - 12); ctx.lineTo(dragTarget.dragStartX, dragTarget.dragStartY + 12); ctx.stroke();
+                // Laser line tratteggiato ed animato
+                ctx.beginPath(); 
+                ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY); 
+                ctx.lineTo(dragTarget.x, dragTarget.y);
+                ctx.lineWidth = 2 + intensity * 2; 
+                ctx.setLineDash([10, 10]);
+                ctx.lineDashOffset = -performance.now() / 20;
+                ctx.strokeStyle = `rgba(${rgb}, ${0.4 + intensity * 0.6})`; 
+                ctx.stroke(); 
+                
+                // Mirino Reticolo Animato
+                ctx.beginPath(); 
+                let crosshairRadius = 12 + Math.sin(performance.now() / 150) * 3;
+                ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, crosshairRadius, 0, PI2); 
+                ctx.lineWidth = 3; 
+                ctx.setLineDash([]);
+                ctx.strokeStyle = `rgba(${rgb}, 1)`; 
+                ctx.stroke();
+                
+                // Centro del Mirino
+                ctx.beginPath(); 
+                ctx.arc(dragTarget.dragStartX, dragTarget.dragStartY, 3, 0, PI2); 
+                ctx.fillStyle = `rgba(${rgb}, 1)`; 
+                ctx.fill();
+                
+                // Segni direzionali del mirino
+                let offset = crosshairRadius + 4;
+                ctx.beginPath(); 
+                ctx.moveTo(dragTarget.dragStartX - offset, dragTarget.dragStartY); 
+                ctx.lineTo(dragTarget.dragStartX - offset + 5, dragTarget.dragStartY); 
+                ctx.moveTo(dragTarget.dragStartX + offset, dragTarget.dragStartY); 
+                ctx.lineTo(dragTarget.dragStartX + offset - 5, dragTarget.dragStartY); 
+                ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY - offset); 
+                ctx.lineTo(dragTarget.dragStartX, dragTarget.dragStartY - offset + 5); 
+                ctx.moveTo(dragTarget.dragStartX, dragTarget.dragStartY + offset); 
+                ctx.lineTo(dragTarget.dragStartX, dragTarget.dragStartY + offset - 5); 
+                ctx.lineWidth = 2; 
+                ctx.stroke();
+                
                 ctx.restore();
             }
         }
@@ -1323,6 +1422,13 @@
 
         function gameLoop(time) {
             if(!window.gameLoopRunning) return;
+            
+            // PREVENZIONE BUG E RISPARMIO BATTERIA SE IL GIOCO NON E' A SCHERMO (VISIBILITY API)
+            if (!isTabActive) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+
             requestAnimationFrame(gameLoop);
 
             if (!lastTime) lastTime = time;
@@ -1338,15 +1444,15 @@
                     handleAI(); 
                     updatePhysics(); 
                     
-                    // GESTIONE REGOLA 5 SECONDI PER TIRO (Solo per giocatori reali, ignorata per la CPU)
+                    // GESTIONE REGOLA 5 SECONDI PER TIRO
                     if (gameState === GAME_STATE_PLAYING && !isMoving) {
                         if (gameMode === 1 && currentTurn === 2) {
-                            turnTimeRemaining = 5.0; // La CPU gestisce i propri tempi tramite aiTimer
+                            turnTimeRemaining = 5.0; // CPU usa il suo AiTimer
                         } else {
                             turnTimeRemaining -= timeStep / 1000;
                             if (turnTimeRemaining <= 0) {
                                 turnTimeRemaining = 0;
-                                // Cancella eventuali trascinamenti in corso
+                                // Interrompe il trascinamento e fa scadere il tempo
                                 if (dragTarget) {
                                     dragTarget.x = dragTarget.dragStartX;
                                     dragTarget.y = dragTarget.dragStartY;
@@ -1380,7 +1486,7 @@
             team1.forEach(p => p.draw(ctx)); team2.forEach(p => p.draw(ctx)); ball.draw(ctx);
             for (let i = 0; i < textPool.length; i++) { textPool[i].draw(ctx); }
             
-            drawTurnIndicator(); // Disegna dinamicamente il timer del turno
+            drawTurnIndicator(); 
             
             ctx.restore();
         }
