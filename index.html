@@ -9,7 +9,7 @@
     <!-- OTTIMIZZAZIONI DI CARICAMENTO (Preconnect & Preload) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="image" href="logocyborgwinner.jpeg">
+    <link rel="preload" as="video" href="inglesepresentbettingexchangeroom.mp4">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,700;1,700&family=Montserrat:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet">
     
     <title>CyberTorneo - TV Broadcast Edition</title>
@@ -95,12 +95,27 @@
             background: linear-gradient(to right, #ffffff, #aaaaaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 5px rgba(255,255,255,0.2));
         }
 
-        /* Nuovi Stili per il Pallone HD nel Menu (Realistico e Statico) */
-        .menu-ball-container {
-            width: 100px; height: 100px; margin: 0 auto 20px auto;
-            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.15));
+        /* Stili Video Presentazione Menu */
+        .menu-video-container {
+            width: 100%;
+            max-width: 260px; /* Dimensione compatta */
+            aspect-ratio: 16 / 9;
+            margin: 0 auto 20px auto;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: 2px solid var(--p1-neon);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.9), 0 0 15px rgba(0, 255, 102, 0.15);
+            overflow: hidden;
+            background: #000;
+            position: relative;
         }
-        .hd-soccer-ball { width: 100%; height: 100%; display: block; }
+        .menu-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none; /* Disabilita i controlli utente per un look pulito */
+        }
 
         /* Scrollbar rimossa per un look più pulito, scroll touch mantenuto */
         #teams-scroll-area {
@@ -386,44 +401,12 @@
             <!-- Menu Principale e Selezione a Schermo Intero -->
             <div id="team-menu" class="overlay-screen">
                 <div class="overlay-content">
-                    <!-- Pallone Ultra Realistico 3D HD -->
-                    <div class="menu-ball-container">
-                        <svg viewBox="0 0 512 512" class="hd-soccer-ball">
-                            <defs>
-                                <radialGradient id="sphereGrad" cx="30%" cy="30%" r="70%">
-                                    <stop offset="0%" stop-color="#ffffff"/>
-                                    <stop offset="40%" stop-color="#f0f0f0"/>
-                                    <stop offset="80%" stop-color="#a0a0a0"/>
-                                    <stop offset="100%" stop-color="#333333"/>
-                                </radialGradient>
-                                <radialGradient id="panelGrad" cx="30%" cy="30%" r="70%">
-                                    <stop offset="0%" stop-color="#3a3a3a"/>
-                                    <stop offset="50%" stop-color="#1a1a1a"/>
-                                    <stop offset="100%" stop-color="#000000"/>
-                                </radialGradient>
-                                <radialGradient id="innerShadow" cx="50%" cy="50%" r="50%">
-                                    <stop offset="75%" stop-color="rgba(0,0,0,0)"/>
-                                    <stop offset="100%" stop-color="rgba(0,0,0,0.85)"/>
-                                </radialGradient>
-                                <linearGradient id="specular" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="rgba(255,255,255,0.7)"/>
-                                    <stop offset="25%" stop-color="rgba(255,255,255,0.1)"/>
-                                    <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-                                </linearGradient>
-                            </defs>
-                            <!-- Base bianca ombreggiata -->
-                            <circle cx="256" cy="256" r="248" fill="url(#sphereGrad)" />
-                            
-                            <!-- Esagoni/Pentagoni Neri -->
-                            <path d="M256 126.6l-85.3 62 32.6 100.3h105.4l32.6-100.3-85.3-62zm-113.6 82.5L46.8 145.4C22.6 186.2 8 233.4 8 282.8c0 30.1 5.3 59.3 15.3 86.8l89.6-65.1-5-95.4zm227.2 0l-5 95.4 89.6 65.1c10-27.5 15.3-56.7 15.3-86.8 0-49.4-14.6-96.6-38.8-137.4l-95.6 63.7zM116.4 397l84.9 61.7c17.5 5.5 36 8.5 54.7 8.5s37.2-3 54.7-8.5l84.9-61.7-52.6-82H169l-52.6 82zm-20.9-281.3l91.6 66.6L256 89.5l68.9 92.8 91.6-66.6C378.8 65.4 320.1 32 256 32s-122.8 33.4-160.5 83.7z" fill="url(#panelGrad)" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round"/>
-                            
-                            <!-- Cuciture strutturali per il realismo -->
-                            <path d="M256 32 v94 m-113.6 82.5 L46.8 145.4 m322.8 63.7 L465.2 145.4 m-52.6 169.6 L395.6 397 m-226.6-82 L116.4 397 M256 461.4 v45" stroke="rgba(0,0,0,0.25)" stroke-width="5" stroke-linecap="round"/>
-                            
-                            <!-- Volume tridimensionale (Ambient Occlusion + Riflesso speculare superiore) -->
-                            <circle cx="256" cy="256" r="248" fill="url(#innerShadow)" />
-                            <circle cx="256" cy="256" r="248" fill="url(#specular)" />
-                        </svg>
+                    
+                    <!-- Video Uploaded Integrato nel Menu -->
+                    <div class="menu-video-container">
+                        <video class="menu-video" autoplay muted playsinline preload="auto" id="intro-video">
+                            <source src="inglesepresentbettingexchangeroom.mp4" type="video/mp4">
+                        </video>
                     </div>
                     
                     <!-- Indicatore First To 3 Wins -->
@@ -1416,6 +1399,18 @@
         }
 
         window.gameLoopRunning = false;
+
+        // --- GESTIONE VIDEO E HYPE DA E-SPORTS ---
+        const introVideo = document.getElementById('intro-video');
+        const startBtn = document.getElementById('start-btn');
+        if (introVideo && startBtn) {
+            introVideo.addEventListener('ended', () => {
+                // Il video si ferma e il tasto play va in OVERDRIVE per chiamare l'azione
+                startBtn.style.animation = 'pulse-logo-btn 0.5s infinite alternate ease-in-out';
+                startBtn.style.borderColor = '#39FF14';
+                startBtn.style.boxShadow = '0 0 40px rgba(57,255,20,0.9), inset 0 0 25px rgba(57,255,20,0.6)';
+            });
+        }
 
         function gameLoop(time) {
             if(!window.gameLoopRunning) return;
