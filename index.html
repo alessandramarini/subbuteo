@@ -152,12 +152,16 @@
 
         .grid-options { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; width: 100%; }
         .team-btn {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 4px; padding: 6px; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s; width: 60px;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 4px; padding: 5px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s; width: 50px;
         }
-        .team-btn .flag-container { width: 44px; height: 30px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); position: relative; }
-        .team-btn .flag-container::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.6) 100%); mix-blend-mode: overlay; }
-        .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; transition: color 0.3s; }
+        /* Bandiere Piccole e Ultra Definite */
+        .team-btn .flag-container { 
+            width: 36px; height: 24px; border-radius: 2px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); 
+            position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.5); 
+        }
+        .team-btn .flag-container::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.4) 100%); mix-blend-mode: overlay; pointer-events: none;}
+        .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1px; transition: color 0.3s; }
         @media (hover: hover) { .team-btn:hover { background: rgba(255, 255, 255, 0.08); } .team-btn:hover span { color: #fff; } }
         .team-btn.active { background: rgba(0, 255, 102, 0.1); border: 1px solid var(--p1-neon); }
         .team-btn.active span { color: var(--p1-neon); text-shadow: 0 0 8px rgba(0,255,102,0.6); }
@@ -210,6 +214,7 @@
             filter: drop-shadow(0 3px 5px rgba(0,0,0,0.8));
             pointer-events: none; 
             will-change: transform;
+            z-index: 10;
         }
         @keyframes pulse-logo-btn {
             0% { transform: scale(1); box-shadow: 0 0 10px rgba(0,255,102,0.3), inset 0 0 5px rgba(0,255,102,0.1); border-color: rgba(0,255,102,0.4); }
@@ -382,18 +387,18 @@
                 <div id="game-over-icon" style="margin-bottom: 10px;"></div>
                 
                 <div style="display: flex; gap: 15px; justify-content: center; align-items: center; width: 100%;">
-                    <!-- Bottone Menu con lo stesso stile rotondo del tasto Play -->
+                    <!-- Bottone per rigiocare, rinominato da MENU a PLAY -->
                     <button id="restart-btn" class="logo-start-btn" style="margin-top: 5px;">
                         <svg viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
-                        <span>MENU</span>
-                        <div class="finger-icon">👆</div>
+                        <span>PLAY</span>
                     </button>
 
-                    <!-- Nuovo Bottone Landing Page Dorato -->
+                    <!-- Nuovo Bottone Landing Page Dorato con l'icona della manina spostata qui -->
                     <a href="https://betting-exchange-room-landing-page.vercel.app/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
                         <button class="logo-start-btn gold-btn" style="margin-top: 5px;">
                             <svg viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
                             <span>JOIN US</span>
+                            <div class="finger-icon">👆</div>
                         </button>
                     </a>
                 </div>
@@ -436,24 +441,24 @@
         initDisplay();
         window.addEventListener('resize', initDisplay);
 
-        // Dati Squadre
+        // Dati Squadre (modificati con preserveAspectRatio="xMidYMid slice" per renderizzazione nitida senza stretch)
         const teamNamesEn = { 
             'ITA': 'Italy', 'BRA': 'Brazil', 'ENG': 'England', 'ESP': 'Spain',
             'IRL': 'Ireland', 'ROU': 'Romania', 'AUS': 'Australia', 'COL': 'Colombia', 'PER': 'Peru', 'ALB': 'Albania',
             'MEX': 'Mexico' 
         };
         const flagsSVG = {
-            'ITA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="100" height="200" fill="#009246"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE2B37"/></svg>`,
-            'BRA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="300" height="200" fill="#009B3A"/><polygon points="150,20 280,100 150,180 20,100" fill="#FEDF00"/><circle cx="150" cy="100" r="45" fill="#002776"/></svg>`,
-            'ENG': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="300" height="200" fill="#ffffff"/><rect x="130" width="40" height="200" fill="#CF081F"/><rect y="80" width="300" height="40" fill="#CF081F"/></svg>`,
-            'ESP': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="300" height="50" fill="#AA151B"/><rect y="50" width="300" height="100" fill="#F1BF00"/><rect y="150" width="300" height="50" fill="#AA151B"/><circle cx="80" cy="100" r="25" fill="#AA151B"/></svg>`,
-            'IRL': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="100" height="200" fill="#169B62"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#FF883E"/></svg>`,
-            'ROU': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="100" height="200" fill="#002B7F"/><rect x="100" width="100" height="200" fill="#FCD116"/><rect x="200" width="100" height="200" fill="#CE1126"/></svg>`,
-            'AUS': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="300" height="200" fill="#012169"/><rect width="150" height="100" fill="#012169"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#fff" stroke-width="15"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#E4002B" stroke-width="8"/><rect x="65" y="0" width="20" height="100" fill="#fff"/><rect x="0" y="40" width="150" height="20" fill="#fff"/><rect x="70" y="0" width="10" height="100" fill="#E4002B"/><rect x="0" y="45" width="150" height="10" fill="#E4002B"/><circle cx="75" cy="150" r="15" fill="#fff"/><circle cx="250" cy="50" r="8" fill="#fff"/><circle cx="210" cy="80" r="8" fill="#fff"/><circle cx="280" cy="90" r="8" fill="#fff"/><circle cx="240" cy="140" r="8" fill="#fff"/><circle cx="260" cy="110" r="5" fill="#fff"/></svg>`,
-            'COL': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="300" height="100" fill="#FCD116"/><rect y="100" width="300" height="50" fill="#003893"/><rect y="150" width="300" height="50" fill="#CE1126"/></svg>`,
-            'PER': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="100" height="200" fill="#D91023"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#D91023"/></svg>`,
-            'ALB': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="300" height="200" fill="#FF0000"/><path d="M150,50 L120,80 L130,120 L150,150 L170,120 L180,80 Z" fill="#000000"/><circle cx="130" cy="70" r="15" fill="#000"/><circle cx="170" cy="70" r="15" fill="#000"/><path d="M120,80 L80,60 L100,100 Z" fill="#000"/><path d="M180,80 L220,60 L200,100 Z" fill="#000"/></svg>`,
-            'MEX': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="none"><rect width="100" height="200" fill="#006847"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE1126"/><circle cx="150" cy="100" r="20" fill="#8B4513"/></svg>`
+            'ITA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#009246"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE2B37"/></svg>`,
+            'BRA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#009B3A"/><polygon points="150,20 280,100 150,180 20,100" fill="#FEDF00"/><circle cx="150" cy="100" r="45" fill="#002776"/></svg>`,
+            'ENG': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#ffffff"/><rect x="130" width="40" height="200" fill="#CF081F"/><rect y="80" width="300" height="40" fill="#CF081F"/></svg>`,
+            'ESP': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="50" fill="#AA151B"/><rect y="50" width="300" height="100" fill="#F1BF00"/><rect y="150" width="300" height="50" fill="#AA151B"/><circle cx="80" cy="100" r="25" fill="#AA151B"/></svg>`,
+            'IRL': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#169B62"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#FF883E"/></svg>`,
+            'ROU': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#002B7F"/><rect x="100" width="100" height="200" fill="#FCD116"/><rect x="200" width="100" height="200" fill="#CE1126"/></svg>`,
+            'AUS': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#012169"/><rect width="150" height="100" fill="#012169"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#fff" stroke-width="15"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#E4002B" stroke-width="8"/><rect x="65" y="0" width="20" height="100" fill="#fff"/><rect x="0" y="40" width="150" height="20" fill="#fff"/><rect x="70" y="0" width="10" height="100" fill="#E4002B"/><rect x="0" y="45" width="150" height="10" fill="#E4002B"/><circle cx="75" cy="150" r="15" fill="#fff"/><circle cx="250" cy="50" r="8" fill="#fff"/><circle cx="210" cy="80" r="8" fill="#fff"/><circle cx="280" cy="90" r="8" fill="#fff"/><circle cx="240" cy="140" r="8" fill="#fff"/><circle cx="260" cy="110" r="5" fill="#fff"/></svg>`,
+            'COL': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="100" fill="#FCD116"/><rect y="100" width="300" height="50" fill="#003893"/><rect y="150" width="300" height="50" fill="#CE1126"/></svg>`,
+            'PER': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#D91023"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#D91023"/></svg>`,
+            'ALB': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#FF0000"/><path d="M150,50 L120,80 L130,120 L150,150 L170,120 L180,80 Z" fill="#000000"/><circle cx="130" cy="70" r="15" fill="#000"/><circle cx="170" cy="70" r="15" fill="#000"/><path d="M120,80 L80,60 L100,100 Z" fill="#000"/><path d="M180,80 L220,60 L200,100 Z" fill="#000"/></svg>`,
+            'MEX': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#006847"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE1126"/><circle cx="150" cy="100" r="20" fill="#8B4513"/></svg>`
         };
 
         let gameMode = 1;
