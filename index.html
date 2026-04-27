@@ -721,15 +721,19 @@
             noiseSource.buffer = noiseBuffer; noiseSource.loop = true;
 
             const filter1 = audioCtx.createBiquadFilter();
-            filter1.type = 'lowpass'; filter1.frequency.value = 350; filter1.Q.value = 1.5;
+            filter1.type = 'lowpass'; filter1.frequency.value = 400; filter1.Q.value = 1.0;
             const filter2 = audioCtx.createBiquadFilter();
-            filter2.type = 'highpass'; filter2.frequency.value = 120;
+            filter2.type = 'highpass'; filter2.frequency.value = 100;
 
-            crowdGainNode = audioCtx.createGain(); crowdGainNode.gain.value = 0.15; 
+            crowdGainNode = audioCtx.createGain(); crowdGainNode.gain.value = 0.12; 
 
-            // -- LFO per la folla --
-            const lfo = audioCtx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.1;
-            const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 0.08;
+            // -- LFO per la folla (Effetto onde del mare / boato stadio profondo) --
+            const lfo = audioCtx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.12;
+            const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 0.06;
+            
+            // Moduliamo la frequenza del filtro passa-basso per creare l'effetto "risacca/onda"
+            const filterLfoGain = audioCtx.createGain(); filterLfoGain.gain.value = 250;
+            lfo.connect(filterLfoGain); filterLfoGain.connect(filter1.frequency);
             
             lfo.connect(lfoGain); lfoGain.connect(crowdGainNode.gain); lfo.start();
             noiseSource.connect(filter1); filter1.connect(filter2); filter2.connect(crowdGainNode); crowdGainNode.connect(audioCtx.destination);
@@ -741,15 +745,15 @@
             osc528.frequency.value = 528;
             
             const gain528 = audioCtx.createGain();
-            // Volume molto basso per renderlo subliminale/ambientale e non fastidioso
-            gain528.gain.value = 0.03; 
+            // Volume quasi impercettibile (subliminale)
+            gain528.gain.value = 0.004; 
             
-            // Applichiamo un LFO al 528Hz per farlo pulsare come un coro da stadio lontano
+            // Applichiamo un LFO al 528Hz per farlo pulsare dolcemente
             const lfo528 = audioCtx.createOscillator();
             lfo528.type = 'sine';
-            lfo528.frequency.value = 0.4; // Lenta pulsazione
+            lfo528.frequency.value = 0.2; 
             const lfoGain528 = audioCtx.createGain();
-            lfoGain528.gain.value = 0.015;
+            lfoGain528.gain.value = 0.002;
             
             lfo528.connect(lfoGain528);
             lfoGain528.connect(gain528.gain);
