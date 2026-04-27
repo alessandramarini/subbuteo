@@ -18,6 +18,7 @@
         :root {
             --p1-neon: #00FF66;
             --p2-neon: #FF0055;
+            --boss-neon: #FF3300;
             --bg-dark: #030408;
         }
 
@@ -39,7 +40,7 @@
         
         canvas { display: block; width: 100%; height: 100%; z-index: 1; touch-action: none; image-rendering: auto; }
 
-        /* Effetti Visivi Ambientali - Ridotti per massimizzare visibilità e flat design */
+        /* Effetti Visivi Ambientali */
         #screen-flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; pointer-events: none; z-index: 8; opacity: 0; transition: opacity 0.05s ease-out; will-change: opacity; }
         #scanlines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.05)); background-size: 100% 4px; pointer-events: none; z-index: 5; mix-blend-mode: overlay; }
         #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; z-index: 10; }
@@ -117,7 +118,7 @@
             overflow: hidden;
             background: #000;
             position: relative;
-            -webkit-transform: translateZ(0); transform: translateZ(0); /* Fix per bordi arrotondati su video iOS */
+            -webkit-transform: translateZ(0); transform: translateZ(0);
         }
         .menu-video {
             width: 100%;
@@ -127,7 +128,7 @@
             pointer-events: none;
         }
 
-        /* Logo copri-watermark piccolo e incollato all'angolo in basso a destra */
+        /* Logo copri-watermark piccolo */
         .watermark-cover {
             position: absolute;
             bottom: 0;
@@ -147,7 +148,7 @@
         }
         .watermark-cover img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
-        /* Scrollbar rimossa per un look più pulito, scroll touch mantenuto */
+        /* Scrollbar rimossa */
         #teams-scroll-area {
             width: 100%; max-height: 45vh; overflow-y: auto; margin-bottom: 10px;
             -webkit-overflow-scrolling: touch; touch-action: pan-y;
@@ -155,7 +156,7 @@
         }
         #teams-scroll-area::-webkit-scrollbar { display: none; }
 
-        /* Sponsor Bumper Broadcast TV - Stile Mini Spot Professionale */
+        /* Sponsor Bumper Broadcast TV */
         #sponsor-bumper {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -202,6 +203,13 @@
             border-radius: 8px; cursor: pointer; flex: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase;
         }
         .mode-btn.active { background: rgba(0, 255, 102, 0.12); border-color: var(--p1-neon); color: var(--p1-neon); }
+        .mode-btn.boss-active { border-color: var(--boss-neon); color: var(--boss-neon); background: rgba(255, 51, 0, 0.12); animation: pulse-boss 2s infinite; }
+
+        @keyframes pulse-boss {
+            0% { box-shadow: 0 0 5px rgba(255,51,0,0.2); }
+            50% { box-shadow: 0 0 15px rgba(255,51,0,0.6); }
+            100% { box-shadow: 0 0 5px rgba(255,51,0,0.2); }
+        }
 
         .grid-options { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; width: 100%; padding: 0 2px;}
         
@@ -277,6 +285,7 @@
             font-size: clamp(35px, 9vmin, 80px); font-weight: 900; font-style: italic; text-align: center; color: #fff; text-transform: uppercase; z-index: 10;
             opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s;
             width: 100%; letter-spacing: 4px; will-change: opacity, transform;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.8);
         }
         #message.active { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: glitchPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes glitchPop { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
@@ -419,6 +428,10 @@
     </div>
 
     <script>
+        // --- SISTEMA "NEMESI" (BOSS AI) ---
+        // Se il giocatore vince contro il computer, la volta dopo il computer sale di livello
+        let aiLevel = parseInt(localStorage.getItem('cyberTorneo_ai_rank')) || 1;
+
         // --- FORZATURA VIDEO AUTOPLAY PER IOS/SAFARI/CHROME MOBILE ---
         function forceVideoPlay() {
             const vids = document.querySelectorAll('video');
@@ -467,8 +480,8 @@
         let tokenCache = {};
         function clearTokenCache() { tokenCache = {}; }
 
-        function getCachedToken(teamCode, isP1, radius, isAI, isDrag) {
-            let key = isAI ? `ai_${radius}_${isDrag}` : `${teamCode}_${isP1}_${radius}_${isDrag}`;
+        function getCachedToken(teamCode, isP1, radius, isAI, isDrag, currentAiLevel) {
+            let key = isAI ? `ai_${radius}_${isDrag}_lvl${currentAiLevel}` : `${teamCode}_${isP1}_${radius}_${isDrag}`;
             if (!tokenCache[key]) {
                 const offCanvas = document.createElement('canvas');
                 const pad = 15; // Padding esteso per garantire lo spazio per ombre e glow
@@ -481,7 +494,7 @@
                 
                 oCtx.translate(radius + pad, radius + pad);
                 
-                if (isAI) drawAiToken(oCtx, 0, 0, radius, isDrag);
+                if (isAI) drawAiToken(oCtx, 0, 0, radius, isDrag, currentAiLevel);
                 else drawNationToken(oCtx, 0, 0, radius, teamCode, isP1, isDrag);
                 
                 tokenCache[key] = { canvas: offCanvas, pad: pad };
@@ -505,7 +518,7 @@
                 let tCode = this.isP1 ? selectedTeamP1 : selectedTeamP2;
                 
                 // Utilizzo della Cache Vettoriale anziché ricalcolare decine di path
-                let cache = getCachedToken(tCode, this.isP1, this.radius, isAI, isDrag);
+                let cache = getCachedToken(tCode, this.isP1, this.radius, isAI, isDrag, aiLevel);
                 ctx.drawImage(cache.canvas, this.x - this.radius - cache.pad, this.y - this.radius - cache.pad, this.radius * 2 + cache.pad * 2, this.radius * 2 + cache.pad * 2);
             }
         }
@@ -636,6 +649,18 @@
         let selectedTeamP1 = 'ITA';
         let selectedTeamP2 = 'MEX';
 
+        // Check if boss mode is active
+        function checkBossStatus() {
+            const btn1p = document.getElementById('btn-1p');
+            if (aiLevel > 1 && gameMode === 1) {
+                btn1p.classList.add('boss-active');
+                btn1p.innerHTML = `1 PLAYER <span style="font-size:10px;">(BOSS LVL ${aiLevel})</span>`;
+            } else {
+                btn1p.classList.remove('boss-active');
+                btn1p.innerHTML = `1 PLAYER`;
+            }
+        }
+
         function buildTeamGrid(containerId, isP2) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
@@ -662,6 +687,7 @@
             document.getElementById('btn-1p').classList.add('active');
             document.getElementById('btn-2p').classList.remove('active');
             document.getElementById('p2-container').classList.add('hidden');
+            checkBossStatus();
         });
 
         document.getElementById('btn-2p').addEventListener('click', () => {
@@ -669,9 +695,13 @@
             document.getElementById('btn-2p').classList.add('active');
             document.getElementById('btn-1p').classList.remove('active');
             document.getElementById('p2-container').classList.remove('hidden');
+            checkBossStatus();
         });
 
-        // --- SISTEMA AUDIO E TTS ---
+        // Initialize UI with boss status if stored
+        checkBossStatus();
+
+        // --- SISTEMA AUDIO E TTS (Con 528Hz Miracle Tone) ---
         let audioCtx = null;
         let crowdGainNode = null;
         let sponsorVoicePlayed = false;
@@ -697,12 +727,38 @@
 
             crowdGainNode = audioCtx.createGain(); crowdGainNode.gain.value = 0.15; 
 
+            // -- LFO per la folla --
             const lfo = audioCtx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.1;
             const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 0.08;
             
             lfo.connect(lfoGain); lfoGain.connect(crowdGainNode.gain); lfo.start();
             noiseSource.connect(filter1); filter1.connect(filter2); filter2.connect(crowdGainNode); crowdGainNode.connect(audioCtx.destination);
             noiseSource.start();
+
+            // -- 528 Hz Subliminal Drone (Miracle Tone / Stadium Hype) --
+            const osc528 = audioCtx.createOscillator();
+            osc528.type = 'sine';
+            osc528.frequency.value = 528;
+            
+            const gain528 = audioCtx.createGain();
+            // Volume molto basso per renderlo subliminale/ambientale e non fastidioso
+            gain528.gain.value = 0.03; 
+            
+            // Applichiamo un LFO al 528Hz per farlo pulsare come un coro da stadio lontano
+            const lfo528 = audioCtx.createOscillator();
+            lfo528.type = 'sine';
+            lfo528.frequency.value = 0.4; // Lenta pulsazione
+            const lfoGain528 = audioCtx.createGain();
+            lfoGain528.gain.value = 0.015;
+            
+            lfo528.connect(lfoGain528);
+            lfoGain528.connect(gain528.gain);
+            
+            osc528.connect(gain528);
+            gain528.connect(audioCtx.destination);
+            
+            osc528.start();
+            lfo528.start();
         }
 
         function commentatorSpeak(text, rate = 1.1, pitch = 1.1) {
@@ -806,11 +862,19 @@
             teamMenuEl.classList.add('hidden'); 
             
             document.getElementById('sb-flag-1').innerHTML = flagsSVG[selectedTeamP1];
-            if (gameMode === 2) document.getElementById('sb-flag-2').innerHTML = flagsSVG[selectedTeamP2];
-            else document.getElementById('sb-flag-2').innerHTML = `<div style="font-size: 16px; margin-top:-2px;">🤖</div>`;
             
-            if (gameMode === 2) { score2El.style.color = '#FF0055'; score2El.style.textShadow = '0 0 25px rgba(255,0,85,0.8)'; } 
-            else { score2El.style.color = '#ffffff'; score2El.style.textShadow = '0 0 25px rgba(255,255,255,0.6)'; }
+            if (gameMode === 2) {
+                document.getElementById('sb-flag-2').innerHTML = flagsSVG[selectedTeamP2];
+                score2El.style.color = '#FF0055'; score2El.style.textShadow = '0 0 25px rgba(255,0,85,0.8)';
+            } else {
+                if (aiLevel > 1) {
+                    document.getElementById('sb-flag-2').innerHTML = `<div style="font-size: 16px; margin-top:-2px;">💀</div>`;
+                    score2El.style.color = '#FF3300'; score2El.style.textShadow = '0 0 25px rgba(255,51,0,0.9)';
+                } else {
+                    document.getElementById('sb-flag-2').innerHTML = `<div style="font-size: 16px; margin-top:-2px;">🤖</div>`;
+                    score2El.style.color = '#ffffff'; score2El.style.textShadow = '0 0 25px rgba(255,255,255,0.6)';
+                }
+            }
 
             drawStaticBackground(); 
             
@@ -822,9 +886,19 @@
                 hideMessage();
                 startTimer();
                 
-                let vsText = gameMode === 2 ? teamNamesEn[selectedTeamP2] : "The System";
-                commentatorSpeak(`The match begins! ${teamNamesEn[selectedTeamP1]} against ${vsText}!`, 1.1, 1.2);
+                let vsText = gameMode === 2 ? teamNamesEn[selectedTeamP2] : (aiLevel > 1 ? "The Boss System" : "The System");
+                commentatorSpeak(`The match begins! ${teamNamesEn[selectedTeamP1]} against ${vsText}!`, 1.1, aiLevel > 1 ? 0.9 : 1.2);
                 
+                if (gameMode === 1 && aiLevel > 1) {
+                    setTimeout(() => {
+                        showMessage(`BOSS LVL ${aiLevel}<br>ACTIVE`);
+                        messageEl.style.color = '#FF3300';
+                        triggerScreenShake(20, 10);
+                        playImpactSound(20);
+                        setTimeout(hideMessage, 2000);
+                    }, 500);
+                }
+
                 if (!window.gameLoopRunning) {
                     window.gameLoopRunning = true;
                     lastTime = performance.now();
@@ -840,6 +914,7 @@
             ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
             particlePool.forEach(p => p.active = false);
             textPool.forEach(t => t.active = false);
+            checkBossStatus();
         });
 
         function showMessage(html) { messageEl.innerHTML = html; messageEl.classList.add('active'); }
@@ -883,7 +958,7 @@
             }
         }
         
-        const MAX_PARTICLES = 80;
+        const MAX_PARTICLES = 100;
         const particlePool = Array.from({length: MAX_PARTICLES}, () => new Particle());
         const textPool = Array.from({length: 10}, () => new FloatingText());
 
@@ -949,12 +1024,16 @@
             ctx.restore();
         }
 
-        function drawAiToken(ctx, x, y, radius, isDrag) {
+        function drawAiToken(ctx, x, y, radius, isDrag, currentAiLevel) {
             ctx.save(); 
             ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2);
-            ctx.fillStyle = '#222'; ctx.fill();
-            ctx.lineWidth = isDrag ? 4 : 2; ctx.strokeStyle = '#ffffff'; 
-            ctx.shadowBlur = 10; ctx.shadowColor = '#ffffff';
+            ctx.fillStyle = currentAiLevel > 1 ? '#3a0000' : '#222'; // Sfondo minaccioso per Boss
+            ctx.fill();
+            
+            let rimColor = currentAiLevel > 1 ? '#FF3300' : '#ffffff';
+            ctx.lineWidth = isDrag ? 4 : 2; ctx.strokeStyle = rimColor; 
+            ctx.shadowBlur = currentAiLevel > 1 ? 15 : 10; 
+            ctx.shadowColor = rimColor;
             ctx.stroke();
             ctx.shadowBlur = 0;
             
@@ -970,7 +1049,8 @@
                 else ctx.lineTo(r * Math.cos(angle), r * Math.sin(angle));
             }
             ctx.closePath();
-            ctx.fillStyle = '#666'; ctx.fill();
+            ctx.fillStyle = currentAiLevel > 1 ? '#aa1100' : '#666'; // Denti insanguinati per il boss
+            ctx.fill();
 
             ctx.beginPath(); ctx.arc(0, 0, radius * 0.4, 0, PI2);
             ctx.fillStyle = '#000000'; ctx.fill();
@@ -978,7 +1058,8 @@
             ctx.beginPath();
             let l = radius * 0.25; let w = radius * 0.1; 
             ctx.moveTo(-l, l); ctx.quadraticCurveTo(-w, -w, l, -l); ctx.quadraticCurveTo(w, w, -l, l);
-            ctx.fillStyle = '#39FF14'; ctx.fill();
+            ctx.fillStyle = currentAiLevel > 1 ? '#FF3300' : '#39FF14'; // Nucleo rosso per boss
+            ctx.fill();
 
             ctx.restore();
         }
@@ -1005,7 +1086,7 @@
                 ctx.arc(GAME_WIDTH / 2, midY, 80, 0, PI2);
             }, 'rgba(255,255,255,0.2)');
             
-            let p2Color = gameMode === 2 ? '#FF0055' : '#ffffff';
+            let p2Color = gameMode === 2 ? '#FF0055' : (aiLevel > 1 ? '#FF3300' : '#ffffff');
             drawFlatLines(() => {
                 ctx.rect(GAME_WIDTH / 2 - 130, mTop, 260, 140);
                 ctx.rect(GAME_WIDTH / 2 - 60, mTop, 120, 50);
@@ -1017,7 +1098,7 @@
             }, '#00FF66');
 
             const gx = GAME_WIDTH / 2 - goalWidth / 2;
-            let p2Fill = gameMode === 2 ? 'rgba(255, 0, 85, 0.15)' : 'rgba(255, 255, 255, 0.15)';
+            let p2Fill = gameMode === 2 ? 'rgba(255, 0, 85, 0.15)' : (aiLevel > 1 ? 'rgba(255, 51, 0, 0.15)' : 'rgba(255, 255, 255, 0.15)');
             ctx.fillStyle = p2Fill; ctx.fillRect(gx, mTop - 20, goalWidth, 20); 
             ctx.lineWidth = 3; ctx.strokeStyle = p2Color; ctx.strokeRect(gx, mTop - 20, goalWidth, 20);
             
@@ -1060,10 +1141,22 @@
             if (e.pointerId === activePointerId) {
                 if (dragTarget && pointer.active) {
                     let dx = dragTarget.dragStartX - dragTarget.x, dy = dragTarget.dragStartY - dragTarget.y;
+                    let dragDist = Math.hypot(dx, dy);
                     isMoving = true; dragTarget.vx = dx * 0.45; dragTarget.vy = dy * 0.45; 
+                    
                     let color = currentTurn === 1 ? '#00FF66' : '#FF0055';
                     createExplosion(dragTarget.dragStartX, dragTarget.dragStartY, color, 12, 8, 4, 30);
-                    triggerScreenShake(4, 3); dragTarget = null;
+                    
+                    // GAMER JUICE: Se il tiro è quasi al massimo
+                    if (dragDist > maxDragPull * 0.9) {
+                        triggerScreenShake(8, 6);
+                        spawnText(dragTarget.dragStartX, dragTarget.dragStartY - 30, "HYPER STRIKE!", "#FFD700");
+                        playImpactSound(15);
+                    } else {
+                        triggerScreenShake(4, 3);
+                    }
+
+                    dragTarget = null;
                     playShootSound(); 
                 }
                 pointer.active = false; activePointerId = null;
@@ -1092,8 +1185,11 @@
                 if (currentTurn === 1) {
                     updateTurnUI(`P1 ◀ ${t}s`, turnTimeRemaining <= 2 ? "#FF0055" : "#00FF66");
                 } else {
-                    if (gameMode === 2) updateTurnUI(`${t}s ▶ P2`, "#FF0055");
-                    else updateTurnUI(`CPU ▶`, "#ffffff");
+                    if (gameMode === 2) {
+                        updateTurnUI(`${t}s ▶ P2`, "#FF0055");
+                    } else {
+                        updateTurnUI(aiLevel > 1 ? `BOSS ▶` : `CPU ▶`, aiLevel > 1 ? "#FF3300" : "#ffffff");
+                    }
                 }
             }
         }
@@ -1101,7 +1197,8 @@
         function switchTurn() {
             if (gameState !== GAME_STATE_PLAYING) return;
             currentTurn = currentTurn === 1 ? 2 : 1; 
-            aiTimer = 40; 
+            // Se aiLevel è alto, la CPU aspetta meno a tirare (più pressione)
+            aiTimer = (gameMode === 1 && aiLevel > 1) ? 25 : 40; 
             turnTimeRemaining = 5.0; 
         }
 
@@ -1144,16 +1241,31 @@
                 }
                 if (bestPlayer) { 
                     let dx = ball.x - bestPlayer.x, dy = ball.y - bestPlayer.y;
-                    let errorMargin = 15; 
+                    
+                    // HARDCORE AI LOGIC
+                    let isBoss = aiLevel > 1;
+                    // Se è boss, il margine d'errore crolla (mira perfetta)
+                    let errorMargin = isBoss ? Math.max(0, 15 - (aiLevel * 3)) : 15; 
                     dx += (Math.random() - 0.5) * errorMargin; dy += (Math.random() - 0.5) * errorMargin;
+                    
                     let dist = Math.hypot(dx, dy);
                     if (dist === 0) dist = 1; 
-                    let powerMultiplier = 3.0;
-                    let maxPwr = 28; 
+                    
+                    // Più è alto il livello, più tira forte
+                    let powerMultiplier = isBoss ? Math.max(1.2, 3.0 - (aiLevel * 0.4)) : 3.0;
+                    let maxPwr = isBoss ? 32 + aiLevel : 28; 
+                    
                     let power = Math.min((dist / powerMultiplier), maxPwr); 
                     bestPlayer.vx = (dx / dist) * power; bestPlayer.vy = (dy / dist) * power;
-                    isMoving = true; aiTimer = 60;
-                    createExplosion(bestPlayer.x, bestPlayer.y, '#ffffff', 10, 8, 4, 25);
+                    
+                    isMoving = true; 
+                    aiTimer = isBoss ? 25 : 60; // Il boss non ti fa respirare
+                    
+                    createExplosion(bestPlayer.x, bestPlayer.y, isBoss ? '#FF3300' : '#ffffff', 15, 10, 4, 25);
+                    if(isBoss && power > 25) {
+                        spawnText(bestPlayer.x, bestPlayer.y - 30, "SYSTEM SMASH!", "#FF3300");
+                        triggerScreenShake(5, 4);
+                    }
                     playShootSound(); 
                 }
             }
@@ -1181,7 +1293,8 @@
                     createExplosion(e1.x + nx * e1.radius, e1.y + ny * e1.radius, c, Math.min(imp, 15), imp, 3, 20);
                     
                     if (imp > 20) {
-                        triggerScreenShake(10, imp * 0.4); hitStopFrames = 4; triggerFlash(0.4); 
+                        // Più juice negli impatti pesanti
+                        triggerScreenShake(12, imp * 0.5); hitStopFrames = 4; triggerFlash(0.4); 
                         spawnText(e1.x + nx*e1.radius, e1.y + ny*e1.radius, impactWords[Math.floor(Math.random()*impactWords.length)], '#FF0055');
                     } else if (imp > 10) {
                         triggerScreenShake(4, imp * 0.2); 
@@ -1338,15 +1451,23 @@
                 flagHTML = `<div class="flag-container" style="width: 60px; height: 36px; margin: 0 auto 5px; border-radius: 4px; overflow: hidden; border: 2px solid #00FF66; box-shadow: 0 3px 15px rgba(0,255,102,0.4);">${flagsSVG[selectedTeamP1]}</div>`;
                 gameOverTitleEl.innerText = teamNamesEn[selectedTeamP1] + " WINS!";
                 gameOverTitleEl.style.color = "#00FF66";
+                
+                // SISTEMA NEMESI: Se batti la CPU, sale di livello! (Max Lvl 5)
+                if (gameMode === 1) {
+                    aiLevel = Math.min(5, aiLevel + 1);
+                    localStorage.setItem('cyberTorneo_ai_rank', aiLevel);
+                }
+
             } else if (winner === 2) {
                 if (gameMode === 2) {
                     flagHTML = `<div class="flag-container" style="width: 60px; height: 36px; margin: 0 auto 5px; border-radius: 4px; overflow: hidden; border: 2px solid #FF0055; box-shadow: 0 3px 15px rgba(255,0,85,0.4);">${flagsSVG[selectedTeamP2]}</div>`;
                     gameOverTitleEl.innerText = teamNamesEn[selectedTeamP2] + " WINS!"; 
                     gameOverTitleEl.style.color = "#FF0055";
                 } else {
-                    flagHTML = `<div style="font-size: 30px; margin: 0 auto 5px; filter: drop-shadow(0 2px 5px rgba(255,255,255,0.4));">🤖</div>`;
-                    gameOverTitleEl.innerText = "SYSTEM WINS"; 
-                    gameOverTitleEl.style.color = "#ffffff";
+                    let bossIcon = aiLevel > 1 ? '💀' : '🤖';
+                    flagHTML = `<div style="font-size: 30px; margin: 0 auto 5px; filter: drop-shadow(0 2px 5px rgba(255,255,255,0.4));">${bossIcon}</div>`;
+                    gameOverTitleEl.innerText = aiLevel > 1 ? "BOSS WINS" : "SYSTEM WINS"; 
+                    gameOverTitleEl.style.color = aiLevel > 1 ? "#FF3300" : "#ffffff";
                 }
             } else {
                 flagHTML = `<div style="font-size: 30px; margin: 0 auto 5px; filter: drop-shadow(0 2px 5px rgba(255,255,255,0.4));">🤝</div>`;
@@ -1375,15 +1496,15 @@
                 commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! ${teamNamesEn[selectedTeamP1]} scores!`, 1.3, 1.4);
             } else {
                 scoreP2++; score2El.innerText = scoreP2; currentTurn = 1;
-                let color = gameMode === 2 ? '#FF0055' : '#ffffff';
+                let color = gameMode === 2 ? '#FF0055' : (aiLevel > 1 ? '#FF3300' : '#ffffff');
                 createExplosion(GAME_WIDTH / 2, GAME_HEIGHT - mBot, color, 40, 30, 8, 150);
                 
                 if (gameMode === 2) {
                     showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#FF0055');
                     commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! ${teamNamesEn[selectedTeamP2]} scores!`, 1.3, 1.4);
                 } else {
-                    showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#ffffff');
-                    commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! The System scores!`, 1.3, 0.8);
+                    showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', aiLevel > 1 ? '#FF3300' : '#ffffff');
+                    commentatorSpeak(aiLevel > 1 ? "CRITICAL HIT! Boss scores!" : "GOOOOOOOOOOOOOOAL!!! The System scores!", 1.3, aiLevel > 1 ? 0.7 : 0.8);
                 }
             }
             updateTurnUI();
