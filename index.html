@@ -85,8 +85,8 @@
         .overlay-content {
             background: linear-gradient(145deg, #0f121b 0%, #050609 100%);
             border: 1px solid rgba(255, 255, 255, 0.06); border-top: 1px solid rgba(255, 255, 255, 0.15); border-bottom: 3px solid var(--p1-neon);
-            border-radius: 16px; padding: 25px 15px; text-align: center; pointer-events: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
-            width: 92%; max-width: 380px; display: flex; flex-direction: column; align-items: center;
+            border-radius: 16px; padding: 20px 10px; text-align: center; pointer-events: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            width: 95%; max-width: 400px; display: flex; flex-direction: column; align-items: center;
         }
 
         .hidden { display: none !important; }
@@ -94,18 +94,40 @@
         /* Stile comune per i video orizzontali arrotondati */
         .inline-video-box {
             width: 100%;
-            height: 120px;
+            height: 110px; /* Leggermente ridotto per recuperare spazio */
             object-fit: cover;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            pointer-events: none; /* Impedisce tocchi indesiderati sul player video */
+            pointer-events: none;
             background-color: #000;
         }
 
-        #teams-scroll-area { width: 100%; max-height: 33vh; overflow-y: auto; margin-bottom: 10px; -webkit-overflow-scrolling: touch; touch-action: pan-y; scrollbar-width: none; }
+        #teams-scroll-area { width: 100%; max-height: 38vh; overflow-y: auto; margin-bottom: 10px; -webkit-overflow-scrolling: touch; touch-action: pan-y; scrollbar-width: none; }
         #teams-scroll-area::-webkit-scrollbar { display: none; }
+
+        /* NUOVI STILI PER IL LAYOUT A COLONNE */
+        #teams-flex-container {
+            display: flex;
+            width: 100%;
+            gap: 8px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .team-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .team-title {
+            margin: 5px 0 8px 0; 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
 
         #sponsor-bumper { background-color: #030408; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sponsor-bumper.active { opacity: 1; pointer-events: auto; }
@@ -117,13 +139,14 @@
         .sponsor-title { font-family: 'Chakra Petch', sans-serif; font-size: clamp(26px, 7vmin, 50px); color: #ffffff; font-weight: 900; letter-spacing: 4px; line-height: 1.1; text-transform: uppercase; text-shadow: 0 10px 30px rgba(0,0,0,1); }
         .sponsor-title span { color: #2AABEE; }
 
-        .mode-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #888; padding: 12px; font-size: 13px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px; border-radius: 8px; cursor: pointer; flex: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; }
+        .mode-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #888; padding: 10px; font-size: 12px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px; border-radius: 8px; cursor: pointer; flex: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; }
         .mode-btn.active { background: rgba(0, 255, 102, 0.12); border-color: var(--p1-neon); color: var(--p1-neon); }
 
-        .grid-options { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; width: 100%; padding: 0 2px;}
-        .team-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 44px; }
-        .team-btn .flag-container { width: 30px; height: 20px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); position: relative; }
-        .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.5px; transition: color 0.3s; }
+        /* OPZIONI SQUADRE RIDIMENSIONATE PER SMARTPHONE */
+        .grid-options { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; width: 100%; padding: 0 2px;}
+        .team-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 38px; }
+        .team-btn .flag-container { width: 26px; height: 18px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); position: relative; }
+        .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 7px; font-weight: 700; letter-spacing: 0.5px; transition: color 0.3s; }
         @media (hover: hover) { .team-btn:hover { background: rgba(255, 255, 255, 0.08); } .team-btn:hover span { color: #fff; } }
         .team-btn.active { background: rgba(0, 255, 102, 0.1); border: 1px solid var(--p1-neon); }
         .team-btn.active span { color: var(--p1-neon); }
@@ -131,8 +154,8 @@
         #p2-grid .team-btn.active span { color: var(--p2-neon); }
         .flag { width: 100%; height: 100%; display: block; object-fit: cover; }
 
-        .joystick-btn-only { background: transparent; border: none; box-shadow: none; cursor: pointer; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px; outline: none; padding: 0; -webkit-tap-highlight-color: transparent; }
-        .joystick-btn-only svg { width: 60px; height: 60px; filter: drop-shadow(0 0 10px rgba(0,255,102,0.4)); animation: pulse-joystick 2.5s infinite alternate ease-in-out; will-change: transform, filter; }
+        .joystick-btn-only { background: transparent; border: none; box-shadow: none; cursor: pointer; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 5px; outline: none; padding: 0; -webkit-tap-highlight-color: transparent; }
+        .joystick-btn-only svg { width: 55px; height: 55px; filter: drop-shadow(0 0 10px rgba(0,255,102,0.4)); animation: pulse-joystick 2.5s infinite alternate ease-in-out; will-change: transform, filter; }
         @keyframes pulse-joystick { 0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,255,102,0.2)); } 100% { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(0,255,102,0.6)); } }
         .joystick-btn-only:active svg { transform: scale(0.9) !important; animation: none; }
 
@@ -200,21 +223,26 @@
                 <div id="team-menu" class="overlay-screen">
                     <div class="overlay-content">
                         
-                        <!-- Video Menu (Sopra le scelte, con bordi tondi e riquadro orizzontale) -->
+                        <!-- Video Menu -->
                         <video id="menu-video" class="inline-video-box" src="itcyborgscommettestake.mp4" autoplay loop muted playsinline webkit-playsinline></video>
 
-                        <div style="display:flex; width:100%; gap:8px; margin-bottom:4px;">
+                        <div style="display:flex; width:100%; gap:8px; margin-bottom:10px;">
                             <button id="btn-1p" class="mode-btn active">1 PLAYER</button>
                             <button id="btn-2p" class="mode-btn">2 PLAYERS</button>
                         </div>
 
+                        <!-- Layout a Colonne per la selezione squadre -->
                         <div id="teams-scroll-area">
-                            <h3 style="margin:10px 0 8px 0; font-size:12px; color:#00FF66; text-transform:uppercase; letter-spacing: 2px;">🟢 Player 1 Team</h3>
-                            <div class="grid-options" id="p1-grid" style="margin-bottom: 12px;"></div>
+                            <div id="teams-flex-container">
+                                <div class="team-column" id="p1-column">
+                                    <h3 class="team-title" style="color:#00FF66;">🟢 P1 Team</h3>
+                                    <div class="grid-options" id="p1-grid"></div>
+                                </div>
 
-                            <div id="p2-container" class="hidden" style="width:100%;">
-                                <h3 style="margin:10px 0 8px 0; font-size:12px; color:#FF0055; text-transform:uppercase; letter-spacing: 2px;">🔴 Player 2 Team</h3>
-                                <div class="grid-options" id="p2-grid" style="margin-bottom: 5px;"></div>
+                                <div class="team-column hidden" id="p2-column">
+                                    <h3 class="team-title" style="color:#FF0055;">🔴 P2 Team</h3>
+                                    <div class="grid-options" id="p2-grid"></div>
+                                </div>
                             </div>
                         </div>
 
@@ -227,7 +255,7 @@
                 <div id="game-over-screen" class="overlay-screen hidden">
                     <div class="overlay-content" style="padding: 15px;">
                         
-                        <!-- Video Game Over (Sopra al vincitore e alla coppa, orizzontale e tondo) -->
+                        <!-- Video Game Over -->
                         <video id="gameover-video" class="inline-video-box" src="inglesepresentbettingexchangeroom.mp4" autoplay loop muted playsinline webkit-playsinline></video>
 
                         <div id="winner-flag-container"></div>
@@ -531,7 +559,7 @@
         }
         window.addEventListener('resize', initDisplay);
 
-        const teamNamesEn = { 'ITA': 'Italy', 'BRA': 'Brazil', 'ENG': 'England', 'ESP': 'Spain', 'IRL': 'Ireland', 'ROU': 'Romania', 'COL': 'Colombia', 'PER': 'Peru', 'ALB': 'Albania', 'MEX': 'Mexico', 'ARG': 'Argentina', 'CHI': 'Chile', 'ECU': 'Ecuador', 'NZL': 'New Zealand', 'URU': 'Uruguay', 'NGA': 'Nigeria', 'CRC': 'Costa Rica', 'IND': 'India', 'CAN': 'Canada', 'GHA': 'Ghana' };
+        const teamNamesEn = { 'ITA': 'Italy', 'BRA': 'Brazil', 'ENG': 'England', 'ESP': 'Spain', 'IRL': 'Ireland', 'ROU': 'Romania', 'COL': 'Colombia', 'PER': 'Peru', 'ALB': 'Albania', 'MEX': 'Mexico', 'ARG': 'Argentina', 'CHI': 'Chile', 'ECU': 'Ecuador', 'NZL': 'New Zealand', 'URU': 'Uruguay', 'NGA': 'Nigeria', 'CRC': 'Costa Rica', 'IND': 'India', 'CAN': 'Canada', 'GHA': 'Ghana', 'AUS': 'Australia', 'CPV': 'Cape Verde', 'SEN': 'Senegal' };
         const flagsSVG = {
             'ITA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#009246"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE2B37"/></svg>`,
             'BRA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#009B3A"/><polygon points="150,20 280,100 150,180 20,100" fill="#FEDF00"/><circle cx="150" cy="100" r="45" fill="#002776"/></svg>`,
@@ -552,7 +580,10 @@
             'CRC': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="33.3" fill="#001489"/><rect y="33.3" width="300" height="33.3" fill="#ffffff"/><rect y="66.6" width="300" height="66.6" fill="#DA291C"/><rect y="133.3" width="300" height="33.3" fill="#ffffff"/><rect y="166.6" width="300" height="33.3" fill="#001489"/></svg>`,
             'IND': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="66.6" fill="#FF9933"/><rect y="66.6" width="300" height="66.6" fill="#ffffff"/><rect y="133.3" width="300" height="66.6" fill="#138808"/><circle cx="150" cy="100" r="22" fill="none" stroke="#000080" stroke-width="4"/><circle cx="150" cy="100" r="4" fill="#000080"/><path d="M150,78 v44 M128,100 h44 M134,84 l32,32 M134,116 l32,-32" stroke="#000080" stroke-width="2"/></svg>`,
             'CAN': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="75" height="200" fill="#FF0000"/><rect x="75" width="150" height="200" fill="#ffffff"/><rect x="225" width="75" height="200" fill="#FF0000"/><path d="M150,40 L160,70 L185,55 L170,90 L200,95 L170,115 L180,145 L155,130 V170 H145 V130 L120,145 L130,115 L100,95 L130,90 L115,55 L140,70 Z" fill="#FF0000"/></svg>`,
-            'GHA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="66.6" fill="#CE1126"/><rect y="66.6" width="300" height="66.6" fill="#FCD116"/><rect y="133.3" width="300" height="66.6" fill="#006B3F"/><polygon points="150,75 156,92 175,92 160,103 165,120 150,110 135,120 140,103 125,92 144,92" fill="#000000"/></svg>`
+            'GHA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="66.6" fill="#CE1126"/><rect y="66.6" width="300" height="66.6" fill="#FCD116"/><rect y="133.3" width="300" height="66.6" fill="#006B3F"/><polygon points="150,75 156,92 175,92 160,103 165,120 150,110 135,120 140,103 125,92 144,92" fill="#000000"/></svg>`,
+            'AUS': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#012169"/><rect width="150" height="100" fill="#012169"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#fff" stroke-width="15"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#CC142B" stroke-width="8"/><rect x="65" y="0" width="20" height="100" fill="#fff"/><rect x="0" y="40" width="150" height="20" fill="#fff"/><rect x="70" y="0" width="10" height="100" fill="#CC142B"/><rect x="0" y="45" width="150" height="10" fill="#CC142B"/><circle cx="75" cy="150" r="18" fill="#fff"/><circle cx="225" cy="40" r="10" fill="#fff"/><circle cx="225" cy="160" r="10" fill="#fff"/><circle cx="180" cy="100" r="10" fill="#fff"/><circle cx="270" cy="90" r="10" fill="#fff"/><circle cx="250" cy="120" r="6" fill="#fff"/></svg>`,
+            'CPV': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="100" fill="#003893"/><rect y="100" width="300" height="16.6" fill="#fff"/><rect y="116.6" width="300" height="16.6" fill="#CF0921"/><rect y="133.2" width="300" height="16.6" fill="#fff"/><rect y="149.8" width="300" height="50.2" fill="#003893"/><circle cx="112.5" cy="65" r="5" fill="#F6A900"/><circle cx="112.5" cy="135" r="5" fill="#F6A900"/><circle cx="77.5" cy="100" r="5" fill="#F6A900"/><circle cx="147.5" cy="100" r="5" fill="#F6A900"/><circle cx="87" cy="75" r="5" fill="#F6A900"/><circle cx="138" cy="75" r="5" fill="#F6A900"/><circle cx="87" cy="125" r="5" fill="#F6A900"/><circle cx="138" cy="125" r="5" fill="#F6A900"/></svg>`,
+            'SEN': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#00853F"/><rect x="100" width="100" height="200" fill="#FDEF42"/><rect x="200" width="100" height="200" fill="#E31B23"/><polygon points="150,70 156,88 175,88 160,99 165,118 150,108 135,118 140,99 125,88 144,88" fill="#00853F"/></svg>`
         };
 
         let gameMode = 1;
@@ -588,11 +619,12 @@
         buildTeamGrid('p1-grid', false);
         buildTeamGrid('p2-grid', true);
 
+        // --- GESTIONE LAYOUT COLONNE ---
         document.getElementById('btn-1p').addEventListener('click', () => {
             gameMode = 1;
             document.getElementById('btn-1p').classList.add('active');
             document.getElementById('btn-2p').classList.remove('active');
-            document.getElementById('p2-container').classList.add('hidden');
+            document.getElementById('p2-column').classList.add('hidden');
             checkBossStatus();
         });
 
@@ -600,7 +632,7 @@
             gameMode = 2;
             document.getElementById('btn-2p').classList.add('active');
             document.getElementById('btn-1p').classList.remove('active');
-            document.getElementById('p2-container').classList.remove('hidden');
+            document.getElementById('p2-column').classList.remove('hidden');
             checkBossStatus();
         });
 
@@ -813,48 +845,44 @@
             else if (teamCode === 'IND') { ctx.fillStyle = '#FF9933'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*0.66); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y - flagR*0.33, flagR*2, flagR*0.66); ctx.fillStyle = '#138808'; ctx.fillRect(x - flagR, y + flagR*0.33, flagR*2, flagR*0.66); ctx.strokeStyle = '#000080'; ctx.lineWidth = flagR*0.04; ctx.beginPath(); ctx.arc(x, y, flagR*0.22, 0, PI2); ctx.stroke(); ctx.fillStyle = '#000080'; ctx.beginPath(); ctx.arc(x, y, flagR*0.04, 0, PI2); ctx.fill(); ctx.beginPath(); ctx.moveTo(x, y-flagR*0.22); ctx.lineTo(x, y+flagR*0.22); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR*0.22, y); ctx.lineTo(x+flagR*0.22, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR*0.15, y-flagR*0.15); ctx.lineTo(x+flagR*0.15, y+flagR*0.15); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR*0.15, y+flagR*0.15); ctx.lineTo(x+flagR*0.15, y-flagR*0.15); ctx.stroke(); }
             else if (teamCode === 'CAN') { ctx.fillStyle = '#FF0000'; ctx.fillRect(x - flagR, y - flagR, flagR*0.5, flagR*2); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR*0.5, y - flagR, flagR, flagR*2); ctx.fillStyle = '#FF0000'; ctx.fillRect(x + flagR*0.5, y - flagR, flagR*0.5, flagR*2); ctx.fillStyle = '#FF0000'; ctx.beginPath(); ctx.moveTo(x, y - flagR*0.6); ctx.lineTo(x + flagR*0.1, y - flagR*0.3); ctx.lineTo(x + flagR*0.35, y - flagR*0.45); ctx.lineTo(x + flagR*0.2, y - flagR*0.1); ctx.lineTo(x + flagR*0.5, y - flagR*0.05); ctx.lineTo(x + flagR*0.2, y + flagR*0.15); ctx.lineTo(x + flagR*0.3, y + flagR*0.45); ctx.lineTo(x + flagR*0.05, y + flagR*0.3); ctx.lineTo(x + flagR*0.05, y + flagR*0.7); ctx.lineTo(x - flagR*0.05, y + flagR*0.7); ctx.lineTo(x - flagR*0.05, y + flagR*0.3); ctx.lineTo(x - flagR*0.3, y + flagR*0.45); ctx.lineTo(x - flagR*0.2, y + flagR*0.15); ctx.lineTo(x - flagR*0.5, y - flagR*0.05); ctx.lineTo(x - flagR*0.2, y - flagR*0.1); ctx.lineTo(x - flagR*0.35, y - flagR*0.45); ctx.lineTo(x - flagR*0.1, y - flagR*0.3); ctx.closePath(); ctx.fill(); }
             else if (teamCode === 'GHA') { ctx.fillStyle = '#CE1126'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*0.66); ctx.fillStyle = '#FCD116'; ctx.fillRect(x - flagR, y - flagR*0.33, flagR*2, flagR*0.66); ctx.fillStyle = '#006B3F'; ctx.fillRect(x - flagR, y + flagR*0.33, flagR*2, flagR*0.66); ctx.fillStyle = '#000000'; ctx.beginPath(); ctx.moveTo(x, y-flagR*0.25); ctx.lineTo(x+flagR*0.06, y-flagR*0.08); ctx.lineTo(x+flagR*0.25, y-flagR*0.08); ctx.lineTo(x+flagR*0.1, y+flagR*0.03); ctx.lineTo(x+flagR*0.15, y+flagR*0.2); ctx.lineTo(x, y+flagR*0.1); ctx.lineTo(x-flagR*0.15, y+flagR*0.2); ctx.lineTo(x-flagR*0.1, y+flagR*0.03); ctx.lineTo(x-flagR*0.25, y-flagR*0.08); ctx.lineTo(x-flagR*0.06, y-flagR*0.08); ctx.closePath(); ctx.fill(); }
+            else if (teamCode === 'AUS') { ctx.fillStyle = '#012169'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*2); ctx.fillStyle = '#012169'; ctx.fillRect(x - flagR, y - flagR, flagR, flagR); ctx.strokeStyle = '#fff'; ctx.lineWidth = flagR*0.15; ctx.beginPath(); ctx.moveTo(x-flagR, y-flagR); ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR, y); ctx.lineTo(x, y-flagR); ctx.stroke(); ctx.strokeStyle = '#CC142B'; ctx.lineWidth = flagR*0.08; ctx.beginPath(); ctx.moveTo(x-flagR, y-flagR); ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR, y); ctx.lineTo(x, y-flagR); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.fillRect(x - flagR*0.35, y - flagR, flagR*0.2, flagR); ctx.fillRect(x - flagR, y - flagR*0.6, flagR, flagR*0.2); ctx.fillStyle = '#CC142B'; ctx.fillRect(x - flagR*0.3, y - flagR, flagR*0.1, flagR); ctx.fillRect(x - flagR, y - flagR*0.55, flagR, flagR*0.1); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x-flagR*0.5, y+flagR*0.5, flagR*0.15, 0, PI2); ctx.fill(); ctx.beginPath(); ctx.arc(x+flagR*0.5, y-flagR*0.6, flagR*0.08, 0, PI2); ctx.fill(); ctx.beginPath(); ctx.arc(x+flagR*0.5, y+flagR*0.6, flagR*0.08, 0, PI2); ctx.fill(); ctx.beginPath(); ctx.arc(x+flagR*0.2, y, flagR*0.08, 0, PI2); ctx.fill(); ctx.beginPath(); ctx.arc(x+flagR*0.8, y-flagR*0.1, flagR*0.08, 0, PI2); ctx.fill(); }
+            else if (teamCode === 'CPV') { ctx.fillStyle = '#003893'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y, flagR*2, flagR*0.16); ctx.fillStyle = '#CF0921'; ctx.fillRect(x - flagR, y+flagR*0.16, flagR*2, flagR*0.16); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y+flagR*0.32, flagR*2, flagR*0.16); ctx.fillStyle = '#003893'; ctx.fillRect(x - flagR, y+flagR*0.48, flagR*2, flagR*0.52); ctx.strokeStyle = '#F6A900'; ctx.lineWidth = flagR*0.1; ctx.setLineDash([flagR*0.15, flagR*0.15]); ctx.beginPath(); ctx.arc(x-flagR*0.25, y, flagR*0.35, 0, PI2); ctx.stroke(); ctx.setLineDash([]); }
+            else if (teamCode === 'SEN') { ctx.fillStyle = '#00853F'; ctx.fillRect(x - flagR, y - flagR, flagR*0.66, flagR*2); ctx.fillStyle = '#FDEF42'; ctx.fillRect(x - flagR*0.33, y - flagR, flagR*0.66, flagR*2); ctx.fillStyle = '#E31B23'; ctx.fillRect(x + flagR*0.33, y - flagR, flagR*0.66, flagR*2); ctx.fillStyle = '#00853F'; ctx.beginPath(); ctx.moveTo(x, y-flagR*0.3); ctx.lineTo(x+flagR*0.06, y-flagR*0.1); ctx.lineTo(x+flagR*0.25, y-flagR*0.1); ctx.lineTo(x+flagR*0.1, y+flagR*0.05); ctx.lineTo(x+flagR*0.15, y+flagR*0.25); ctx.lineTo(x, y+flagR*0.15); ctx.lineTo(x-flagR*0.15, y+flagR*0.25); ctx.lineTo(x-flagR*0.1, y+flagR*0.05); ctx.lineTo(x-flagR*0.25, y-flagR*0.1); ctx.lineTo(x-flagR*0.06, y-flagR*0.1); ctx.closePath(); ctx.fill(); }
             ctx.restore();
         }
 
         function drawAiToken(ctx, x, y, radius, isDrag, currentAiLevel) {
             ctx.save(); 
-            ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2);
-            ctx.fillStyle = '#111';
-            ctx.fill();
-            
-            let rimColor = chakraData[currentAiLevel].color;
-            ctx.lineWidth = isDrag ? 4 : 2; ctx.strokeStyle = rimColor; 
-            ctx.shadowBlur = 15; ctx.shadowColor = rimColor;
-            ctx.stroke(); ctx.shadowBlur = 0;
-            
             ctx.translate(x, y);
-            const rOuter = radius * 0.75; const rValley = radius * 0.55; const teeth = 8;
-            ctx.beginPath();
-            for (let i = 0; i < teeth * 2; i++) {
-                const angle = (i * Math.PI) / teeth; const r = (i % 2 === 0) ? rOuter : rValley;
-                if (i === 0) ctx.moveTo(r * Math.cos(angle), r * Math.sin(angle)); else ctx.lineTo(r * Math.cos(angle), r * Math.sin(angle));
-            }
-            ctx.closePath(); ctx.fillStyle = '#333'; ctx.fill();
 
+            let rimColor = chakraData[currentAiLevel].color;
+
+            // Ombra esterna e bordo
             ctx.beginPath();
-            ctx.arc(0, 0, radius * 0.45, 0, PI2);
-            ctx.closePath();
-            
+            ctx.arc(0, 0, radius, 0, PI2);
+            ctx.lineWidth = isDrag ? 4 : 2;
+            ctx.strokeStyle = rimColor;
+            ctx.shadowBlur = isDrag ? 15 : 8;
+            ctx.shadowColor = rimColor;
+            ctx.fillStyle = '#000'; // Sfondo scuro in caso manchi l'immagine
+            ctx.fill();
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Disegna il logo ritagliato a cerchio intero (leggermente ridotto per non coprire il bordo)
             ctx.save();
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.9, 0, PI2);
             ctx.clip(); 
+            
             if (logoTondoImg.complete && logoTondoImg.naturalWidth !== 0) {
-                ctx.drawImage(logoTondoImg, -radius * 0.45, -radius * 0.45, radius * 0.9, radius * 0.9);
+                // Disegna coprendo l'intera pedina
+                ctx.drawImage(logoTondoImg, -radius * 0.9, -radius * 0.9, radius * 1.8, radius * 1.8);
             } else {
-                ctx.fillStyle = '#000000'; 
+                ctx.fillStyle = '#111'; 
                 ctx.fill(); 
             }
             ctx.restore();
-
-            ctx.beginPath();
-            ctx.arc(0, 0, radius * 0.45, 0, PI2);
-            ctx.lineWidth = 1.5;
-            ctx.strokeStyle = rimColor;
-            ctx.stroke();
 
             ctx.restore();
         }
