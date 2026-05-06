@@ -680,10 +680,12 @@
             oscChakra.frequency.value = chakraData[aiLevel].hz;
             
             const gainChakra = audioCtx.createGain();
-            gainChakra.gain.value = 0.002; 
+            // Volume del tono fisso ridotto da 0.002 a 0.0003 per renderlo quasi impercettibile
+            gainChakra.gain.value = 0.0003; 
             
             const lfoChakra = audioCtx.createOscillator(); lfoChakra.type = 'sine'; lfoChakra.frequency.value = 0.2; 
-            const lfoGainChakra = audioCtx.createGain(); lfoGainChakra.gain.value = 0.001;
+            // Ridotta anche la modulazione del volume
+            const lfoGainChakra = audioCtx.createGain(); lfoGainChakra.gain.value = 0.00015;
             
             lfoChakra.connect(lfoGainChakra); lfoGainChakra.connect(gainChakra.gain);
             oscChakra.connect(gainChakra); gainChakra.connect(audioCtx.destination);
