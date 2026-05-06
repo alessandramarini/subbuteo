@@ -6,9 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     
-    <!-- OTTIMIZZAZIONI DI CARICAMENTO -->
+    <!-- OTTIMIZZAZIONI DI CARICAMENTO E PRE-CONNESSIONI (Cruciali per Vercel/Github Pages) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://flagcdn.com">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,700;1,700&family=Montserrat:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet">
     
     <title>CyberTorneo - Telegram Edition</title>
@@ -60,7 +61,7 @@
         }
         
         .sb-flag-container { width: 36px; height: 24px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; background: #000; }
-        .sb-flag-container svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .sb-flag-container img, .sb-flag-container svg { width: 100%; height: 100%; object-fit: cover; display: block; }
         
         #timer-display {
             font-family: 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 900;
@@ -95,8 +96,8 @@
         .inline-video-box {
             width: 100%;
             height: auto;
-            aspect-ratio: 16 / 9; /* Mantiene le proporzioni originali per non schiacciare l'immagine */
-            max-height: 160px; /* Limite per non prendere troppo schermo */
+            aspect-ratio: 16 / 9;
+            max-height: 160px;
             object-fit: cover;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
@@ -106,30 +107,15 @@
             background-color: #000;
         }
 
-        #teams-scroll-area { width: 100%; max-height: 34vh; overflow-y: auto; margin-bottom: 10px; -webkit-overflow-scrolling: touch; touch-action: pan-y; scrollbar-width: none; }
-        #teams-scroll-area::-webkit-scrollbar { display: none; }
+        #teams-scroll-area { width: 100%; max-height: 34vh; overflow-y: auto; margin-bottom: 10px; -webkit-overflow-scrolling: touch; touch-action: pan-y; scrollbar-width: thin; scrollbar-color: var(--p1-neon) rgba(255, 255, 255, 0.05); }
+        #teams-scroll-area::-webkit-scrollbar { width: 6px; display: block; }
+        #teams-scroll-area::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
+        #teams-scroll-area::-webkit-scrollbar-thumb { background: var(--p1-neon); border-radius: 4px; }
 
         /* NUOVI STILI PER IL LAYOUT A COLONNE */
-        #teams-flex-container {
-            display: flex;
-            width: 100%;
-            gap: 8px;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .team-column {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .team-title {
-            margin: 5px 0 8px 0; 
-            font-size: 11px; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            white-space: nowrap;
-        }
+        #teams-flex-container { display: flex; width: 100%; gap: 8px; justify-content: center; align-items: flex-start; }
+        .team-column { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .team-title { margin: 5px 0 8px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
 
         #sponsor-bumper { background-color: #030408; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sponsor-bumper.active { opacity: 1; pointer-events: auto; }
@@ -146,9 +132,9 @@
 
         /* OPZIONI SQUADRE RIDIMENSIONATE PER SMARTPHONE */
         .grid-options { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; width: 100%; padding: 0 2px;}
-        .team-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 38px; }
-        .team-btn .flag-container { width: 26px; height: 18px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); position: relative; }
-        .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 7px; font-weight: 700; letter-spacing: 0.5px; transition: color 0.3s; }
+        .team-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 40px; }
+        .team-btn .flag-container { width: 26px; height: 18px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); position: relative; background: #222; }
+        .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 7px; font-weight: 700; letter-spacing: 0.5px; transition: color 0.3s; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
         @media (hover: hover) { .team-btn:hover { background: rgba(255, 255, 255, 0.08); } .team-btn:hover span { color: #fff; } }
         .team-btn.active { background: rgba(0, 255, 102, 0.1); border: 1px solid var(--p1-neon); }
         .team-btn.active span { color: var(--p1-neon); }
@@ -233,7 +219,7 @@
                             <button id="btn-2p" class="mode-btn">2 PLAYERS</button>
                         </div>
 
-                        <!-- Layout a Colonne per la selezione squadre -->
+                        <!-- Layout a Colonne per la selezione squadre (TUTTE LE NAZIONI DEL MONDO) -->
                         <div id="teams-scroll-area">
                             <div id="teams-flex-container">
                                 <div class="team-column" id="p1-column">
@@ -328,6 +314,220 @@
         const menuVideo = document.getElementById('menu-video');
         const gameOverVideo = document.getElementById('gameover-video');
 
+        // --- DATABASE NAZIONI DEL MONDO (ORDINE ALFABETICO INGLESE CON CODICI ISO 3166-1) ---
+        // Questa lista esauriente risolve il problema delle performance e abbraccia il mondo intero
+        const countries = [
+            {id:'af', name:'Afghanistan'}, {id:'al', name:'Albania'}, {id:'dz', name:'Algeria'}, {id:'ad', name:'Andorra'}, {id:'ao', name:'Angola'},
+            {id:'ag', name:'Antigua & Barbuda'}, {id:'ar', name:'Argentina'}, {id:'am', name:'Armenia'}, {id:'au', name:'Australia'}, {id:'at', name:'Austria'},
+            {id:'az', name:'Azerbaijan'}, {id:'bs', name:'Bahamas'}, {id:'bh', name:'Bahrain'}, {id:'bd', name:'Bangladesh'}, {id:'bb', name:'Barbados'},
+            {id:'by', name:'Belarus'}, {id:'be', name:'Belgium'}, {id:'bz', name:'Belize'}, {id:'bj', name:'Benin'}, {id:'bt', name:'Bhutan'},
+            {id:'bo', name:'Bolivia'}, {id:'ba', name:'Bosnia'}, {id:'bw', name:'Botswana'}, {id:'br', name:'Brazil'}, {id:'bn', name:'Brunei'},
+            {id:'bg', name:'Bulgaria'}, {id:'bf', name:'Burkina Faso'}, {id:'bi', name:'Burundi'}, {id:'cv', name:'Cabo Verde'}, {id:'kh', name:'Cambodia'},
+            {id:'cm', name:'Cameroon'}, {id:'ca', name:'Canada'}, {id:'cf', name:'CAR'}, {id:'td', name:'Chad'}, {id:'cl', name:'Chile'},
+            {id:'cn', name:'China'}, {id:'co', name:'Colombia'}, {id:'km', name:'Comoros'}, {id:'cg', name:'Congo'}, {id:'cd', name:'Congo (DRC)'},
+            {id:'cr', name:'Costa Rica'}, {id:'hr', name:'Croatia'}, {id:'cu', name:'Cuba'}, {id:'cy', name:'Cyprus'}, {id:'cz', name:'Czechia'},
+            {id:'dk', name:'Denmark'}, {id:'dj', name:'Djibouti'}, {id:'dm', name:'Dominica'}, {id:'do', name:'Dominican Rep.'}, {id:'ec', name:'Ecuador'},
+            {id:'eg', name:'Egypt'}, {id:'sv', name:'El Salvador'}, {id:'gq', name:'Eq. Guinea'}, {id:'er', name:'Eritrea'}, {id:'ee', name:'Estonia'},
+            {id:'sz', name:'Eswatini'}, {id:'et', name:'Ethiopia'}, {id:'fj', name:'Fiji'}, {id:'fi', name:'Finland'}, {id:'fr', name:'France'},
+            {id:'ga', name:'Gabon'}, {id:'gm', name:'Gambia'}, {id:'ge', name:'Georgia'}, {id:'de', name:'Germany'}, {id:'gh', name:'Ghana'},
+            {id:'gr', name:'Greece'}, {id:'gd', name:'Grenada'}, {id:'gt', name:'Guatemala'}, {id:'gn', name:'Guinea'}, {id:'gw', name:'Guinea-Bissau'},
+            {id:'gy', name:'Guyana'}, {id:'ht', name:'Haiti'}, {id:'hn', name:'Honduras'}, {id:'hu', name:'Hungary'}, {id:'is', name:'Iceland'},
+            {id:'in', name:'India'}, {id:'id', name:'Indonesia'}, {id:'ir', name:'Iran'}, {id:'iq', name:'Iraq'}, {id:'ie', name:'Ireland'},
+            {id:'il', name:'Israel'}, {id:'it', name:'Italy'}, {id:'jm', name:'Jamaica'}, {id:'jp', name:'Japan'}, {id:'jo', name:'Jordan'},
+            {id:'kz', name:'Kazakhstan'}, {id:'ke', name:'Kenya'}, {id:'ki', name:'Kiribati'}, {id:'kp', name:'North Korea'}, {id:'kr', name:'South Korea'},
+            {id:'kw', name:'Kuwait'}, {id:'kg', name:'Kyrgyzstan'}, {id:'la', name:'Laos'}, {id:'lv', name:'Latvia'}, {id:'lb', name:'Lebanon'},
+            {id:'ls', name:'Lesotho'}, {id:'lr', name:'Liberia'}, {id:'ly', name:'Libya'}, {id:'li', name:'Liechtenstein'}, {id:'lt', name:'Lithuania'},
+            {id:'lu', name:'Luxembourg'}, {id:'mg', name:'Madagascar'}, {id:'mw', name:'Malawi'}, {id:'my', name:'Malaysia'}, {id:'mv', name:'Maldives'},
+            {id:'ml', name:'Mali'}, {id:'mt', name:'Malta'}, {id:'mh', name:'Marshall Islands'}, {id:'mr', name:'Mauritania'}, {id:'mu', name:'Mauritius'},
+            {id:'mx', name:'Mexico'}, {id:'fm', name:'Micronesia'}, {id:'md', name:'Moldova'}, {id:'mc', name:'Monaco'}, {id:'mn', name:'Mongolia'},
+            {id:'me', name:'Montenegro'}, {id:'ma', name:'Morocco'}, {id:'mz', name:'Mozambique'}, {id:'mm', name:'Myanmar'}, {id:'na', name:'Namibia'},
+            {id:'nr', name:'Nauru'}, {id:'np', name:'Nepal'}, {id:'nl', name:'Netherlands'}, {id:'nz', name:'New Zealand'}, {id:'ni', name:'Nicaragua'},
+            {id:'ne', name:'Niger'}, {id:'ng', name:'Nigeria'}, {id:'mk', name:'North Macedonia'}, {id:'no', name:'Norway'}, {id:'om', name:'Oman'},
+            {id:'pk', name:'Pakistan'}, {id:'pw', name:'Palau'}, {id:'ps', name:'Palestine'}, {id:'pa', name:'Panama'}, {id:'pg', name:'Papua New Guinea'},
+            {id:'py', name:'Paraguay'}, {id:'pe', name:'Peru'}, {id:'ph', name:'Philippines'}, {id:'pl', name:'Poland'}, {id:'pt', name:'Portugal'},
+            {id:'qa', name:'Qatar'}, {id:'ro', name:'Romania'}, {id:'ru', name:'Russia'}, {id:'rw', name:'Rwanda'}, {id:'kn', name:'St. Kitts & Nevis'},
+            {id:'lc', name:'Saint Lucia'}, {id:'vc', name:'St. Vincent'}, {id:'ws', name:'Samoa'}, {id:'sm', name:'San Marino'}, {id:'st', name:'Sao Tome'}, 
+            {id:'sa', name:'Saudi Arabia'}, {id:'sn', name:'Senegal'}, {id:'rs', name:'Serbia'}, {id:'sc', name:'Seychelles'},
+            {id:'sl', name:'Sierra Leone'}, {id:'sg', name:'Singapore'}, {id:'sk', name:'Slovakia'}, {id:'si', name:'Slovenia'}, {id:'sb', name:'Solomon Islands'},
+            {id:'so', name:'Somalia'}, {id:'za', name:'South Africa'}, {id:'ss', name:'South Sudan'}, {id:'es', name:'Spain'}, {id:'lk', name:'Sri Lanka'},
+            {id:'sd', name:'Sudan'}, {id:'sr', name:'Suriname'}, {id:'se', name:'Sweden'}, {id:'ch', name:'Switzerland'}, {id:'sy', name:'Syria'},
+            {id:'tw', name:'Taiwan'}, {id:'tj', name:'Tajikistan'}, {id:'tz', name:'Tanzania'}, {id:'th', name:'Thailand'}, {id:'tl', name:'Timor-Leste'},
+            {id:'tg', name:'Togo'}, {id:'to', name:'Tonga'}, {id:'tt', name:'Trinidad'}, {id:'tn', name:'Tunisia'}, {id:'tr', name:'Turkey'},
+            {id:'tm', name:'Turkmenistan'}, {id:'tv', name:'Tuvalu'}, {id:'ug', name:'Uganda'}, {id:'ua', name:'Ukraine'}, {id:'ae', name:'UAE'},
+            {id:'gb', name:'United Kingdom'}, {id:'us', name:'United States'}, {id:'uy', name:'Uruguay'}, {id:'uz', name:'Uzbekistan'}, {id:'vu', name:'Vanuatu'},
+            {id:'va', name:'Vatican City'}, {id:'ve', name:'Venezuela'}, {id:'vn', name:'Vietnam'}, {id:'ye', name:'Yemen'}, {id:'zm', name:'Zambia'}, {id:'zw', name:'Zimbabwe'}
+        ];
+
+        // --- SISTEMA PRELOAD BANDIERE TRAMITE CDN GLOBALE ---
+        let loadedFlags = {};
+        function preloadFlag(code) {
+            if (!loadedFlags[code]) {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = `https://flagcdn.com/w80/${code}.png`;
+                loadedFlags[code] = img;
+                img.onload = () => { clearTokenCache(); };
+            }
+        }
+        
+        function getTeamName(code) {
+            const t = countries.find(c => c.id === code);
+            return t ? t.name : code.toUpperCase();
+        }
+
+        let gameMode = 1;
+        let selectedTeamP1 = 'it'; // Default Italy
+        let selectedTeamP2 = 'mx'; // Default Mexico
+        preloadFlag(selectedTeamP1);
+        preloadFlag(selectedTeamP2);
+
+        function checkBossStatus() {
+            const btn1p = document.getElementById('btn-1p');
+            if (gameMode === 1 && aiLevel > 1) {
+                btn1p.innerHTML = `1 PLAYER <span style="font-size:10px; opacity:0.8; letter-spacing:0px;">- LIV: ${aiLevel}</span>`;
+            } else {
+                btn1p.innerHTML = `1 PLAYER`;
+            }
+        }
+
+        function buildTeamGrid(containerId, isP2) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            countries.forEach(team => {
+                const btn = document.createElement('button');
+                btn.className = 'team-btn ' + ((!isP2 && team.id === selectedTeamP1) || (isP2 && team.id === selectedTeamP2) ? 'active' : '');
+                btn.dataset.team = team.id;
+                // Costruzione con la CDN e caricamento lazy
+                btn.innerHTML = `<div class="flag-container"><img src="https://flagcdn.com/w40/${team.id}.png" class="flag" loading="lazy" alt="${team.name}"></div><span title="${team.name}">${team.name}</span>`;
+                btn.onclick = () => {
+                    container.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    if (isP2) selectedTeamP2 = team.id; else selectedTeamP1 = team.id;
+                    preloadFlag(team.id); // Precarica la versione HD per il canvas!
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        buildTeamGrid('p1-grid', false);
+        buildTeamGrid('p2-grid', true);
+
+        // --- GESTIONE LAYOUT COLONNE ---
+        document.getElementById('btn-1p').addEventListener('click', () => {
+            gameMode = 1;
+            document.getElementById('btn-1p').classList.add('active');
+            document.getElementById('btn-2p').classList.remove('active');
+            document.getElementById('p2-column').classList.add('hidden');
+            checkBossStatus();
+        });
+
+        document.getElementById('btn-2p').addEventListener('click', () => {
+            gameMode = 2;
+            document.getElementById('btn-2p').classList.add('active');
+            document.getElementById('btn-1p').classList.remove('active');
+            document.getElementById('p2-column').classList.remove('hidden');
+            checkBossStatus();
+        });
+
+        checkBossStatus();
+
+        let audioCtx = null;
+        let crowdGainNode = null;
+        let sponsorVoicePlayed = false;
+        let oscChakra = null;
+
+        function initAudio() {
+            if ('speechSynthesis' in window) window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+            if (audioCtx) { if (audioCtx.state === 'suspended') audioCtx.resume(); return; }
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+            
+            const bufferSize = audioCtx.sampleRate * 2;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+            
+            const noiseSource = audioCtx.createBufferSource();
+            noiseSource.buffer = noiseBuffer; noiseSource.loop = true;
+
+            const filter1 = audioCtx.createBiquadFilter();
+            filter1.type = 'lowpass'; filter1.frequency.value = 400; filter1.Q.value = 1.0;
+            const filter2 = audioCtx.createBiquadFilter();
+            filter2.type = 'highpass'; filter2.frequency.value = 100;
+
+            crowdGainNode = audioCtx.createGain(); crowdGainNode.gain.value = 0.12; 
+
+            const lfo = audioCtx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.12;
+            const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 0.06;
+            const filterLfoGain = audioCtx.createGain(); filterLfoGain.gain.value = 250;
+            lfo.connect(filterLfoGain); filterLfoGain.connect(filter1.frequency);
+            
+            lfo.connect(lfoGain); lfoGain.connect(crowdGainNode.gain); lfo.start();
+            noiseSource.connect(filter1); filter1.connect(filter2); filter2.connect(crowdGainNode); crowdGainNode.connect(audioCtx.destination);
+            noiseSource.start();
+
+            oscChakra = audioCtx.createOscillator();
+            oscChakra.type = 'sine';
+            oscChakra.frequency.value = chakraData[aiLevel].hz;
+            
+            const gainChakra = audioCtx.createGain();
+            // Volume del tono fisso quasi impercettibile
+            gainChakra.gain.value = 0.0003; 
+            
+            const lfoChakra = audioCtx.createOscillator(); lfoChakra.type = 'sine'; lfoChakra.frequency.value = 0.2; 
+            const lfoGainChakra = audioCtx.createGain(); lfoGainChakra.gain.value = 0.00015;
+            
+            lfoChakra.connect(lfoGainChakra); lfoGainChakra.connect(gainChakra.gain);
+            oscChakra.connect(gainChakra); gainChakra.connect(audioCtx.destination);
+            
+            oscChakra.start(); lfoChakra.start();
+        }
+
+        function updateChakraAudio() {
+            if(oscChakra && audioCtx) oscChakra.frequency.setTargetAtTime(chakraData[aiLevel].hz, audioCtx.currentTime, 0.5);
+        }
+
+        function playSponsorBumper(callback) {
+            const bumper = document.getElementById('sponsor-bumper');
+            bumper.classList.remove('hidden'); void bumper.offsetWidth; bumper.classList.add('active');
+            setTimeout(() => {
+                bumper.classList.remove('active');
+                setTimeout(() => { bumper.classList.add('hidden'); if (callback) callback(); }, 800); 
+            }, 2500); 
+        }
+
+        function playShootSound() {
+            if (!audioCtx) return; if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+        }
+
+        function playImpactSound(intensity, isGoal = false) {
+            if (!audioCtx) return; if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain(); const filter = audioCtx.createBiquadFilter();
+            const baseFreq = 528;
+            if (isGoal) {
+                const hornGain = audioCtx.createGain(); const freqs = [150, 153, 225, 230, 305]; 
+                freqs.forEach(f => { let h = audioCtx.createOscillator(); h.type = 'sawtooth'; h.frequency.value = f; h.connect(hornGain); h.start(); h.stop(audioCtx.currentTime + 2.5); });
+                hornGain.gain.setValueAtTime(0, audioCtx.currentTime); hornGain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.05);
+                hornGain.gain.setValueAtTime(0.15, audioCtx.currentTime + 1.2); hornGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2.5);
+                const hornFilter = audioCtx.createBiquadFilter(); hornFilter.type = 'lowpass'; hornFilter.frequency.setValueAtTime(2500, audioCtx.currentTime); hornFilter.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 2.5);
+                hornGain.connect(hornFilter); hornFilter.connect(audioCtx.destination);
+                if(crowdGainNode) { crowdGainNode.gain.cancelScheduledValues(audioCtx.currentTime); crowdGainNode.gain.setValueAtTime(0.9, audioCtx.currentTime); crowdGainNode.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 4); }
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(baseFreq * 2, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(baseFreq, audioCtx.currentTime + 0.5);
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.1); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+            } else {
+                osc.type = intensity > 15 ? 'square' : 'triangle'; osc.frequency.setValueAtTime(baseFreq * 1.5, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(baseFreq, audioCtx.currentTime + 0.1);
+                let vol = Math.min(intensity / 30, 0.4); gainNode.gain.setValueAtTime(0, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.01); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            }
+            filter.type = 'lowpass'; filter.frequency.setValueAtTime(2000, audioCtx.currentTime);
+            if(!isGoal) filter.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.2);
+            osc.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + (isGoal ? 2.5 : 0.3));
+        }
+
         // --- SISTEMA CACHING VETTORIALE ---
         let tokenCache = {};
         function clearTokenCache() { tokenCache = {}; }
@@ -352,6 +552,226 @@
                 tokenCache[key] = { canvas: offCanvas, pad: pad };
             }
             return tokenCache[key];
+        }
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            initAudio(); updateChakraAudio();
+            teamMenuEl.classList.add('hidden'); 
+            
+            if(menuVideo) menuVideo.pause();
+
+            document.getElementById('sb-flag-1').innerHTML = `<img src="https://flagcdn.com/w40/${selectedTeamP1}.png" class="flag">`;
+            
+            if (gameMode === 2) {
+                document.getElementById('sb-flag-2').innerHTML = `<img src="https://flagcdn.com/w40/${selectedTeamP2}.png" class="flag">`;
+                score2El.style.color = '#FF0055'; score2El.style.textShadow = '0 0 25px rgba(255,0,85,0.8)';
+            } else {
+                let aiColor = chakraData[aiLevel].color;
+                document.getElementById('sb-flag-2').innerHTML = `<img src="logo-tondo.jpeg" style="height: 100%; width: auto; aspect-ratio: 1/1; border-radius: 50%; border: 1px solid ${aiColor}; box-shadow: 0 0 8px ${aiColor}; display: block; margin: 0 auto; object-fit: cover;">`;
+                score2El.style.color = aiColor; score2El.style.textShadow = `0 0 20px ${aiColor}80`;
+                scoreBoardEl.style.borderBottomColor = aiColor;
+            }
+
+            drawStaticBackground(); 
+            
+            playSponsorBumper(() => {
+                currentTurn = 1; resetPositions();
+                scoreP1 = 0; scoreP2 = 0; score1El.innerText = 0; score2El.innerText = 0;
+                timeRemaining = matchDuration; updateTimerUI();
+                gameState = GAME_STATE_PLAYING; 
+                hideMessage();
+                startTimer();
+                
+                if (!window.gameLoopRunning) {
+                    window.gameLoopRunning = true;
+                    lastTime = performance.now();
+                    requestAnimationFrame(gameLoop);
+                }
+            });
+        });
+
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            gameOverScreenEl.classList.add('hidden'); teamMenuEl.classList.remove('hidden');
+            scoreBoardEl.style.borderBottomColor = "var(--p1-neon)";
+            gameState = GAME_STATE_MENU; hideMessage(); stopTimer();
+            window.gameLoopRunning = false; 
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+            particlePool.forEach(p => p.active = false); textPool.forEach(t => t.active = false);
+            checkBossStatus();
+            
+            if(gameOverVideo) gameOverVideo.pause();
+            if(menuVideo) menuVideo.play().catch(e => console.log(e));
+        });
+
+        function showMessage(html) { messageEl.innerHTML = html; messageEl.classList.add('active'); }
+        function hideMessage() { messageEl.classList.remove('active'); }
+        function triggerFlash(intensity) { const flash = document.getElementById('screen-flash'); flash.style.transition = 'none'; flash.style.opacity = intensity; setTimeout(() => { flash.style.transition = 'opacity 0.1s'; flash.style.opacity = 0; }, 10); }
+        function triggerScreenShake(dur, mag) { shakeTime = dur; shakeMagnitude = mag; }
+
+        class FloatingText {
+            constructor() { this.active = false; }
+            spawn(x, y, text, color) { this.x = x; this.y = y; this.text = text; this.color = color; this.life = 1.0; this.vy = -1.5; this.active = true;}
+            update() { if(!this.active) return; this.y += this.vy; this.life -= 0.02; if(this.life<=0) this.active = false; }
+            draw(ctx) { if (!this.active) return; ctx.save(); ctx.globalAlpha = this.life; ctx.font = '900 24px Chakra Petch'; ctx.fillStyle = this.color; ctx.textAlign = 'center'; let scale = 1 + (1 - this.life) * 0.5; ctx.translate(this.x, this.y); ctx.scale(scale, scale); ctx.fillText(this.text, 0, 0); ctx.restore(); }
+        }
+
+        class Particle {
+            constructor() { this.active = false; }
+            spawn(x, y, color, speed, size, life) { this.x = x; this.y = y; this.vx = (Math.random() - 0.5) * speed; this.vy = (Math.random() - 0.5) * speed; this.color = color; this.size = size; this.life = life; this.maxLife = life; this.active = true; }
+            update() { if(!this.active) return; this.x += this.vx; this.y += this.vy; this.life--; this.size *= 0.95; if(this.life<=0) this.active=false; }
+            draw(ctx) { if(!this.active) return; ctx.save(); ctx.globalAlpha = Math.max(0, this.life / this.maxLife); ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, PI2); ctx.fill(); ctx.restore(); }
+        }
+        
+        const MAX_PARTICLES = 100;
+        const particlePool = Array.from({length: MAX_PARTICLES}, () => new Particle());
+        const textPool = Array.from({length: 10}, () => new FloatingText());
+
+        function createExplosion(x, y, color, amount, speed, size, life) { 
+            let spawned = 0;
+            for(let i=0; i<particlePool.length; i++) { if(!particlePool[i].active) { particlePool[i].spawn(x, y, color, speed, size, life); spawned++; if(spawned >= amount) break; } }
+        }
+
+        function spawnText(x, y, text, color) {
+            for(let i=0; i<textPool.length; i++) { if(!textPool[i].active) { textPool[i].spawn(x, y, text, color); break; } }
+        }
+
+        function drawNationToken(ctx, x, y, radius, teamCode, isP1, isDrag) {
+            ctx.save();
+            let baseColor = isP1 ? '#00FF66' : (gameMode === 2 ? '#FF0055' : '#ffffff');
+            ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2); ctx.fillStyle = '#111'; ctx.fill();
+            ctx.lineWidth = isDrag ? 4 : 2; ctx.strokeStyle = isDrag ? '#ffffff' : baseColor; 
+            ctx.shadowBlur = 10; ctx.shadowColor = isDrag ? '#ffffff' : baseColor; ctx.stroke(); ctx.shadowBlur = 0;
+            
+            const flagR = radius * 0.75; 
+            ctx.beginPath(); ctx.arc(x, y, flagR, 0, PI2); ctx.clip();
+            
+            let img = loadedFlags[teamCode];
+            if (img && img.complete && img.naturalWidth !== 0) {
+                // Algoritmo Object-Fit Cover manuale per il canvas per non schiacciare le bandiere
+                let aspect = img.naturalWidth / img.naturalHeight;
+                let drawW = flagR * 2 * Math.max(1, aspect);
+                let drawH = flagR * 2 * Math.max(1, 1/aspect);
+                ctx.drawImage(img, x - drawW/2, y - drawH/2, drawW, drawH);
+            } else {
+                ctx.fillStyle = '#333';
+                ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*2);
+            }
+            
+            ctx.restore();
+        }
+
+        function drawAiToken(ctx, x, y, radius, isDrag, currentAiLevel) {
+            ctx.save(); 
+            ctx.translate(x, y);
+
+            let rimColor = chakraData[currentAiLevel].color;
+
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, PI2);
+            ctx.lineWidth = isDrag ? 4 : 2;
+            ctx.strokeStyle = rimColor;
+            ctx.shadowBlur = isDrag ? 15 : 8;
+            ctx.shadowColor = rimColor;
+            ctx.fillStyle = '#000'; 
+            ctx.fill();
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.9, 0, PI2);
+            ctx.clip(); 
+            
+            if (logoTondoImg.complete && logoTondoImg.naturalWidth !== 0) {
+                ctx.drawImage(logoTondoImg, -radius * 0.9, -radius * 0.9, radius * 1.8, radius * 1.8);
+            } else {
+                ctx.fillStyle = '#111'; 
+                ctx.fill(); 
+            }
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        function drawField() {
+            ctx.fillStyle = '#224a10'; 
+            ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+            const playX = mSide;
+            const playY = mTop;
+            const playW = GAME_WIDTH - mSide * 2;
+            const playH = GAME_HEIGHT - mTop - mBot;
+
+            const stripeCount = 14;
+            const stripeHeight = playH / stripeCount;
+            for (let i = 0; i < stripeCount; i++) {
+                ctx.fillStyle = i % 2 === 0 ? '#3A7C21' : '#326A1D';
+                ctx.fillRect(playX, playY + i * stripeHeight, playW, stripeHeight);
+            }
+
+            ctx.save();
+            ctx.lineCap = 'square';
+            ctx.lineJoin = 'miter';
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+
+            ctx.strokeRect(playX, playY, playW, playH);
+
+            const midY = playY + playH / 2;
+            ctx.beginPath();
+            ctx.moveTo(playX, midY);
+            ctx.lineTo(playX + playW, midY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(GAME_WIDTH / 2, midY, playW * 0.15, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.arc(GAME_WIDTH / 2, midY, 4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            ctx.fill();
+
+            const penW = playW * 0.55;
+            const penH = playH * 0.15;
+            const penX = GAME_WIDTH / 2 - penW / 2;
+            ctx.strokeRect(penX, playY, penW, penH); 
+            ctx.strokeRect(penX, playY + playH - penH, penW, penH); 
+
+            const goalAreaW = playW * 0.25;
+            const goalAreaH = playH * 0.05;
+            const goalAreaX = GAME_WIDTH / 2 - goalAreaW / 2;
+            ctx.strokeRect(goalAreaX, playY, goalAreaW, goalAreaH); 
+            ctx.strokeRect(goalAreaX, playY + playH - goalAreaH, goalAreaW, goalAreaH); 
+
+            const penSpotDist = playH * 0.11;
+            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + penSpotDist, 3, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, 3, 0, Math.PI*2); ctx.fill();
+
+            const arcR = playW * 0.15;
+            ctx.save();
+            ctx.beginPath(); ctx.rect(playX, playY + penH, playW, playH/2 - penH); ctx.clip();
+            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + penSpotDist, arcR, 0, Math.PI*2); ctx.stroke();
+            ctx.restore();
+
+            ctx.save();
+            ctx.beginPath(); ctx.rect(playX, midY, playW, playH/2 - penH); ctx.clip();
+            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, arcR, 0, Math.PI*2); ctx.stroke();
+            ctx.restore();
+
+            const cornerR = playW * 0.03;
+            ctx.beginPath(); ctx.arc(playX, playY, cornerR, 0, Math.PI/2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(playX+playW, playY, cornerR, Math.PI/2, Math.PI); ctx.stroke();
+            ctx.beginPath(); ctx.arc(playX, playY+playH, cornerR, -Math.PI/2, 0); ctx.stroke();
+            ctx.beginPath(); ctx.arc(playX+playW, playY+playH, cornerR, Math.PI, -Math.PI/2); ctx.stroke();
+
+            const gx = GAME_WIDTH / 2 - goalWidth / 2;
+            let p2Color = gameMode === 2 ? '#FF0055' : chakraData[aiLevel].color;
+            let p2Fill = gameMode === 2 ? 'rgba(255, 0, 85, 0.15)' : `${chakraData[aiLevel].color}26`; 
+            ctx.fillStyle = p2Fill; ctx.fillRect(gx, playY - 20, goalWidth, 20); ctx.lineWidth = 3; ctx.strokeStyle = p2Color; ctx.strokeRect(gx, playY - 20, goalWidth, 20);
+            ctx.fillStyle = 'rgba(0, 255, 102, 0.15)'; ctx.fillRect(gx, playY + playH, goalWidth, 20); ctx.strokeStyle = '#00FF66'; ctx.strokeRect(gx, playY + playH, goalWidth, 20);
+            
+            ctx.restore();
         }
 
         class CircleEntity {
@@ -560,417 +980,6 @@
             if(gameState === GAME_STATE_MENU || gameState === GAME_STATE_OVER) drawStaticBackground();
         }
         window.addEventListener('resize', initDisplay);
-
-        const teamNamesEn = { 'ITA': 'Italy', 'BRA': 'Brazil', 'ENG': 'England', 'ESP': 'Spain', 'IRL': 'Ireland', 'ROU': 'Romania', 'COL': 'Colombia', 'PER': 'Peru', 'ALB': 'Albania', 'MEX': 'Mexico', 'ARG': 'Argentina', 'CHI': 'Chile', 'ECU': 'Ecuador', 'NZL': 'New Zealand', 'URU': 'Uruguay', 'NGA': 'Nigeria', 'CRC': 'Costa Rica', 'IND': 'India', 'CAN': 'Canada', 'GHA': 'Ghana', 'AUS': 'Australia', 'CPV': 'Cape Verde', 'SEN': 'Senegal' };
-        const flagsSVG = {
-            'ITA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#009246"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE2B37"/></svg>`,
-            'BRA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#009B3A"/><polygon points="150,20 280,100 150,180 20,100" fill="#FEDF00"/><circle cx="150" cy="100" r="45" fill="#002776"/></svg>`,
-            'ENG': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#ffffff"/><rect x="130" width="40" height="200" fill="#CF081F"/><rect y="80" width="300" height="40" fill="#CF081F"/></svg>`,
-            'ESP': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="50" fill="#AA151B"/><rect y="50" width="300" height="100" fill="#F1BF00"/><rect y="150" width="300" height="50" fill="#AA151B"/><circle cx="80" cy="100" r="25" fill="#AA151B"/></svg>`,
-            'IRL': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#169B62"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#FF883E"/></svg>`,
-            'ROU': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#002B7F"/><rect x="100" width="100" height="200" fill="#FCD116"/><rect x="200" width="100" height="200" fill="#CE1126"/></svg>`,
-            'COL': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="100" fill="#FCD116"/><rect y="100" width="300" height="50" fill="#003893"/><rect y="150" width="300" height="50" fill="#CE1126"/></svg>`,
-            'PER': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#D91023"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#D91023"/></svg>`,
-            'ALB': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#FF0000"/><path d="M150,50 L120,80 L130,120 L150,150 L170,120 L180,80 Z" fill="#000000"/><circle cx="130" cy="70" r="15" fill="#000"/><circle cx="170" cy="70" r="15" fill="#000"/><path d="M120,80 L80,60 L100,100 Z" fill="#000"/><path d="M180,80 L220,60 L200,100 Z" fill="#000"/></svg>`,
-            'MEX': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#006847"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#CE1126"/><circle cx="150" cy="100" r="20" fill="#8B4513"/></svg>`,
-            'ARG': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#75AADB"/><rect y="66.6" width="300" height="66.6" fill="#ffffff"/><circle cx="150" cy="100" r="20" fill="#FCBF49"/></svg>`,
-            'CHI': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#ffffff"/><rect y="100" width="300" height="100" fill="#D52B1E"/><rect width="100" height="100" fill="#0039A6"/><polygon points="50,30 55,45 70,45 58,55 62,70 50,60 38,70 42,55 30,45 45,45" fill="#ffffff"/></svg>`,
-            'ECU': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="100" fill="#FFD100"/><rect y="100" width="300" height="50" fill="#0033A0"/><rect y="150" width="300" height="50" fill="#EF3340"/><rect x="135" y="70" width="30" height="40" fill="#00ACC1"/><circle cx="150" cy="90" r="10" fill="#FFD100"/></svg>`,
-            'NZL': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#012169"/><rect width="150" height="100" fill="#012169"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#fff" stroke-width="15"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#CC142B" stroke-width="8"/><rect x="65" y="0" width="20" height="100" fill="#fff"/><rect x="0" y="40" width="150" height="20" fill="#fff"/><rect x="70" y="0" width="10" height="100" fill="#CC142B"/><rect x="0" y="45" width="150" height="10" fill="#CC142B"/><polygon points="225,40 230,50 240,50 232,58 235,68 225,62 215,68 218,58 210,50 220,50" fill="#CC142B" stroke="#fff" stroke-width="2"/><polygon points="260,80 264,88 272,88 266,94 268,102 260,98 252,102 254,94 248,88 256,88" fill="#CC142B" stroke="#fff" stroke-width="2"/><polygon points="225,130 230,140 240,140 232,148 235,158 225,152 215,158 218,148 210,140 220,140" fill="#CC142B" stroke="#fff" stroke-width="2"/><polygon points="190,80 194,88 202,88 196,94 198,102 190,98 182,102 184,94 178,88 186,88" fill="#CC142B" stroke="#fff" stroke-width="2"/></svg>`,
-            'URU': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#ffffff"/><rect y="22.2" width="300" height="22.2" fill="#0038A8"/><rect y="66.6" width="300" height="22.2" fill="#0038A8"/><rect y="111.1" width="300" height="22.2" fill="#0038A8"/><rect y="155.5" width="300" height="22.2" fill="#0038A8"/><rect width="111.1" height="111.1" fill="#ffffff"/><circle cx="55.5" cy="55.5" r="25" fill="#FCD116"/></svg>`,
-            'NGA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#008751"/><rect x="100" width="100" height="200" fill="#ffffff"/><rect x="200" width="100" height="200" fill="#008751"/></svg>`,
-            'CRC': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="33.3" fill="#001489"/><rect y="33.3" width="300" height="33.3" fill="#ffffff"/><rect y="66.6" width="300" height="66.6" fill="#DA291C"/><rect y="133.3" width="300" height="33.3" fill="#ffffff"/><rect y="166.6" width="300" height="33.3" fill="#001489"/></svg>`,
-            'IND': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="66.6" fill="#FF9933"/><rect y="66.6" width="300" height="66.6" fill="#ffffff"/><rect y="133.3" width="300" height="66.6" fill="#138808"/><circle cx="150" cy="100" r="22" fill="none" stroke="#000080" stroke-width="4"/><circle cx="150" cy="100" r="4" fill="#000080"/><path d="M150,78 v44 M128,100 h44 M134,84 l32,32 M134,116 l32,-32" stroke="#000080" stroke-width="2"/></svg>`,
-            'CAN': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="75" height="200" fill="#FF0000"/><rect x="75" width="150" height="200" fill="#ffffff"/><rect x="225" width="75" height="200" fill="#FF0000"/><path d="M150,40 L160,70 L185,55 L170,90 L200,95 L170,115 L180,145 L155,130 V170 H145 V130 L120,145 L130,115 L100,95 L130,90 L115,55 L140,70 Z" fill="#FF0000"/></svg>`,
-            'GHA': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="66.6" fill="#CE1126"/><rect y="66.6" width="300" height="66.6" fill="#FCD116"/><rect y="133.3" width="300" height="66.6" fill="#006B3F"/><polygon points="150,75 156,92 175,92 160,103 165,120 150,110 135,120 140,103 125,92 144,92" fill="#000000"/></svg>`,
-            'AUS': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="200" fill="#012169"/><rect width="150" height="100" fill="#012169"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#fff" stroke-width="15"/><path d="M0,0 L150,100 M0,100 L150,0" stroke="#CC142B" stroke-width="8"/><rect x="65" y="0" width="20" height="100" fill="#fff"/><rect x="0" y="40" width="150" height="20" fill="#fff"/><rect x="70" y="0" width="10" height="100" fill="#CC142B"/><rect x="0" y="45" width="150" height="10" fill="#CC142B"/><circle cx="75" cy="150" r="18" fill="#fff"/><circle cx="225" cy="40" r="10" fill="#fff"/><circle cx="225" cy="160" r="10" fill="#fff"/><circle cx="180" cy="100" r="10" fill="#fff"/><circle cx="270" cy="90" r="10" fill="#fff"/><circle cx="250" cy="120" r="6" fill="#fff"/></svg>`,
-            'CPV': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="300" height="100" fill="#003893"/><rect y="100" width="300" height="16.6" fill="#fff"/><rect y="116.6" width="300" height="16.6" fill="#CF0921"/><rect y="133.2" width="300" height="16.6" fill="#fff"/><rect y="149.8" width="300" height="50.2" fill="#003893"/><circle cx="112.5" cy="65" r="5" fill="#F6A900"/><circle cx="112.5" cy="135" r="5" fill="#F6A900"/><circle cx="77.5" cy="100" r="5" fill="#F6A900"/><circle cx="147.5" cy="100" r="5" fill="#F6A900"/><circle cx="87" cy="75" r="5" fill="#F6A900"/><circle cx="138" cy="75" r="5" fill="#F6A900"/><circle cx="87" cy="125" r="5" fill="#F6A900"/><circle cx="138" cy="125" r="5" fill="#F6A900"/></svg>`,
-            'SEN': `<svg class="flag" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><rect width="100" height="200" fill="#00853F"/><rect x="100" width="100" height="200" fill="#FDEF42"/><rect x="200" width="100" height="200" fill="#E31B23"/><polygon points="150,70 156,88 175,88 160,99 165,118 150,108 135,118 140,99 125,88 144,88" fill="#00853F"/></svg>`
-        };
-
-        let gameMode = 1;
-        let selectedTeamP1 = 'ITA'; 
-        let selectedTeamP2 = 'MEX'; 
-
-        function checkBossStatus() {
-            const btn1p = document.getElementById('btn-1p');
-            if (gameMode === 1 && aiLevel > 1) {
-                btn1p.innerHTML = `1 PLAYER <span style="font-size:10px; opacity:0.8; letter-spacing:0px;">- LIV: ${aiLevel}</span>`;
-            } else {
-                btn1p.innerHTML = `1 PLAYER`;
-            }
-        }
-
-        function buildTeamGrid(containerId, isP2) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            Object.keys(flagsSVG).forEach(team => {
-                const btn = document.createElement('button');
-                btn.className = 'team-btn ' + ((!isP2 && team === 'ITA') || (isP2 && team === 'MEX') ? 'active' : '');
-                btn.dataset.team = team;
-                btn.innerHTML = `<div class="flag-container">${flagsSVG[team]}</div><span>${team}</span>`;
-                btn.onclick = () => {
-                    container.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    if (isP2) selectedTeamP2 = team; else selectedTeamP1 = team;
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        buildTeamGrid('p1-grid', false);
-        buildTeamGrid('p2-grid', true);
-
-        // --- GESTIONE LAYOUT COLONNE ---
-        document.getElementById('btn-1p').addEventListener('click', () => {
-            gameMode = 1;
-            document.getElementById('btn-1p').classList.add('active');
-            document.getElementById('btn-2p').classList.remove('active');
-            document.getElementById('p2-column').classList.add('hidden');
-            checkBossStatus();
-        });
-
-        document.getElementById('btn-2p').addEventListener('click', () => {
-            gameMode = 2;
-            document.getElementById('btn-2p').classList.add('active');
-            document.getElementById('btn-1p').classList.remove('active');
-            document.getElementById('p2-column').classList.remove('hidden');
-            checkBossStatus();
-        });
-
-        checkBossStatus();
-
-        let audioCtx = null;
-        let crowdGainNode = null;
-        let sponsorVoicePlayed = false;
-        let oscChakra = null;
-
-        function initAudio() {
-            if ('speechSynthesis' in window) window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
-            if (audioCtx) { if (audioCtx.state === 'suspended') audioCtx.resume(); return; }
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            audioCtx = new AudioContext();
-            
-            const bufferSize = audioCtx.sampleRate * 2;
-            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const output = noiseBuffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
-            
-            const noiseSource = audioCtx.createBufferSource();
-            noiseSource.buffer = noiseBuffer; noiseSource.loop = true;
-
-            const filter1 = audioCtx.createBiquadFilter();
-            filter1.type = 'lowpass'; filter1.frequency.value = 400; filter1.Q.value = 1.0;
-            const filter2 = audioCtx.createBiquadFilter();
-            filter2.type = 'highpass'; filter2.frequency.value = 100;
-
-            crowdGainNode = audioCtx.createGain(); crowdGainNode.gain.value = 0.12; 
-
-            const lfo = audioCtx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.12;
-            const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 0.06;
-            const filterLfoGain = audioCtx.createGain(); filterLfoGain.gain.value = 250;
-            lfo.connect(filterLfoGain); filterLfoGain.connect(filter1.frequency);
-            
-            lfo.connect(lfoGain); lfoGain.connect(crowdGainNode.gain); lfo.start();
-            noiseSource.connect(filter1); filter1.connect(filter2); filter2.connect(crowdGainNode); crowdGainNode.connect(audioCtx.destination);
-            noiseSource.start();
-
-            oscChakra = audioCtx.createOscillator();
-            oscChakra.type = 'sine';
-            oscChakra.frequency.value = chakraData[aiLevel].hz;
-            
-            const gainChakra = audioCtx.createGain();
-            // Volume del tono fisso ridotto da 0.002 a 0.0003 per renderlo quasi impercettibile
-            gainChakra.gain.value = 0.0003; 
-            
-            const lfoChakra = audioCtx.createOscillator(); lfoChakra.type = 'sine'; lfoChakra.frequency.value = 0.2; 
-            // Ridotta anche la modulazione del volume
-            const lfoGainChakra = audioCtx.createGain(); lfoGainChakra.gain.value = 0.00015;
-            
-            lfoChakra.connect(lfoGainChakra); lfoGainChakra.connect(gainChakra.gain);
-            oscChakra.connect(gainChakra); gainChakra.connect(audioCtx.destination);
-            
-            oscChakra.start(); lfoChakra.start();
-        }
-
-        function updateChakraAudio() {
-            if(oscChakra && audioCtx) oscChakra.frequency.setTargetAtTime(chakraData[aiLevel].hz, audioCtx.currentTime, 0.5);
-        }
-
-        function playSponsorBumper(callback) {
-            const bumper = document.getElementById('sponsor-bumper');
-            bumper.classList.remove('hidden'); void bumper.offsetWidth; bumper.classList.add('active');
-            setTimeout(() => {
-                bumper.classList.remove('active');
-                setTimeout(() => { bumper.classList.add('hidden'); if (callback) callback(); }, 800); 
-            }, 2500); 
-        }
-
-        function playShootSound() {
-            if (!audioCtx) return; if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.15);
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.15);
-        }
-
-        function playImpactSound(intensity, isGoal = false) {
-            if (!audioCtx) return; if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain(); const filter = audioCtx.createBiquadFilter();
-            const baseFreq = 528;
-            if (isGoal) {
-                const hornGain = audioCtx.createGain(); const freqs = [150, 153, 225, 230, 305]; 
-                freqs.forEach(f => { let h = audioCtx.createOscillator(); h.type = 'sawtooth'; h.frequency.value = f; h.connect(hornGain); h.start(); h.stop(audioCtx.currentTime + 2.5); });
-                hornGain.gain.setValueAtTime(0, audioCtx.currentTime); hornGain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.05);
-                hornGain.gain.setValueAtTime(0.15, audioCtx.currentTime + 1.2); hornGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2.5);
-                const hornFilter = audioCtx.createBiquadFilter(); hornFilter.type = 'lowpass'; hornFilter.frequency.setValueAtTime(2500, audioCtx.currentTime); hornFilter.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 2.5);
-                hornGain.connect(hornFilter); hornFilter.connect(audioCtx.destination);
-                if(crowdGainNode) { crowdGainNode.gain.cancelScheduledValues(audioCtx.currentTime); crowdGainNode.gain.setValueAtTime(0.9, audioCtx.currentTime); crowdGainNode.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 4); }
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(baseFreq * 2, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(baseFreq, audioCtx.currentTime + 0.5);
-                gainNode.gain.setValueAtTime(0, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.1); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
-            } else {
-                osc.type = intensity > 15 ? 'square' : 'triangle'; osc.frequency.setValueAtTime(baseFreq * 1.5, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(baseFreq, audioCtx.currentTime + 0.1);
-                let vol = Math.min(intensity / 30, 0.4); gainNode.gain.setValueAtTime(0, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.01); gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-            }
-            filter.type = 'lowpass'; filter.frequency.setValueAtTime(2000, audioCtx.currentTime);
-            if(!isGoal) filter.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.2);
-            osc.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + (isGoal ? 2.5 : 0.3));
-        }
-
-        document.getElementById('start-btn').addEventListener('click', () => {
-            initAudio(); updateChakraAudio();
-            teamMenuEl.classList.add('hidden'); 
-            
-            // Pausa il video del menu
-            if(menuVideo) menuVideo.pause();
-
-            document.getElementById('sb-flag-1').innerHTML = flagsSVG[selectedTeamP1];
-            
-            if (gameMode === 2) {
-                document.getElementById('sb-flag-2').innerHTML = flagsSVG[selectedTeamP2];
-                score2El.style.color = '#FF0055'; score2El.style.textShadow = '0 0 25px rgba(255,0,85,0.8)';
-            } else {
-                let aiColor = chakraData[aiLevel].color;
-                document.getElementById('sb-flag-2').innerHTML = `<img src="logo-tondo.jpeg" style="height: 100%; width: auto; aspect-ratio: 1/1; border-radius: 50%; border: 1px solid ${aiColor}; box-shadow: 0 0 8px ${aiColor}; display: block; margin: 0 auto; object-fit: cover;">`;
-                score2El.style.color = aiColor; score2El.style.textShadow = `0 0 20px ${aiColor}80`;
-                scoreBoardEl.style.borderBottomColor = aiColor;
-            }
-
-            drawStaticBackground(); 
-            
-            playSponsorBumper(() => {
-                currentTurn = 1; resetPositions();
-                scoreP1 = 0; scoreP2 = 0; score1El.innerText = 0; score2El.innerText = 0;
-                timeRemaining = matchDuration; updateTimerUI();
-                gameState = GAME_STATE_PLAYING; 
-                hideMessage();
-                startTimer();
-                
-                if (!window.gameLoopRunning) {
-                    window.gameLoopRunning = true;
-                    lastTime = performance.now();
-                    requestAnimationFrame(gameLoop);
-                }
-            });
-        });
-
-        document.getElementById('restart-btn').addEventListener('click', () => {
-            gameOverScreenEl.classList.add('hidden'); teamMenuEl.classList.remove('hidden');
-            scoreBoardEl.style.borderBottomColor = "var(--p1-neon)";
-            gameState = GAME_STATE_MENU; hideMessage(); stopTimer();
-            window.gameLoopRunning = false; 
-            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-            particlePool.forEach(p => p.active = false); textPool.forEach(t => t.active = false);
-            checkBossStatus();
-            
-            // Ferma il video finale e fa ripartire quello del menu
-            if(gameOverVideo) gameOverVideo.pause();
-            if(menuVideo) menuVideo.play().catch(e => console.log(e));
-        });
-
-        function showMessage(html) { messageEl.innerHTML = html; messageEl.classList.add('active'); }
-        function hideMessage() { messageEl.classList.remove('active'); }
-        function triggerFlash(intensity) { const flash = document.getElementById('screen-flash'); flash.style.transition = 'none'; flash.style.opacity = intensity; setTimeout(() => { flash.style.transition = 'opacity 0.1s'; flash.style.opacity = 0; }, 10); }
-        function triggerScreenShake(dur, mag) { shakeTime = dur; shakeMagnitude = mag; }
-
-        class FloatingText {
-            constructor() { this.active = false; }
-            spawn(x, y, text, color) { this.x = x; this.y = y; this.text = text; this.color = color; this.life = 1.0; this.vy = -1.5; this.active = true;}
-            update() { if(!this.active) return; this.y += this.vy; this.life -= 0.02; if(this.life<=0) this.active = false; }
-            draw(ctx) { if (!this.active) return; ctx.save(); ctx.globalAlpha = this.life; ctx.font = '900 24px Chakra Petch'; ctx.fillStyle = this.color; ctx.textAlign = 'center'; let scale = 1 + (1 - this.life) * 0.5; ctx.translate(this.x, this.y); ctx.scale(scale, scale); ctx.fillText(this.text, 0, 0); ctx.restore(); }
-        }
-
-        class Particle {
-            constructor() { this.active = false; }
-            spawn(x, y, color, speed, size, life) { this.x = x; this.y = y; this.vx = (Math.random() - 0.5) * speed; this.vy = (Math.random() - 0.5) * speed; this.color = color; this.size = size; this.life = life; this.maxLife = life; this.active = true; }
-            update() { if(!this.active) return; this.x += this.vx; this.y += this.vy; this.life--; this.size *= 0.95; if(this.life<=0) this.active=false; }
-            draw(ctx) { if(!this.active) return; ctx.save(); ctx.globalAlpha = Math.max(0, this.life / this.maxLife); ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, PI2); ctx.fill(); ctx.restore(); }
-        }
-        
-        const MAX_PARTICLES = 100;
-        const particlePool = Array.from({length: MAX_PARTICLES}, () => new Particle());
-        const textPool = Array.from({length: 10}, () => new FloatingText());
-
-        function createExplosion(x, y, color, amount, speed, size, life) { 
-            let spawned = 0;
-            for(let i=0; i<particlePool.length; i++) { if(!particlePool[i].active) { particlePool[i].spawn(x, y, color, speed, size, life); spawned++; if(spawned >= amount) break; } }
-        }
-
-        function spawnText(x, y, text, color) {
-            for(let i=0; i<textPool.length; i++) { if(!textPool[i].active) { textPool[i].spawn(x, y, text, color); break; } }
-        }
-
-        function drawNationToken(ctx, x, y, radius, teamCode, isP1, isDrag) {
-            ctx.save();
-            let baseColor = isP1 ? '#00FF66' : (gameMode === 2 ? '#FF0055' : '#ffffff');
-            ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2); ctx.fillStyle = '#111'; ctx.fill();
-            ctx.lineWidth = isDrag ? 4 : 2; ctx.strokeStyle = isDrag ? '#ffffff' : baseColor; 
-            ctx.shadowBlur = 10; ctx.shadowColor = isDrag ? '#ffffff' : baseColor; ctx.stroke(); ctx.shadowBlur = 0;
-            
-            const flagR = radius * 0.75; ctx.beginPath(); ctx.arc(x, y, flagR, 0, PI2); ctx.clip();
-            if (teamCode === 'ITA') { ctx.fillStyle = '#009246'; ctx.fillRect(x - flagR, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR + flagR*0.66, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#CE2B37'; ctx.fillRect(x - flagR + flagR*1.33, y - flagR, flagR*0.68, flagR*2); } 
-            else if (teamCode === 'BRA') { ctx.fillStyle = '#009B3A'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*2); ctx.fillStyle = '#FEDF00'; ctx.beginPath(); ctx.moveTo(x, y - flagR*0.8); ctx.lineTo(x + flagR*0.8, y); ctx.lineTo(x, y + flagR*0.8); ctx.lineTo(x - flagR*0.8, y); ctx.fill(); ctx.fillStyle = '#002776'; ctx.beginPath(); ctx.arc(x, y, flagR*0.35, 0, PI2); ctx.fill(); } 
-            else if (teamCode === 'ENG') { ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*2); ctx.fillStyle = '#CF081F'; ctx.fillRect(x - flagR*0.2, y - flagR, flagR*0.4, flagR*2); ctx.fillRect(x - flagR, y - flagR*0.2, flagR*2, flagR*0.4); } 
-            else if (teamCode === 'ESP') { ctx.fillStyle = '#AA151B'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*0.5); ctx.fillRect(x - flagR, y + flagR*0.5, flagR*2, flagR*0.5); ctx.fillStyle = '#F1BF00'; ctx.fillRect(x - flagR, y - flagR*0.5, flagR*2, flagR); ctx.fillStyle = '#AA151B'; ctx.beginPath(); ctx.arc(x - flagR*0.3, y, flagR*0.2, 0, PI2); ctx.fill(); }
-            else if (teamCode === 'IRL') { ctx.fillStyle = '#169B62'; ctx.fillRect(x - flagR, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR + flagR*0.66, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#FF883E'; ctx.fillRect(x - flagR + flagR*1.33, y - flagR, flagR*0.68, flagR*2); }
-            else if (teamCode === 'ROU') { ctx.fillStyle = '#002B7F'; ctx.fillRect(x - flagR, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#FCD116'; ctx.fillRect(x - flagR + flagR*0.66, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#CE1126'; ctx.fillRect(x - flagR + flagR*1.33, y - flagR, flagR*0.68, flagR*2); }
-            else if (teamCode === 'COL') { ctx.fillStyle = '#FCD116'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR); ctx.fillStyle = '#003893'; ctx.fillRect(x - flagR, y, flagR*2, flagR*0.5); ctx.fillStyle = '#CE1126'; ctx.fillRect(x - flagR, y + flagR*0.5, flagR*2, flagR*0.5); }
-            else if (teamCode === 'PER') { ctx.fillStyle = '#D91023'; ctx.fillRect(x - flagR, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR + flagR*0.66, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#D91023'; ctx.fillRect(x - flagR + flagR*1.33, y - flagR, flagR*0.68, flagR*2); }
-            else if (teamCode === 'ALB') { ctx.fillStyle = '#FF0000'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*2); ctx.fillStyle = '#000000'; ctx.beginPath(); ctx.moveTo(x, y - flagR*0.4); ctx.lineTo(x - flagR*0.4, y + flagR*0.2); ctx.lineTo(x, y + flagR*0.6); ctx.lineTo(x + flagR*0.4, y + flagR*0.2); ctx.fill(); ctx.beginPath(); ctx.arc(x - flagR*0.15, y - flagR*0.2, flagR*0.15, 0, PI2); ctx.fill(); ctx.beginPath(); ctx.arc(x + flagR*0.15, y - flagR*0.2, flagR*0.15, 0, PI2); ctx.fill(); }
-            else if (teamCode === 'MEX') { ctx.fillStyle = '#006847'; ctx.fillRect(x - flagR, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR + flagR*0.66, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#CE1126'; ctx.fillRect(x - flagR + flagR*1.33, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#8B4513'; ctx.beginPath(); ctx.arc(x, y, flagR*0.25, 0, PI2); ctx.fill(); }
-            else if (teamCode === 'ARG') { ctx.fillStyle = '#75AADB'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*2); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y - flagR*0.33, flagR*2, flagR*0.66); ctx.fillStyle = '#FCBF49'; ctx.beginPath(); ctx.arc(x, y, flagR*0.2, 0, PI2); ctx.fill(); }
-            else if (teamCode === 'CHI') { ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*2); ctx.fillStyle = '#D52B1E'; ctx.fillRect(x - flagR, y, flagR*2, flagR); ctx.fillStyle = '#0039A6'; ctx.fillRect(x - flagR, y - flagR, flagR, flagR); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.moveTo(x - flagR*0.5, y - flagR*0.7); ctx.lineTo(x - flagR*0.45, y - flagR*0.55); ctx.lineTo(x - flagR*0.3, y - flagR*0.55); ctx.lineTo(x - flagR*0.42, y - flagR*0.45); ctx.lineTo(x - flagR*0.38, y - flagR*0.3); ctx.lineTo(x - flagR*0.5, y - flagR*0.4); ctx.lineTo(x - flagR*0.62, y - flagR*0.3); ctx.lineTo(x - flagR*0.58, y - flagR*0.45); ctx.lineTo(x - flagR*0.7, y - flagR*0.55); ctx.lineTo(x - flagR*0.55, y - flagR*0.55); ctx.fill(); }
-            else if (teamCode === 'ECU') { ctx.fillStyle = '#FFD100'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR); ctx.fillStyle = '#0033A0'; ctx.fillRect(x - flagR, y, flagR*2, flagR*0.5); ctx.fillStyle = '#EF3340'; ctx.fillRect(x - flagR, y + flagR*0.5, flagR*2, flagR*0.5); ctx.fillStyle = '#00ACC1'; ctx.fillRect(x - flagR*0.1, y - flagR*0.3, flagR*0.2, flagR*0.4); ctx.fillStyle = '#FFD100'; ctx.beginPath(); ctx.arc(x, y - flagR*0.1, flagR*0.1, 0, PI2); ctx.fill(); }
-            else if (teamCode === 'NZL') { ctx.fillStyle = '#012169'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*2); ctx.fillStyle = '#012169'; ctx.fillRect(x - flagR, y - flagR, flagR, flagR); ctx.strokeStyle = '#fff'; ctx.lineWidth = flagR*0.15; ctx.beginPath(); ctx.moveTo(x-flagR, y-flagR); ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR, y); ctx.lineTo(x, y-flagR); ctx.stroke(); ctx.strokeStyle = '#CC142B'; ctx.lineWidth = flagR*0.08; ctx.beginPath(); ctx.moveTo(x-flagR, y-flagR); ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR, y); ctx.lineTo(x, y-flagR); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.fillRect(x - flagR*0.35, y - flagR, flagR*0.2, flagR); ctx.fillRect(x - flagR, y - flagR*0.6, flagR, flagR*0.2); ctx.fillStyle = '#CC142B'; ctx.fillRect(x - flagR*0.3, y - flagR, flagR*0.1, flagR); ctx.fillRect(x - flagR, y - flagR*0.55, flagR, flagR*0.1); ctx.fillStyle = '#CC142B'; ctx.strokeStyle = '#fff'; ctx.lineWidth = flagR*0.02; ctx.beginPath(); ctx.moveTo(x+flagR*0.5, y-flagR*0.6); ctx.lineTo(x+flagR*0.55, y-flagR*0.5); ctx.lineTo(x+flagR*0.65, y-flagR*0.5); ctx.lineTo(x+flagR*0.57, y-flagR*0.42); ctx.lineTo(x+flagR*0.6, y-flagR*0.32); ctx.lineTo(x+flagR*0.5, y-flagR*0.38); ctx.lineTo(x+flagR*0.4, y-flagR*0.32); ctx.lineTo(x+flagR*0.43, y-flagR*0.42); ctx.lineTo(x+flagR*0.35, y-flagR*0.5); ctx.lineTo(x+flagR*0.45, y-flagR*0.5); ctx.closePath(); ctx.fill(); ctx.stroke(); }
-            else if (teamCode === 'URU') { ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*2); ctx.fillStyle = '#0038A8'; ctx.fillRect(x - flagR, y - flagR*0.77, flagR*2, flagR*0.22); ctx.fillRect(x - flagR, y - flagR*0.33, flagR*2, flagR*0.22); ctx.fillRect(x - flagR, y + flagR*0.11, flagR*2, flagR*0.22); ctx.fillRect(x - flagR, y + flagR*0.55, flagR*2, flagR*0.22); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y - flagR, flagR*0.74, flagR*0.74); ctx.fillStyle = '#FCD116'; ctx.beginPath(); ctx.arc(x - flagR*0.63, y - flagR*0.63, flagR*0.25, 0, PI2); ctx.fill(); }
-            else if (teamCode === 'NGA') { ctx.fillStyle = '#008751'; ctx.fillRect(x - flagR, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR + flagR*0.66, y - flagR, flagR*0.68, flagR*2); ctx.fillStyle = '#008751'; ctx.fillRect(x - flagR + flagR*1.33, y - flagR, flagR*0.68, flagR*2); }
-            else if (teamCode === 'CRC') { ctx.fillStyle = '#001489'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*0.33); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y - flagR*0.66, flagR*2, flagR*0.33); ctx.fillStyle = '#DA291C'; ctx.fillRect(x - flagR, y - flagR*0.33, flagR*2, flagR*0.66); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y + flagR*0.33, flagR*2, flagR*0.33); ctx.fillStyle = '#001489'; ctx.fillRect(x - flagR, y + flagR*0.66, flagR*2, flagR*0.33); }
-            else if (teamCode === 'IND') { ctx.fillStyle = '#FF9933'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*0.66); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y - flagR*0.33, flagR*2, flagR*0.66); ctx.fillStyle = '#138808'; ctx.fillRect(x - flagR, y + flagR*0.33, flagR*2, flagR*0.66); ctx.strokeStyle = '#000080'; ctx.lineWidth = flagR*0.04; ctx.beginPath(); ctx.arc(x, y, flagR*0.22, 0, PI2); ctx.stroke(); ctx.fillStyle = '#000080'; ctx.beginPath(); ctx.arc(x, y, flagR*0.04, 0, PI2); ctx.fill(); ctx.beginPath(); ctx.moveTo(x, y-flagR*0.22); ctx.lineTo(x, y+flagR*0.22); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR*0.22, y); ctx.lineTo(x+flagR*0.22, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR*0.15, y-flagR*0.15); ctx.lineTo(x+flagR*0.15, y+flagR*0.15); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR*0.15, y+flagR*0.15); ctx.lineTo(x+flagR*0.15, y-flagR*0.15); ctx.stroke(); }
-            else if (teamCode === 'CAN') { ctx.fillStyle = '#FF0000'; ctx.fillRect(x - flagR, y - flagR, flagR*0.5, flagR*2); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR*0.5, y - flagR, flagR, flagR*2); ctx.fillStyle = '#FF0000'; ctx.fillRect(x + flagR*0.5, y - flagR, flagR*0.5, flagR*2); ctx.fillStyle = '#FF0000'; ctx.beginPath(); ctx.moveTo(x, y - flagR*0.6); ctx.lineTo(x + flagR*0.1, y - flagR*0.3); ctx.lineTo(x + flagR*0.35, y - flagR*0.45); ctx.lineTo(x + flagR*0.2, y - flagR*0.1); ctx.lineTo(x + flagR*0.5, y - flagR*0.05); ctx.lineTo(x + flagR*0.2, y + flagR*0.15); ctx.lineTo(x + flagR*0.3, y + flagR*0.45); ctx.lineTo(x + flagR*0.05, y + flagR*0.3); ctx.lineTo(x + flagR*0.05, y + flagR*0.7); ctx.lineTo(x - flagR*0.05, y + flagR*0.7); ctx.lineTo(x - flagR*0.05, y + flagR*0.3); ctx.lineTo(x - flagR*0.3, y + flagR*0.45); ctx.lineTo(x - flagR*0.2, y + flagR*0.15); ctx.lineTo(x - flagR*0.5, y - flagR*0.05); ctx.lineTo(x - flagR*0.2, y - flagR*0.1); ctx.lineTo(x - flagR*0.35, y - flagR*0.45); ctx.lineTo(x - flagR*0.1, y - flagR*0.3); ctx.closePath(); ctx.fill(); }
-            else if (teamCode === 'GHA') { ctx.fillStyle = '#CE1126'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*0.66); ctx.fillStyle = '#FCD116'; ctx.fillRect(x - flagR, y - flagR*0.33, flagR*2, flagR*0.66); ctx.fillStyle = '#006B3F'; ctx.fillRect(x - flagR, y + flagR*0.33, flagR*2, flagR*0.66); ctx.fillStyle = '#000000'; ctx.beginPath(); ctx.moveTo(x, y-flagR*0.25); ctx.lineTo(x+flagR*0.06, y-flagR*0.08); ctx.lineTo(x+flagR*0.25, y-flagR*0.08); ctx.lineTo(x+flagR*0.1, y+flagR*0.03); ctx.lineTo(x+flagR*0.15, y+flagR*0.2); ctx.lineTo(x, y+flagR*0.1); ctx.lineTo(x-flagR*0.15, y+flagR*0.2); ctx.lineTo(x-flagR*0.1, y+flagR*0.03); ctx.lineTo(x-flagR*0.25, y-flagR*0.08); ctx.lineTo(x-flagR*0.06, y-flagR*0.08); ctx.closePath(); ctx.fill(); }
-            else if (teamCode === 'AUS') { ctx.fillStyle = '#012169'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR*2); ctx.fillStyle = '#012169'; ctx.fillRect(x - flagR, y - flagR, flagR, flagR); ctx.strokeStyle = '#fff'; ctx.lineWidth = flagR*0.15; ctx.beginPath(); ctx.moveTo(x-flagR, y-flagR); ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR, y); ctx.lineTo(x, y-flagR); ctx.stroke(); ctx.strokeStyle = '#CC142B'; ctx.lineWidth = flagR*0.08; ctx.beginPath(); ctx.moveTo(x-flagR, y-flagR); ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-flagR, y); ctx.lineTo(x, y-flagR); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.fillRect(x - flagR*0.35, y - flagR, flagR*0.2, flagR); ctx.fillRect(x - flagR, y - flagR*0.6, flagR, flagR*0.2); ctx.fillStyle = '#CC142B'; ctx.fillRect(x - flagR*0.3, y - flagR, flagR*0.1, flagR); ctx.fillRect(x - flagR, y - flagR*0.55, flagR, flagR*0.1); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x-flagR*0.5, y+flagR*0.5, flagR*0.15, 0, PI2); ctx.fill(); ctx.beginPath(); ctx.arc(x+flagR*0.5, y-flagR*0.6, flagR*0.08, 0, PI2); ctx.fill(); ctx.beginPath(); ctx.arc(x+flagR*0.5, y+flagR*0.6, flagR*0.08, 0, PI2); ctx.fill(); ctx.beginPath(); ctx.arc(x+flagR*0.2, y, flagR*0.08, 0, PI2); ctx.fill(); ctx.beginPath(); ctx.arc(x+flagR*0.8, y-flagR*0.1, flagR*0.08, 0, PI2); ctx.fill(); }
-            else if (teamCode === 'CPV') { ctx.fillStyle = '#003893'; ctx.fillRect(x - flagR, y - flagR, flagR*2, flagR); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y, flagR*2, flagR*0.16); ctx.fillStyle = '#CF0921'; ctx.fillRect(x - flagR, y+flagR*0.16, flagR*2, flagR*0.16); ctx.fillStyle = '#ffffff'; ctx.fillRect(x - flagR, y+flagR*0.32, flagR*2, flagR*0.16); ctx.fillStyle = '#003893'; ctx.fillRect(x - flagR, y+flagR*0.48, flagR*2, flagR*0.52); ctx.strokeStyle = '#F6A900'; ctx.lineWidth = flagR*0.1; ctx.setLineDash([flagR*0.15, flagR*0.15]); ctx.beginPath(); ctx.arc(x-flagR*0.25, y, flagR*0.35, 0, PI2); ctx.stroke(); ctx.setLineDash([]); }
-            else if (teamCode === 'SEN') { ctx.fillStyle = '#00853F'; ctx.fillRect(x - flagR, y - flagR, flagR*0.66, flagR*2); ctx.fillStyle = '#FDEF42'; ctx.fillRect(x - flagR*0.33, y - flagR, flagR*0.66, flagR*2); ctx.fillStyle = '#E31B23'; ctx.fillRect(x + flagR*0.33, y - flagR, flagR*0.66, flagR*2); ctx.fillStyle = '#00853F'; ctx.beginPath(); ctx.moveTo(x, y-flagR*0.3); ctx.lineTo(x+flagR*0.06, y-flagR*0.1); ctx.lineTo(x+flagR*0.25, y-flagR*0.1); ctx.lineTo(x+flagR*0.1, y+flagR*0.05); ctx.lineTo(x+flagR*0.15, y+flagR*0.25); ctx.lineTo(x, y+flagR*0.15); ctx.lineTo(x-flagR*0.15, y+flagR*0.25); ctx.lineTo(x-flagR*0.1, y+flagR*0.05); ctx.lineTo(x-flagR*0.25, y-flagR*0.1); ctx.lineTo(x-flagR*0.06, y-flagR*0.1); ctx.closePath(); ctx.fill(); }
-            ctx.restore();
-        }
-
-        function drawAiToken(ctx, x, y, radius, isDrag, currentAiLevel) {
-            ctx.save(); 
-            ctx.translate(x, y);
-
-            let rimColor = chakraData[currentAiLevel].color;
-
-            // Ombra esterna e bordo
-            ctx.beginPath();
-            ctx.arc(0, 0, radius, 0, PI2);
-            ctx.lineWidth = isDrag ? 4 : 2;
-            ctx.strokeStyle = rimColor;
-            ctx.shadowBlur = isDrag ? 15 : 8;
-            ctx.shadowColor = rimColor;
-            ctx.fillStyle = '#000'; // Sfondo scuro in caso manchi l'immagine
-            ctx.fill();
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-
-            // Disegna il logo ritagliato a cerchio intero (leggermente ridotto per non coprire il bordo)
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(0, 0, radius * 0.9, 0, PI2);
-            ctx.clip(); 
-            
-            if (logoTondoImg.complete && logoTondoImg.naturalWidth !== 0) {
-                // Disegna coprendo l'intera pedina
-                ctx.drawImage(logoTondoImg, -radius * 0.9, -radius * 0.9, radius * 1.8, radius * 1.8);
-            } else {
-                ctx.fillStyle = '#111'; 
-                ctx.fill(); 
-            }
-            ctx.restore();
-
-            ctx.restore();
-        }
-
-        function drawField() {
-            ctx.fillStyle = '#224a10'; 
-            ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-            const playX = mSide;
-            const playY = mTop;
-            const playW = GAME_WIDTH - mSide * 2;
-            const playH = GAME_HEIGHT - mTop - mBot;
-
-            const stripeCount = 14;
-            const stripeHeight = playH / stripeCount;
-            for (let i = 0; i < stripeCount; i++) {
-                ctx.fillStyle = i % 2 === 0 ? '#3A7C21' : '#326A1D';
-                ctx.fillRect(playX, playY + i * stripeHeight, playW, stripeHeight);
-            }
-
-            ctx.save();
-            ctx.lineCap = 'square';
-            ctx.lineJoin = 'miter';
-            ctx.lineWidth = 2.5;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
-
-            ctx.strokeRect(playX, playY, playW, playH);
-
-            const midY = playY + playH / 2;
-            ctx.beginPath();
-            ctx.moveTo(playX, midY);
-            ctx.lineTo(playX + playW, midY);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.arc(GAME_WIDTH / 2, midY, playW * 0.15, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.arc(GAME_WIDTH / 2, midY, 4, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-            ctx.fill();
-
-            const penW = playW * 0.55;
-            const penH = playH * 0.15;
-            const penX = GAME_WIDTH / 2 - penW / 2;
-            ctx.strokeRect(penX, playY, penW, penH); 
-            ctx.strokeRect(penX, playY + playH - penH, penW, penH); 
-
-            const goalAreaW = playW * 0.25;
-            const goalAreaH = playH * 0.05;
-            const goalAreaX = GAME_WIDTH / 2 - goalAreaW / 2;
-            ctx.strokeRect(goalAreaX, playY, goalAreaW, goalAreaH); 
-            ctx.strokeRect(goalAreaX, playY + playH - goalAreaH, goalAreaW, goalAreaH); 
-
-            const penSpotDist = playH * 0.11;
-            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + penSpotDist, 3, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, 3, 0, Math.PI*2); ctx.fill();
-
-            const arcR = playW * 0.15;
-            ctx.save();
-            ctx.beginPath(); ctx.rect(playX, playY + penH, playW, playH/2 - penH); ctx.clip();
-            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + penSpotDist, arcR, 0, Math.PI*2); ctx.stroke();
-            ctx.restore();
-
-            ctx.save();
-            ctx.beginPath(); ctx.rect(playX, midY, playW, playH/2 - penH); ctx.clip();
-            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, arcR, 0, Math.PI*2); ctx.stroke();
-            ctx.restore();
-
-            const cornerR = playW * 0.03;
-            ctx.beginPath(); ctx.arc(playX, playY, cornerR, 0, Math.PI/2); ctx.stroke();
-            ctx.beginPath(); ctx.arc(playX+playW, playY, cornerR, Math.PI/2, Math.PI); ctx.stroke();
-            ctx.beginPath(); ctx.arc(playX, playY+playH, cornerR, -Math.PI/2, 0); ctx.stroke();
-            ctx.beginPath(); ctx.arc(playX+playW, playY+playH, cornerR, Math.PI, -Math.PI/2); ctx.stroke();
-
-            const gx = GAME_WIDTH / 2 - goalWidth / 2;
-            let p2Color = gameMode === 2 ? '#FF0055' : chakraData[aiLevel].color;
-            let p2Fill = gameMode === 2 ? 'rgba(255, 0, 85, 0.15)' : `${chakraData[aiLevel].color}26`; 
-            ctx.fillStyle = p2Fill; ctx.fillRect(gx, playY - 20, goalWidth, 20); ctx.lineWidth = 3; ctx.strokeStyle = p2Color; ctx.strokeRect(gx, playY - 20, goalWidth, 20);
-            ctx.fillStyle = 'rgba(0, 255, 102, 0.15)'; ctx.fillRect(gx, playY + playH, goalWidth, 20); ctx.strokeStyle = '#00FF66'; ctx.strokeRect(gx, playY + playH, goalWidth, 20);
-            
-            ctx.restore();
-        }
 
         function updatePointerCoords(clientX, clientY) {
             const rect = canvas.getBoundingClientRect(); pointer.x = (clientX - rect.left) * (GAME_WIDTH / rect.width); pointer.y = (clientY - rect.top) * (GAME_HEIGHT / rect.height);
@@ -1202,8 +1211,8 @@
             let flagHTML = '';
 
             if (winner === 1) {
-                flagHTML = `<div class="flag-container" style="width: 60px; height: 36px; margin: 0 auto 5px; border-radius: 4px; overflow: hidden; border: 2px solid #00FF66; box-shadow: 0 3px 15px rgba(0,255,102,0.4);">${flagsSVG[selectedTeamP1]}</div>`;
-                gameOverTitleEl.innerText = teamNamesEn[selectedTeamP1] + " WINS!"; gameOverTitleEl.style.color = "#00FF66";
+                flagHTML = `<div class="flag-container" style="width: 60px; height: 36px; margin: 0 auto 5px; border-radius: 4px; overflow: hidden; border: 2px solid #00FF66; box-shadow: 0 3px 15px rgba(0,255,102,0.4);"><img src="https://flagcdn.com/w80/${selectedTeamP1}.png" style="width:100%; height:100%; object-fit:cover; display:block;"></div>`;
+                gameOverTitleEl.innerText = getTeamName(selectedTeamP1).toUpperCase() + " WINS!"; gameOverTitleEl.style.color = "#00FF66";
                 
                 if (gameMode === 1) {
                     if (aiLevel < 7) {
@@ -1213,8 +1222,8 @@
                 }
             } else if (winner === 2) {
                 if (gameMode === 2) {
-                    flagHTML = `<div class="flag-container" style="width: 60px; height: 36px; margin: 0 auto 5px; border-radius: 4px; overflow: hidden; border: 2px solid #FF0055; box-shadow: 0 3px 15px rgba(255,0,85,0.4);">${flagsSVG[selectedTeamP2]}</div>`;
-                    gameOverTitleEl.innerText = teamNamesEn[selectedTeamP2] + " WINS!"; gameOverTitleEl.style.color = "#FF0055";
+                    flagHTML = `<div class="flag-container" style="width: 60px; height: 36px; margin: 0 auto 5px; border-radius: 4px; overflow: hidden; border: 2px solid #FF0055; box-shadow: 0 3px 15px rgba(255,0,85,0.4);"><img src="https://flagcdn.com/w80/${selectedTeamP2}.png" style="width:100%; height:100%; object-fit:cover; display:block;"></div>`;
+                    gameOverTitleEl.innerText = getTeamName(selectedTeamP2).toUpperCase() + " WINS!"; gameOverTitleEl.style.color = "#FF0055";
                 } else {
                     let aiColor = chakraData[aiLevel].color;
                     flagHTML = `<img src="logo-tondo.jpeg" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid ${aiColor}; box-shadow: 0 2px 15px ${aiColor}; margin: 0 auto 10px; display: block; object-fit: cover;">`;
