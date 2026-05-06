@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     
-    <!-- OTTIMIZZAZIONI DI CARICAMENTO E PRE-CONNESSIONI (Cruciali per Vercel/Github Pages) -->
+    <!-- OTTIMIZZAZIONI DI CARICAMENTO E PRE-CONNESSIONI -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://flagcdn.com">
@@ -23,14 +23,15 @@
 
         * { -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; outline: none; box-sizing: border-box; }
 
-        body {
+        html, body {
             margin: 0; padding: 0; background: var(--bg-outer);
             color: #fff; font-family: 'Montserrat', sans-serif;
-            height: 100vh; height: 100dvh; width: 100vw; overflow: hidden; touch-action: none; overscroll-behavior: none;
+            height: 100%; width: 100%; overflow: hidden; 
+            touch-action: none; overscroll-behavior: none; /* Blocca il pull-to-refresh e il bouncing su iOS */
         }
 
         #game-container {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg-outer);
             display: flex; justify-content: center; align-items: center; overflow: hidden;
             -webkit-transform: translateZ(0); transform: translateZ(0); will-change: transform;
@@ -40,6 +41,7 @@
             position: relative; background-color: var(--bg-dark);
             overflow: hidden; 
             box-shadow: 0 0 50px rgba(0,0,0,1);
+            /* Le dimensioni saranno gestite in JS via transform: scale per stabilità su tutti i device */
         }
         
         canvas, #screen-flash, #ui-layer, #sponsor-bumper, .overlay-screen {
@@ -92,7 +94,6 @@
 
         .hidden { display: none !important; }
 
-        /* Stile comune per i video orizzontali arrotondati */
         .inline-video-box {
             width: 100%;
             height: auto;
@@ -107,12 +108,12 @@
             background-color: #000;
         }
 
+        /* Scorrimento sicuro per touch */
         #teams-scroll-area { width: 100%; max-height: 34vh; overflow-y: auto; margin-bottom: 10px; -webkit-overflow-scrolling: touch; touch-action: pan-y; scrollbar-width: thin; scrollbar-color: var(--p1-neon) rgba(255, 255, 255, 0.05); }
         #teams-scroll-area::-webkit-scrollbar { width: 6px; display: block; }
         #teams-scroll-area::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
         #teams-scroll-area::-webkit-scrollbar-thumb { background: var(--p1-neon); border-radius: 4px; }
 
-        /* NUOVI STILI PER IL LAYOUT A COLONNE */
         #teams-flex-container { display: flex; width: 100%; gap: 8px; justify-content: center; align-items: flex-start; }
         .team-column { flex: 1; display: flex; flex-direction: column; align-items: center; }
         .team-title { margin: 5px 0 8px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
@@ -130,7 +131,6 @@
         .mode-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #888; padding: 10px; font-size: 12px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px; border-radius: 8px; cursor: pointer; flex: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; }
         .mode-btn.active { background: rgba(0, 255, 102, 0.12); border-color: var(--p1-neon); color: var(--p1-neon); }
 
-        /* OPZIONI SQUADRE RIDIMENSIONATE PER SMARTPHONE */
         .grid-options { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; width: 100%; padding: 0 2px;}
         .team-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 40px; }
         .team-btn .flag-container { width: 26px; height: 18px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); position: relative; background: #222; }
@@ -283,22 +283,44 @@
             { name: "SAHASRARA (CROWN)", color: "#9400D3", hz: 963 }       // Lvl 7
         ];
 
-        // --- PREVENZIONE GLITCH TOUCH ---
+        // --- PREVENZIONE GLITCH TOUCH E RUBBER-BANDING ---
         window.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('touchmove', e => { 
-            if (e.target.closest('#teams-scroll-area')) return;
+            // Consenti lo scroll solo dentro l'area specifica
+            const scrollArea = e.target.closest('#teams-scroll-area');
+            if (scrollArea) {
+                // Non prevenire l'evento se siamo nell'area scrollabile, a meno che non si sia al limite
+                const isAtTop = scrollArea.scrollTop === 0;
+                const isAtBottom = scrollArea.scrollHeight - scrollArea.scrollTop <= scrollArea.clientHeight;
+                const isMovingDown = e.touches[0].clientY > (scrollArea.lastY || 0);
+                scrollArea.lastY = e.touches[0].clientY;
+                
+                if ((isAtTop && isMovingDown) || (isAtBottom && !isMovingDown)) {
+                    if(e.cancelable) e.preventDefault();
+                }
+                return;
+            }
             if(e.cancelable) e.preventDefault(); 
         }, { passive: false });
 
         let isTabActive = true;
         document.addEventListener("visibilitychange", () => {
             isTabActive = !document.hidden;
-            if(isTabActive) lastTime = performance.now();
+            if(isTabActive) {
+                lastTime = performance.now();
+                // Risveglia l'audio per non perdere sync e risparmiare batteria
+                if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            } else {
+                // Metti in pausa il motore audio quando la finestra è chiusa/invisibile
+                if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
+            }
         });
 
-        // Configurazione Resa Visiva
-        let GAME_WIDTH = 600;
-        let GAME_HEIGHT = 900;
+        // Configurazione Resa Visiva e Stabilità Fisica
+        const LOGICAL_WIDTH = 600;
+        const LOGICAL_HEIGHT = 900;
+        let GAME_WIDTH = LOGICAL_WIDTH;
+        let GAME_HEIGHT = LOGICAL_HEIGHT;
         let dpr = 1; 
         const PI2 = Math.PI * 2; 
         
@@ -314,8 +336,7 @@
         const menuVideo = document.getElementById('menu-video');
         const gameOverVideo = document.getElementById('gameover-video');
 
-        // --- DATABASE NAZIONI DEL MONDO (ORDINE ALFABETICO INGLESE CON CODICI ISO 3166-1) ---
-        // Questa lista esauriente risolve il problema delle performance e abbraccia il mondo intero
+        // --- DATABASE NAZIONI DEL MONDO (ORDINE ALFABETICO INGLESE) ---
         const countries = [
             {id:'af', name:'Afghanistan'}, {id:'al', name:'Albania'}, {id:'dz', name:'Algeria'}, {id:'ad', name:'Andorra'}, {id:'ao', name:'Angola'},
             {id:'ag', name:'Antigua & Barbuda'}, {id:'ar', name:'Argentina'}, {id:'am', name:'Armenia'}, {id:'au', name:'Australia'}, {id:'at', name:'Austria'},
@@ -358,7 +379,7 @@
             {id:'va', name:'Vatican City'}, {id:'ve', name:'Venezuela'}, {id:'vn', name:'Vietnam'}, {id:'ye', name:'Yemen'}, {id:'zm', name:'Zambia'}, {id:'zw', name:'Zimbabwe'}
         ];
 
-        // --- SISTEMA PRELOAD BANDIERE TRAMITE CDN GLOBALE ---
+        // --- SISTEMA PRELOAD BANDIERE ---
         let loadedFlags = {};
         function preloadFlag(code) {
             if (!loadedFlags[code]) {
@@ -376,8 +397,8 @@
         }
 
         let gameMode = 1;
-        let selectedTeamP1 = 'it'; // Default Italy
-        let selectedTeamP2 = 'mx'; // Default Mexico
+        let selectedTeamP1 = 'it'; 
+        let selectedTeamP2 = 'mx'; 
         preloadFlag(selectedTeamP1);
         preloadFlag(selectedTeamP2);
 
@@ -397,13 +418,12 @@
                 const btn = document.createElement('button');
                 btn.className = 'team-btn ' + ((!isP2 && team.id === selectedTeamP1) || (isP2 && team.id === selectedTeamP2) ? 'active' : '');
                 btn.dataset.team = team.id;
-                // Costruzione con la CDN e caricamento lazy
                 btn.innerHTML = `<div class="flag-container"><img src="https://flagcdn.com/w40/${team.id}.png" class="flag" loading="lazy" alt="${team.name}"></div><span title="${team.name}">${team.name}</span>`;
                 btn.onclick = () => {
                     container.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     if (isP2) selectedTeamP2 = team.id; else selectedTeamP1 = team.id;
-                    preloadFlag(team.id); // Precarica la versione HD per il canvas!
+                    preloadFlag(team.id); 
                 };
                 container.appendChild(btn);
             });
@@ -471,7 +491,6 @@
             oscChakra.frequency.value = chakraData[aiLevel].hz;
             
             const gainChakra = audioCtx.createGain();
-            // Volume del tono fisso quasi impercettibile
             gainChakra.gain.value = 0.0003; 
             
             const lfoChakra = audioCtx.createOscillator(); lfoChakra.type = 'sine'; lfoChakra.frequency.value = 0.2; 
@@ -647,7 +666,6 @@
             
             let img = loadedFlags[teamCode];
             if (img && img.complete && img.naturalWidth !== 0) {
-                // Algoritmo Object-Fit Cover manuale per il canvas per non schiacciare le bandiere
                 let aspect = img.naturalWidth / img.naturalHeight;
                 let drawW = flagR * 2 * Math.max(1, aspect);
                 let drawH = flagR * 2 * Math.max(1, 1/aspect);
@@ -946,32 +964,19 @@
         function initDisplay() {
             const w = window.innerWidth;
             const h = window.innerHeight;
-            let screenRatio = h / w;
-            let targetRatio = 1.6; 
-
-            let visualWidth, visualHeight;
-
-            if (screenRatio < targetRatio) {
-                visualHeight = h;
-                visualWidth = h / targetRatio;
-            } else {
-                visualWidth = w;
-                visualHeight = w * targetRatio;
-            }
-
-            GAME_WIDTH = 600;
-            GAME_HEIGHT = GAME_WIDTH * targetRatio;
             
-            mTop = Math.max(190, GAME_HEIGHT * 0.18); 
-            mBot = Math.max(90, GAME_HEIGHT * 0.10);
-            
-            dpr = Math.min(window.devicePixelRatio || 1, 2);
-            canvas.width = GAME_WIDTH * dpr; 
-            canvas.height = GAME_HEIGHT * dpr;
+            // Calcolo scala per adattare i 600x900 perfetti a qualsiasi schermo
+            const scale = Math.min(w / LOGICAL_WIDTH, h / LOGICAL_HEIGHT);
 
             const wrapper = document.getElementById('game-wrapper');
-            wrapper.style.width = `${visualWidth}px`;
-            wrapper.style.height = `${visualHeight}px`;
+            wrapper.style.width = `${LOGICAL_WIDTH}px`;
+            wrapper.style.height = `${LOGICAL_HEIGHT}px`;
+            wrapper.style.transform = `scale(${scale})`;
+            wrapper.style.transformOrigin = 'center center';
+            
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = LOGICAL_WIDTH * dpr; 
+            canvas.height = LOGICAL_HEIGHT * dpr;
 
             ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.scale(dpr, dpr);
             ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
@@ -982,7 +987,12 @@
         window.addEventListener('resize', initDisplay);
 
         function updatePointerCoords(clientX, clientY) {
-            const rect = canvas.getBoundingClientRect(); pointer.x = (clientX - rect.left) * (GAME_WIDTH / rect.width); pointer.y = (clientY - rect.top) * (GAME_HEIGHT / rect.height);
+            const rect = canvas.getBoundingClientRect();
+            // Adatta le coordinate del tocco tenendo conto della scala CSS usata
+            const scaleX = LOGICAL_WIDTH / rect.width;
+            const scaleY = LOGICAL_HEIGHT / rect.height;
+            pointer.x = (clientX - rect.left) * scaleX;
+            pointer.y = (clientY - rect.top) * scaleY;
         }
 
         function handlePointerDown(e) {
