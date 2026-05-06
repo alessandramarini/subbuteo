@@ -87,9 +87,9 @@
         .overlay-content {
             background: linear-gradient(145deg, #0f121b 0%, #050609 100%);
             border: 1px solid rgba(255, 255, 255, 0.06); border-top: 1px solid rgba(255, 255, 255, 0.15); border-bottom: 3px solid var(--p1-neon);
-            border-radius: 16px; padding: 20px 10px; text-align: center; pointer-events: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
-            width: 95%; max-width: 400px; 
-            max-height: 90%; /* Margine sicuro sopra e sotto, layout perfettamente adattivo */
+            border-radius: 16px; padding: 25px 15px; text-align: center; pointer-events: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            width: 96%; max-width: 560px; /* Aumentato drasticamente per sfruttare l'intero schermo */
+            max-height: 94%; 
             display: flex; flex-direction: column; align-items: center; overflow: hidden;
         }
 
@@ -99,38 +99,39 @@
             width: 100%;
             height: auto;
             aspect-ratio: 16 / 9;
-            max-height: 160px;
+            max-height: 180px; /* Leggermente più alto vista la maggiore larghezza */
             object-fit: cover;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             pointer-events: none;
             background-color: #000;
-            flex-shrink: 0; /* Impedisce al video di rimpicciolirsi su schermi bassi */
+            flex-shrink: 0; 
         }
 
-        /* Scorrimento sicuro per touch e adattivo: ora si adatta all'altezza residua automaticamente in modo assoluto */
+        /* Scorrimento sicuro per touch e adattivo */
         #teams-scroll-area { 
             width: 100%; 
             flex: 1 1 auto; 
             min-height: 0;
             overflow-y: auto; 
-            margin-bottom: 10px; 
+            margin-bottom: 15px; 
             -webkit-overflow-scrolling: touch; 
             touch-action: pan-y; 
             scrollbar-width: thin; 
             scrollbar-color: var(--p1-neon) rgba(255, 255, 255, 0.05); 
+            max-height: 50vh; /* Permette alla griglia di espandersi in verticale */
         }
         #teams-scroll-area::-webkit-scrollbar { width: 6px; display: block; }
         #teams-scroll-area::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
         #teams-scroll-area::-webkit-scrollbar-thumb { background: var(--p1-neon); border-radius: 4px; }
 
-        .button-group { width: 100%; display: flex; gap: 8px; margin-bottom: 10px; flex-shrink: 0; }
+        .button-group { width: 100%; display: flex; gap: 10px; margin-bottom: 15px; flex-shrink: 0; }
 
-        #teams-flex-container { display: flex; width: 100%; gap: 8px; justify-content: center; align-items: flex-start; }
+        #teams-flex-container { display: flex; width: 100%; gap: 12px; justify-content: center; align-items: flex-start; }
         .team-column { flex: 1; display: flex; flex-direction: column; align-items: center; }
-        .team-title { margin: 5px 0 8px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .team-title { margin: 5px 0 10px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; white-space: nowrap; font-weight: bold; }
 
         #sponsor-bumper { background-color: #030408; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sponsor-bumper.active { opacity: 1; pointer-events: auto; }
@@ -142,13 +143,15 @@
         .sponsor-title { font-family: 'Chakra Petch', sans-serif; font-size: 38px; color: #ffffff; font-weight: 900; letter-spacing: 4px; line-height: 1.1; text-transform: uppercase; text-shadow: 0 10px 30px rgba(0,0,0,1); }
         .sponsor-title span { color: #2AABEE; }
 
-        .mode-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #888; padding: 10px; font-size: 12px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px; border-radius: 8px; cursor: pointer; flex: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; }
+        .mode-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #888; padding: 12px; font-size: 14px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px; border-radius: 8px; cursor: pointer; flex: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; }
         .mode-btn.active { background: rgba(0, 255, 102, 0.12); border-color: var(--p1-neon); color: var(--p1-neon); }
 
-        .grid-options { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; width: 100%; padding: 0 2px;}
-        .team-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 40px; }
-        .team-btn .flag-container { width: 26px; height: 18px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); position: relative; background: #222; }
-        .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 7px; font-weight: 700; letter-spacing: 0.5px; transition: color 0.3s; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+        .grid-options { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%; padding: 5px;}
+        /* Bandiere molto più grandi e ariose */
+        .team-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 68px; }
+        .team-btn .flag-container { width: 45px; height: 30px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); position: relative; background: #222; }
+        .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; transition: color 0.3s; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+        
         @media (hover: hover) { .team-btn:hover { background: rgba(255, 255, 255, 0.08); } .team-btn:hover span { color: #fff; } }
         .team-btn.active { background: rgba(0, 255, 102, 0.1); border: 1px solid var(--p1-neon); }
         .team-btn.active span { color: var(--p1-neon); }
@@ -157,7 +160,7 @@
         .flag { width: 100%; height: 100%; display: block; object-fit: cover; }
 
         .joystick-btn-only { flex-shrink: 0; background: transparent; border: none; box-shadow: none; cursor: pointer; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 5px; outline: none; padding: 0; -webkit-tap-highlight-color: transparent; }
-        .joystick-btn-only svg { width: 55px; height: 55px; filter: drop-shadow(0 0 10px rgba(0,255,102,0.4)); animation: pulse-joystick 2.5s infinite alternate ease-in-out; will-change: transform, filter; }
+        .joystick-btn-only svg { width: 65px; height: 65px; filter: drop-shadow(0 0 10px rgba(0,255,102,0.4)); animation: pulse-joystick 2.5s infinite alternate ease-in-out; will-change: transform, filter; }
         @keyframes pulse-joystick { 0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,255,102,0.2)); } 100% { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(0,255,102,0.6)); } }
         .joystick-btn-only:active svg { transform: scale(0.9) !important; animation: none; }
 
@@ -255,13 +258,13 @@
                 </div>
 
                 <div id="game-over-screen" class="overlay-screen hidden">
-                    <div class="overlay-content" style="padding: 15px;">
+                    <div class="overlay-content">
                         
                         <!-- Video Game Over -->
                         <video id="gameover-video" class="inline-video-box" src="inglesepresentbettingexchangeroom.mp4" autoplay loop muted playsinline webkit-playsinline></video>
 
                         <div id="winner-flag-container"></div>
-                        <h2 id="game-over-title" style="font-size: 28px; margin-bottom: 5px; flex-shrink: 0;">MATCH OVER</h2>
+                        <h2 id="game-over-title" style="font-size: 32px; margin-bottom: 5px; flex-shrink: 0;">MATCH OVER</h2>
                         <div id="game-over-icon" style="margin-bottom: 0;"></div>
                         
                         <div style="display: flex; flex-direction: column; gap: 8px; justify-content: center; align-items: center; width: 100%; flex-shrink: 0;">
@@ -432,7 +435,8 @@
                 const btn = document.createElement('button');
                 btn.className = 'team-btn ' + ((!isP2 && team.id === selectedTeamP1) || (isP2 && team.id === selectedTeamP2) ? 'active' : '');
                 btn.dataset.team = team.id;
-                btn.innerHTML = `<div class="flag-container"><img src="https://flagcdn.com/w40/${team.id}.png" class="flag" loading="lazy" alt="${team.name}"></div><span title="${team.name}">${team.name}</span>`;
+                // Carica la bandiera in HD per la griglia
+                btn.innerHTML = `<div class="flag-container"><img src="https://flagcdn.com/w80/${team.id}.png" class="flag" loading="lazy" alt="${team.name}"></div><span title="${team.name}">${team.name}</span>`;
                 btn.onclick = () => {
                     container.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
