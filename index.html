@@ -91,7 +91,19 @@
 
         .hidden { display: none !important; }
 
-        /* Ridotto da 45vh a 33vh per lasciare spazio al video inline */
+        /* Stile comune per i video orizzontali arrotondati */
+        .inline-video-box {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            pointer-events: none; /* Impedisce tocchi indesiderati sul player video */
+            background-color: #000;
+        }
+
         #teams-scroll-area { width: 100%; max-height: 33vh; overflow-y: auto; margin-bottom: 10px; -webkit-overflow-scrolling: touch; touch-action: pan-y; scrollbar-width: none; }
         #teams-scroll-area::-webkit-scrollbar { display: none; }
 
@@ -122,7 +134,6 @@
         .joystick-btn-only { background: transparent; border: none; box-shadow: none; cursor: pointer; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px; outline: none; padding: 0; -webkit-tap-highlight-color: transparent; }
         .joystick-btn-only svg { width: 60px; height: 60px; filter: drop-shadow(0 0 10px rgba(0,255,102,0.4)); animation: pulse-joystick 2.5s infinite alternate ease-in-out; will-change: transform, filter; }
         @keyframes pulse-joystick { 0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,255,102,0.2)); } 100% { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(0,255,102,0.6)); } }
-        @keyframes pulse-joystick-overdrive { 0% { transform: scale(1.05); filter: drop-shadow(0 0 15px rgba(57,255,20,0.6)); } 100% { transform: scale(1.15); filter: drop-shadow(0 0 35px rgba(57,255,20,1)); } }
         .joystick-btn-only:active svg { transform: scale(0.9) !important; animation: none; }
 
         #message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(35px, 9vmin, 80px); font-weight: 900; font-style: italic; text-align: center; color: #fff; text-transform: uppercase; z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; width: 100%; letter-spacing: 4px; will-change: opacity, transform; text-shadow: 0 5px 15px rgba(0,0,0,0.8); }
@@ -139,17 +150,6 @@
         .cup-base-top { position: absolute; bottom: 25px; left: 45px; width: 70px; height: 15px; background: #B8860B; border-radius: 10px 10px 0 0; z-index: 2; }
         .trophy-base { position: absolute; bottom: 0; left: 25px; right: 25px; height: 30px; background: #222; border-radius: 2px 2px 8px 8px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px; z-index: 2; }
         .base-plate { font-size: 8px; color: #fff; font-family: 'Chakra Petch', sans-serif; letter-spacing: 2px; font-weight: 700; background: #050505; padding: 2px 10px; border-radius: 2px; }
-
-        /* NUOVI STILI PER IL VIDEO CYBORG */
-        #skip-video-btn {
-            position: absolute; bottom: 40px; right: 20px;
-            background: rgba(0, 255, 102, 0.2); border: 2px solid #00FF66; color: #fff;
-            padding: 12px 25px; font-family: 'Chakra Petch', sans-serif; font-weight: 900; 
-            font-size: 16px; border-radius: 8px; cursor: pointer; pointer-events: auto;
-            backdrop-filter: blur(5px); text-shadow: 0 0 5px #00FF66; box-shadow: 0 0 15px rgba(0,255,102,0.4);
-            transition: all 0.2s ease;
-        }
-        #skip-video-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -183,12 +183,6 @@
                 </div>
             </div>
 
-            <!-- CONTENITORE VIDEO CYBORG -->
-            <div id="video-overlay" class="overlay-screen hidden" style="z-index: 100; background: #000;">
-                <video id="cyborg-video" playsinline webkit-playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
-                <button id="skip-video-btn">SKIP VIDEO ⏭</button>
-            </div>
-
             <div id="ui-layer">
                 <div id="top-hud">
                     <div style="display: flex; flex-direction: column; align-items: center;">
@@ -206,8 +200,8 @@
                 <div id="team-menu" class="overlay-screen">
                     <div class="overlay-content">
                         
-                        <!-- Nuovo Video Menu Inline (Ottimizzato per smartphone/tutti i browser) -->
-                        <video id="menu-video" src="inglesepresentbettingexchangeroom.mp4" autoplay loop muted playsinline webkit-playsinline oncanplay="this.play()" onloadedmetadata="this.muted = true" style="width: 100%; max-height: 140px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); pointer-events: none;"></video>
+                        <!-- Video Menu (Sopra le scelte, con bordi tondi e riquadro orizzontale) -->
+                        <video id="menu-video" class="inline-video-box" src="itcyborgscommettestake.mp4" autoplay loop muted playsinline webkit-playsinline></video>
 
                         <div style="display:flex; width:100%; gap:8px; margin-bottom:4px;">
                             <button id="btn-1p" class="mode-btn active">1 PLAYER</button>
@@ -232,6 +226,10 @@
 
                 <div id="game-over-screen" class="overlay-screen hidden">
                     <div class="overlay-content" style="padding: 15px;">
+                        
+                        <!-- Video Game Over (Sopra al vincitore e alla coppa, orizzontale e tondo) -->
+                        <video id="gameover-video" class="inline-video-box" src="inglesepresentbettingexchangeroom.mp4" autoplay loop muted playsinline webkit-playsinline></video>
+
                         <div id="winner-flag-container"></div>
                         <h2 id="game-over-title" style="font-size: clamp(22px, 5vmin, 32px); margin-bottom: 5px;">MATCH OVER</h2>
                         <div id="game-over-icon" style="margin-bottom: 0;"></div>
@@ -253,7 +251,6 @@
         // Caricamento Immagine Globale (Logo Tondo)
         const logoTondoImg = new Image();
         logoTondoImg.src = 'logo-tondo.jpeg';
-        // Quando il logo è caricato, svuotiamo la cache vettoriale così da ridisegnare subito i Token dell'AI
         logoTondoImg.onload = () => { clearTokenCache(); };
 
         // --- SISTEMA RISVEGLIO INCONSAPEVOLE (7 CHAKRA AI) ---
@@ -297,36 +294,9 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d', { alpha: false }); 
 
-        // --- IMPOSTAZIONI VIDEO CYBORG ---
-        // Il video intro è stato rimosso in favore di quello in-menu inline
-        const winVideoSrc = 'itcyborgscommettestake.mp4';     
-
-        function playCyborgVideo(src, onComplete) {
-            const videoOverlay = document.getElementById('video-overlay');
-            const videoEl = document.getElementById('cyborg-video');
-            const skipBtn = document.getElementById('skip-video-btn');
-
-            videoOverlay.classList.remove('hidden');
-            videoEl.src = src;
-
-            // Avvio riproduzione
-            videoEl.play().catch(e => {
-                console.log("Riproduzione automatica bloccata o video non trovato:", e);
-                closeCyborgVideo(onComplete); // Salta il video se non può essere riprodotto
-            });
-
-            videoEl.onended = () => closeCyborgVideo(onComplete);
-            skipBtn.onclick = () => closeCyborgVideo(onComplete);
-        }
-
-        function closeCyborgVideo(onComplete) {
-            const videoOverlay = document.getElementById('video-overlay');
-            const videoEl = document.getElementById('cyborg-video');
-            videoOverlay.classList.add('hidden');
-            videoEl.pause();
-            videoEl.src = "";
-            if (onComplete) onComplete();
-        }
+        // Riferimenti Video
+        const menuVideo = document.getElementById('menu-video');
+        const gameOverVideo = document.getElementById('gameover-video');
 
         // --- SISTEMA CACHING VETTORIALE ---
         let tokenCache = {};
@@ -398,7 +368,6 @@
                 let isFireCore = currentSpeed > 18;
                 let trailColor = isFireCore ? '255, 0, 85' : '0, 255, 102';
                 
-                // Draw Scia
                 if (this.trail.length > 1) {
                     ctx.beginPath(); ctx.moveTo(this.trail[0].x, this.trail[0].y);
                     for (let i = 1; i < this.trail.length; i++) ctx.lineTo(this.trail[i].x, this.trail[i].y);
@@ -409,7 +378,6 @@
                 
                 ctx.translate(this.x, this.y);
                 
-                // Ombra fissa non ruotata (Previene glitch su Safari)
                 ctx.shadowColor = 'rgba(0,0,0,0.5)';
                 ctx.shadowBlur = 6;
                 ctx.shadowOffsetY = 4;
@@ -424,13 +392,11 @@
 
                 ctx.rotate(this.rotation);
 
-                // DISEGNO MATEMATICO DEL PALLONE (Migliorato 3D vettoriale)
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(0, 0, this.radius, 0, PI2);
-                ctx.clip(); // Maschera di ritaglio per l'effetto sferico
+                ctx.clip(); 
 
-                // Sfondo con gradiente radiale 3D
                 let grad = ctx.createRadialGradient(-this.radius*0.3, -this.radius*0.3, this.radius*0.1, 0, 0, this.radius);
                 grad.addColorStop(0, '#ffffff');
                 grad.addColorStop(0.7, '#e0e0e0');
@@ -438,14 +404,12 @@
                 ctx.fillStyle = grad;
                 ctx.fillRect(-this.radius, -this.radius, this.radius*2, this.radius*2);
 
-                // Geometria a esagoni e pentagoni
                 ctx.fillStyle = '#1a1a1a';
                 ctx.strokeStyle = '#333';
                 ctx.lineWidth = 1.5;
                 ctx.lineJoin = 'round';
                 let r = this.radius;
 
-                // Pentagono centrale
                 ctx.beginPath();
                 for (let i = 0; i < 5; i++) {
                     let a = i * PI2 / 5 - Math.PI / 2;
@@ -458,7 +422,6 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // Linee dal pentagono centrale ai lati e pentagoni periferici
                 for (let i = 0; i < 5; i++) {
                     let a1 = i * PI2 / 5 - Math.PI / 2;
                     let a2 = (i + 1) * PI2 / 5 - Math.PI / 2;
@@ -480,16 +443,14 @@
                     ctx.lineTo(ex2, ey2);
                     ctx.stroke();
 
-                    // Mezzi pentagoni sui bordi
                     ctx.beginPath();
                     ctx.arc(Math.cos(aMid) * r, Math.sin(aMid) * r, r * 0.42, 0, PI2);
                     ctx.fill();
                     ctx.stroke();
                 }
 
-                ctx.restore(); // Rimuovi il clip
+                ctx.restore(); 
                 
-                // Bordo netto attorno al pallone
                 ctx.beginPath();
                 ctx.arc(0, 0, this.radius, 0, PI2);
                 ctx.lineWidth = 1.5;
@@ -551,7 +512,6 @@
             GAME_WIDTH = 600;
             GAME_HEIGHT = GAME_WIDTH * targetRatio;
             
-            // MARGINI OTTIMIZZATI PER NON SOVRAPPORSI ALL'UI
             mTop = Math.max(190, GAME_HEIGHT * 0.18); 
             mBot = Math.max(90, GAME_HEIGHT * 0.10);
             
@@ -746,6 +706,9 @@
             initAudio(); updateChakraAudio();
             teamMenuEl.classList.add('hidden'); 
             
+            // Pausa il video del menu
+            if(menuVideo) menuVideo.pause();
+
             document.getElementById('sb-flag-1').innerHTML = flagsSVG[selectedTeamP1];
             
             if (gameMode === 2) {
@@ -760,7 +723,6 @@
 
             drawStaticBackground(); 
             
-            // Avvio diretto senza video overlay iniziale (sostituito dal video inline)
             playSponsorBumper(() => {
                 currentTurn = 1; resetPositions();
                 scoreP1 = 0; scoreP2 = 0; score1El.innerText = 0; score2El.innerText = 0;
@@ -786,8 +748,8 @@
             particlePool.forEach(p => p.active = false); textPool.forEach(t => t.active = false);
             checkBossStatus();
             
-            // Prova a far ripartire il video nel menu se fosse andato in pausa
-            const menuVideo = document.getElementById('menu-video');
+            // Ferma il video finale e fa ripartire quello del menu
+            if(gameOverVideo) gameOverVideo.pause();
             if(menuVideo) menuVideo.play().catch(e => console.log(e));
         });
 
@@ -874,7 +836,6 @@
             }
             ctx.closePath(); ctx.fillStyle = '#333'; ctx.fill();
 
-            // Inserimento Logo Tondo all'interno del token dell'AI
             ctx.beginPath();
             ctx.arc(0, 0, radius * 0.45, 0, PI2);
             ctx.closePath();
@@ -889,7 +850,6 @@
             }
             ctx.restore();
 
-            // Anello colorato di demarcazione attorno al logo
             ctx.beginPath();
             ctx.arc(0, 0, radius * 0.45, 0, PI2);
             ctx.lineWidth = 1.5;
@@ -1194,12 +1154,7 @@
             showMessage("TIME UP!"); messageEl.style.color = '#FFD700'; messageEl.style.setProperty('--accent-color', '#FFD700');
             setTimeout(() => { 
                 hideMessage(); 
-                if (scoreP1 !== scoreP2) {
-                    // C'è un vincitore, riproduci il video vittoria
-                    playCyborgVideo(winVideoSrc, () => showEndScreen());
-                } else {
-                    showEndScreen(); 
-                }
+                showEndScreen();
             }, 2500);
         }
 
@@ -1241,6 +1196,9 @@
             winnerFlagContainerEl.innerHTML = flagHTML;
             gameOverIconEl.innerHTML = `<div style="transform: scale(0.6); transform-origin: top center; height: 110px;">${goldCupHTML}</div>`;
             gameOverScreenEl.classList.remove('hidden');
+            
+            // Fai partire il video del risultato finale
+            if(gameOverVideo) gameOverVideo.play().catch(e => console.log(e));
         }
 
         function scoreGoal(playerScored) {
@@ -1267,10 +1225,7 @@
                 stopTimer(); 
                 setTimeout(() => { 
                     hideMessage(); 
-                    // Mostra il video vittoria prima dello schermo finale
-                    playCyborgVideo(winVideoSrc, () => {
-                        showEndScreen(); 
-                    });
+                    showEndScreen(); 
                 }, 2500); 
             } else { setTimeout(() => { if (gameState === GAME_STATE_GOAL) { resetPositions(); gameState = GAME_STATE_PLAYING; hideMessage(); } }, 3500); }
         }
