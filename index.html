@@ -89,7 +89,9 @@
             background: linear-gradient(145deg, #0f121b 0%, #050609 100%);
             border: 1px solid rgba(255, 255, 255, 0.06); border-top: 1px solid rgba(255, 255, 255, 0.15); border-bottom: 3px solid var(--p1-neon);
             border-radius: 16px; padding: 20px 10px; text-align: center; pointer-events: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
-            width: 95%; max-width: 400px; display: flex; flex-direction: column; align-items: center;
+            width: 95%; max-width: 400px; 
+            max-height: 95dvh; /* Evita sforamenti verticali su smartphone piccoli */
+            display: flex; flex-direction: column; align-items: center; overflow: hidden;
         }
 
         .hidden { display: none !important; }
@@ -106,13 +108,26 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             pointer-events: none;
             background-color: #000;
+            flex-shrink: 0; /* Impedisce al video di rimpicciolirsi su schermi bassi */
         }
 
-        /* Scorrimento sicuro per touch */
-        #teams-scroll-area { width: 100%; max-height: 34vh; overflow-y: auto; margin-bottom: 10px; -webkit-overflow-scrolling: touch; touch-action: pan-y; scrollbar-width: thin; scrollbar-color: var(--p1-neon) rgba(255, 255, 255, 0.05); }
+        /* Scorrimento sicuro per touch e adattivo */
+        #teams-scroll-area { 
+            width: 100%; 
+            flex: 1; /* Prende lo spazio residuo senza sforare il max-height */
+            min-height: 0;
+            overflow-y: auto; 
+            margin-bottom: 10px; 
+            -webkit-overflow-scrolling: touch; 
+            touch-action: pan-y; 
+            scrollbar-width: thin; 
+            scrollbar-color: var(--p1-neon) rgba(255, 255, 255, 0.05); 
+        }
         #teams-scroll-area::-webkit-scrollbar { width: 6px; display: block; }
         #teams-scroll-area::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
         #teams-scroll-area::-webkit-scrollbar-thumb { background: var(--p1-neon); border-radius: 4px; }
+
+        .button-group { width: 100%; display: flex; gap: 8px; margin-bottom: 10px; flex-shrink: 0; }
 
         #teams-flex-container { display: flex; width: 100%; gap: 8px; justify-content: center; align-items: flex-start; }
         .team-column { flex: 1; display: flex; flex-direction: column; align-items: center; }
@@ -142,7 +157,7 @@
         #p2-grid .team-btn.active span { color: var(--p2-neon); }
         .flag { width: 100%; height: 100%; display: block; object-fit: cover; }
 
-        .joystick-btn-only { background: transparent; border: none; box-shadow: none; cursor: pointer; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 5px; outline: none; padding: 0; -webkit-tap-highlight-color: transparent; }
+        .joystick-btn-only { flex-shrink: 0; background: transparent; border: none; box-shadow: none; cursor: pointer; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 5px; outline: none; padding: 0; -webkit-tap-highlight-color: transparent; }
         .joystick-btn-only svg { width: 55px; height: 55px; filter: drop-shadow(0 0 10px rgba(0,255,102,0.4)); animation: pulse-joystick 2.5s infinite alternate ease-in-out; will-change: transform, filter; }
         @keyframes pulse-joystick { 0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,255,102,0.2)); } 100% { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(0,255,102,0.6)); } }
         .joystick-btn-only:active svg { transform: scale(0.9) !important; animation: none; }
@@ -151,7 +166,7 @@
         #message.active { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: glitchPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes glitchPop { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
 
-        .cup-trophy-container { position: relative; width: 160px; height: 180px; margin: 0 auto 20px auto; }
+        .cup-trophy-container { position: relative; width: 160px; height: 180px; margin: 0 auto 20px auto; flex-shrink: 0; }
         .cup-handle { position: absolute; top: 30px; width: 45px; height: 60px; border: 6px solid #DAA520; border-radius: 20px; z-index: 1; }
         .handle-left { left: 15px; border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;}
         .handle-right { right: 15px; border-left: none; border-top-left-radius: 0; border-bottom-left-radius: 0;}
@@ -214,7 +229,7 @@
                         <!-- Video Menu -->
                         <video id="menu-video" class="inline-video-box" src="itcyborgscommettestake.mp4" autoplay loop muted playsinline webkit-playsinline></video>
 
-                        <div style="display:flex; width:100%; gap:8px; margin-bottom:10px;">
+                        <div class="button-group">
                             <button id="btn-1p" class="mode-btn active">1 PLAYER</button>
                             <button id="btn-2p" class="mode-btn">2 PLAYERS</button>
                         </div>
@@ -247,10 +262,10 @@
                         <video id="gameover-video" class="inline-video-box" src="inglesepresentbettingexchangeroom.mp4" autoplay loop muted playsinline webkit-playsinline></video>
 
                         <div id="winner-flag-container"></div>
-                        <h2 id="game-over-title" style="font-size: clamp(22px, 5vmin, 32px); margin-bottom: 5px;">MATCH OVER</h2>
+                        <h2 id="game-over-title" style="font-size: clamp(22px, 5vmin, 32px); margin-bottom: 5px; flex-shrink: 0;">MATCH OVER</h2>
                         <div id="game-over-icon" style="margin-bottom: 0;"></div>
                         
-                        <div style="display: flex; flex-direction: column; gap: 8px; justify-content: center; align-items: center; width: 100%;">
+                        <div style="display: flex; flex-direction: column; gap: 8px; justify-content: center; align-items: center; width: 100%; flex-shrink: 0;">
                             <button id="restart-btn" class="joystick-btn-only" style="margin-top: 0;">
                                 <svg viewBox="0 0 100 100"><use href="#gamepad-icon"></use></svg>
                             </button>
@@ -547,9 +562,177 @@
             osc.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + (isGoal ? 2.5 : 0.3));
         }
 
-        // --- SISTEMA CACHING VETTORIALE ---
+        // --- SISTEMA CACHING VETTORIALE ULTRA-PRESTAZIONALE ---
         let tokenCache = {};
         function clearTokenCache() { tokenCache = {}; }
+
+        // Cache del campo per evitare di ridisegnare linee ed esagoni 60 volte al secondo
+        let fieldCacheCanvas = null;
+        function generateFieldCache() {
+            fieldCacheCanvas = document.createElement('canvas');
+            fieldCacheCanvas.width = GAME_WIDTH * dpr;
+            fieldCacheCanvas.height = GAME_HEIGHT * dpr;
+            const fCtx = fieldCacheCanvas.getContext('2d', { alpha: false });
+            fCtx.scale(dpr, dpr);
+
+            fCtx.fillStyle = '#224a10'; 
+            fCtx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+            const playX = mSide;
+            const playY = mTop;
+            const playW = GAME_WIDTH - mSide * 2;
+            const playH = GAME_HEIGHT - mTop - mBot;
+
+            const stripeCount = 14;
+            const stripeHeight = playH / stripeCount;
+            for (let i = 0; i < stripeCount; i++) {
+                fCtx.fillStyle = i % 2 === 0 ? '#3A7C21' : '#326A1D';
+                fCtx.fillRect(playX, playY + i * stripeHeight, playW, stripeHeight);
+            }
+
+            fCtx.save();
+            fCtx.lineCap = 'square';
+            fCtx.lineJoin = 'miter';
+            fCtx.lineWidth = 2.5;
+            fCtx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+
+            fCtx.strokeRect(playX, playY, playW, playH);
+
+            const midY = playY + playH / 2;
+            fCtx.beginPath();
+            fCtx.moveTo(playX, midY);
+            fCtx.lineTo(playX + playW, midY);
+            fCtx.stroke();
+
+            fCtx.beginPath();
+            fCtx.arc(GAME_WIDTH / 2, midY, playW * 0.15, 0, Math.PI * 2);
+            fCtx.stroke();
+            
+            fCtx.beginPath();
+            fCtx.arc(GAME_WIDTH / 2, midY, 4, 0, Math.PI * 2);
+            fCtx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            fCtx.fill();
+
+            const penW = playW * 0.55;
+            const penH = playH * 0.15;
+            const penX = GAME_WIDTH / 2 - penW / 2;
+            fCtx.strokeRect(penX, playY, penW, penH); 
+            fCtx.strokeRect(penX, playY + playH - penH, penW, penH); 
+
+            const goalAreaW = playW * 0.25;
+            const goalAreaH = playH * 0.05;
+            const goalAreaX = GAME_WIDTH / 2 - goalAreaW / 2;
+            fCtx.strokeRect(goalAreaX, playY, goalAreaW, goalAreaH); 
+            fCtx.strokeRect(goalAreaX, playY + playH - goalAreaH, goalAreaW, goalAreaH); 
+
+            const penSpotDist = playH * 0.11;
+            fCtx.beginPath(); fCtx.arc(GAME_WIDTH/2, playY + penSpotDist, 3, 0, Math.PI*2); fCtx.fill();
+            fCtx.beginPath(); fCtx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, 3, 0, Math.PI*2); fCtx.fill();
+
+            const arcR = playW * 0.15;
+            fCtx.save();
+            fCtx.beginPath(); fCtx.rect(playX, playY + penH, playW, playH/2 - penH); fCtx.clip();
+            fCtx.beginPath(); fCtx.arc(GAME_WIDTH/2, playY + penSpotDist, arcR, 0, Math.PI*2); fCtx.stroke();
+            fCtx.restore();
+
+            fCtx.save();
+            fCtx.beginPath(); fCtx.rect(playX, midY, playW, playH/2 - penH); fCtx.clip();
+            fCtx.beginPath(); fCtx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, arcR, 0, Math.PI*2); fCtx.stroke();
+            fCtx.restore();
+
+            const cornerR = playW * 0.03;
+            fCtx.beginPath(); fCtx.arc(playX, playY, cornerR, 0, Math.PI/2); fCtx.stroke();
+            fCtx.beginPath(); fCtx.arc(playX+playW, playY, cornerR, Math.PI/2, Math.PI); fCtx.stroke();
+            fCtx.beginPath(); fCtx.arc(playX, playY+playH, cornerR, -Math.PI/2, 0); fCtx.stroke();
+            fCtx.beginPath(); fCtx.arc(playX+playW, playY+playH, cornerR, Math.PI, -Math.PI/2); fCtx.stroke();
+
+            const gx = GAME_WIDTH / 2 - goalWidth / 2;
+            let p2Color = gameMode === 2 ? '#FF0055' : chakraData[aiLevel].color;
+            let p2Fill = gameMode === 2 ? 'rgba(255, 0, 85, 0.15)' : `${chakraData[aiLevel].color}26`; 
+            fCtx.fillStyle = p2Fill; fCtx.fillRect(gx, playY - 20, goalWidth, 20); fCtx.lineWidth = 3; fCtx.strokeStyle = p2Color; fCtx.strokeRect(gx, playY - 20, goalWidth, 20);
+            fCtx.fillStyle = 'rgba(0, 255, 102, 0.15)'; fCtx.fillRect(gx, playY + playH, goalWidth, 20); fCtx.strokeStyle = '#00FF66'; fCtx.strokeRect(gx, playY + playH, goalWidth, 20);
+            
+            fCtx.restore();
+        }
+
+        // Cache del Pallone per evitare drop di FPS
+        let cachedBallCanvas = null;
+        function getBallCanvas(radius) {
+            if (!cachedBallCanvas) {
+                cachedBallCanvas = document.createElement('canvas');
+                const pad = 2;
+                cachedBallCanvas.width = (radius * 2 + pad * 2) * dpr;
+                cachedBallCanvas.height = (radius * 2 + pad * 2) * dpr;
+                const bCtx = cachedBallCanvas.getContext('2d');
+                bCtx.scale(dpr, dpr);
+                bCtx.translate(radius + pad, radius + pad);
+
+                bCtx.beginPath();
+                bCtx.arc(0, 0, radius, 0, PI2);
+                bCtx.clip(); 
+
+                let grad = bCtx.createRadialGradient(-radius*0.3, -radius*0.3, radius*0.1, 0, 0, radius);
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.7, '#e0e0e0');
+                grad.addColorStop(1, '#999999');
+                bCtx.fillStyle = grad;
+                bCtx.fillRect(-radius, -radius, radius*2, radius*2);
+
+                bCtx.fillStyle = '#1a1a1a';
+                bCtx.strokeStyle = '#333';
+                bCtx.lineWidth = 1.5;
+                bCtx.lineJoin = 'round';
+                let r = radius;
+
+                bCtx.beginPath();
+                for (let i = 0; i < 5; i++) {
+                    let a = i * PI2 / 5 - Math.PI / 2;
+                    let px = Math.cos(a) * (r * 0.38);
+                    let py = Math.sin(a) * (r * 0.38);
+                    if (i === 0) bCtx.moveTo(px, py);
+                    else bCtx.lineTo(px, py);
+                }
+                bCtx.closePath();
+                bCtx.fill();
+                bCtx.stroke();
+
+                for (let i = 0; i < 5; i++) {
+                    let a1 = i * PI2 / 5 - Math.PI / 2;
+                    let a2 = (i + 1) * PI2 / 5 - Math.PI / 2;
+                    let aMid = a1 + Math.PI / 5;
+                    
+                    let px = Math.cos(a1) * (r * 0.38);
+                    let py = Math.sin(a1) * (r * 0.38);
+                    let px2 = Math.cos(a2) * (r * 0.38);
+                    let py2 = Math.sin(a2) * (r * 0.38);
+                    
+                    let ex = Math.cos(a1) * (r * 0.85);
+                    let ey = Math.sin(a1) * (r * 0.85);
+                    let ex2 = Math.cos(a2) * (r * 0.85);
+                    let ey2 = Math.sin(a2) * (r * 0.85);
+
+                    bCtx.beginPath();
+                    bCtx.moveTo(px, py);
+                    bCtx.lineTo(ex, ey);
+                    bCtx.lineTo(ex2, ey2);
+                    bCtx.stroke();
+
+                    bCtx.beginPath();
+                    bCtx.arc(Math.cos(aMid) * r, Math.sin(aMid) * r, r * 0.42, 0, PI2);
+                    bCtx.fill();
+                    bCtx.stroke();
+                }
+
+                bCtx.restore(); 
+                
+                bCtx.beginPath();
+                bCtx.arc(0, 0, radius, 0, PI2);
+                bCtx.lineWidth = 1.5;
+                bCtx.strokeStyle = '#222';
+                bCtx.stroke();
+            }
+            return { canvas: cachedBallCanvas, pad: 2 };
+        }
 
         function getCachedToken(teamCode, isP1, radius, isAI, isDrag, currentAiLevel) {
             let key = isAI ? `ai_${radius}_${isDrag}_lvl${currentAiLevel}` : `${teamCode}_${isP1}_${radius}_${isDrag}`;
@@ -591,6 +774,8 @@
                 scoreBoardEl.style.borderBottomColor = aiColor;
             }
 
+            // Rigenera il field cache coi colori corretti (goal p2)
+            generateFieldCache();
             drawStaticBackground(); 
             
             playSponsorBumper(() => {
@@ -711,85 +896,13 @@
             ctx.restore();
         }
 
-        function drawField() {
-            ctx.fillStyle = '#224a10'; 
-            ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-            const playX = mSide;
-            const playY = mTop;
-            const playW = GAME_WIDTH - mSide * 2;
-            const playH = GAME_HEIGHT - mTop - mBot;
-
-            const stripeCount = 14;
-            const stripeHeight = playH / stripeCount;
-            for (let i = 0; i < stripeCount; i++) {
-                ctx.fillStyle = i % 2 === 0 ? '#3A7C21' : '#326A1D';
-                ctx.fillRect(playX, playY + i * stripeHeight, playW, stripeHeight);
-            }
-
-            ctx.save();
-            ctx.lineCap = 'square';
-            ctx.lineJoin = 'miter';
-            ctx.lineWidth = 2.5;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
-
-            ctx.strokeRect(playX, playY, playW, playH);
-
-            const midY = playY + playH / 2;
-            ctx.beginPath();
-            ctx.moveTo(playX, midY);
-            ctx.lineTo(playX + playW, midY);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.arc(GAME_WIDTH / 2, midY, playW * 0.15, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.arc(GAME_WIDTH / 2, midY, 4, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-            ctx.fill();
-
-            const penW = playW * 0.55;
-            const penH = playH * 0.15;
-            const penX = GAME_WIDTH / 2 - penW / 2;
-            ctx.strokeRect(penX, playY, penW, penH); 
-            ctx.strokeRect(penX, playY + playH - penH, penW, penH); 
-
-            const goalAreaW = playW * 0.25;
-            const goalAreaH = playH * 0.05;
-            const goalAreaX = GAME_WIDTH / 2 - goalAreaW / 2;
-            ctx.strokeRect(goalAreaX, playY, goalAreaW, goalAreaH); 
-            ctx.strokeRect(goalAreaX, playY + playH - goalAreaH, goalAreaW, goalAreaH); 
-
-            const penSpotDist = playH * 0.11;
-            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + penSpotDist, 3, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, 3, 0, Math.PI*2); ctx.fill();
-
-            const arcR = playW * 0.15;
-            ctx.save();
-            ctx.beginPath(); ctx.rect(playX, playY + penH, playW, playH/2 - penH); ctx.clip();
-            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + penSpotDist, arcR, 0, Math.PI*2); ctx.stroke();
-            ctx.restore();
-
-            ctx.save();
-            ctx.beginPath(); ctx.rect(playX, midY, playW, playH/2 - penH); ctx.clip();
-            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, arcR, 0, Math.PI*2); ctx.stroke();
-            ctx.restore();
-
-            const cornerR = playW * 0.03;
-            ctx.beginPath(); ctx.arc(playX, playY, cornerR, 0, Math.PI/2); ctx.stroke();
-            ctx.beginPath(); ctx.arc(playX+playW, playY, cornerR, Math.PI/2, Math.PI); ctx.stroke();
-            ctx.beginPath(); ctx.arc(playX, playY+playH, cornerR, -Math.PI/2, 0); ctx.stroke();
-            ctx.beginPath(); ctx.arc(playX+playW, playY+playH, cornerR, Math.PI, -Math.PI/2); ctx.stroke();
-
-            const gx = GAME_WIDTH / 2 - goalWidth / 2;
-            let p2Color = gameMode === 2 ? '#FF0055' : chakraData[aiLevel].color;
-            let p2Fill = gameMode === 2 ? 'rgba(255, 0, 85, 0.15)' : `${chakraData[aiLevel].color}26`; 
-            ctx.fillStyle = p2Fill; ctx.fillRect(gx, playY - 20, goalWidth, 20); ctx.lineWidth = 3; ctx.strokeStyle = p2Color; ctx.strokeRect(gx, playY - 20, goalWidth, 20);
-            ctx.fillStyle = 'rgba(0, 255, 102, 0.15)'; ctx.fillRect(gx, playY + playH, goalWidth, 20); ctx.strokeStyle = '#00FF66'; ctx.strokeRect(gx, playY + playH, goalWidth, 20);
-            
-            ctx.restore();
+        function drawStaticBackground() { 
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+            if (!fieldCacheCanvas) generateFieldCache();
+            ctx.drawImage(fieldCacheCanvas, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+            team1.forEach(p => p.draw(ctx)); 
+            team2.forEach(p => p.draw(ctx)); 
+            ball.draw(ctx); 
         }
 
         class CircleEntity {
@@ -860,70 +973,9 @@
 
                 ctx.rotate(this.rotation);
 
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(0, 0, this.radius, 0, PI2);
-                ctx.clip(); 
-
-                let grad = ctx.createRadialGradient(-this.radius*0.3, -this.radius*0.3, this.radius*0.1, 0, 0, this.radius);
-                grad.addColorStop(0, '#ffffff');
-                grad.addColorStop(0.7, '#e0e0e0');
-                grad.addColorStop(1, '#999999');
-                ctx.fillStyle = grad;
-                ctx.fillRect(-this.radius, -this.radius, this.radius*2, this.radius*2);
-
-                ctx.fillStyle = '#1a1a1a';
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 1.5;
-                ctx.lineJoin = 'round';
-                let r = this.radius;
-
-                ctx.beginPath();
-                for (let i = 0; i < 5; i++) {
-                    let a = i * PI2 / 5 - Math.PI / 2;
-                    let px = Math.cos(a) * (r * 0.38);
-                    let py = Math.sin(a) * (r * 0.38);
-                    if (i === 0) ctx.moveTo(px, py);
-                    else ctx.lineTo(px, py);
-                }
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-
-                for (let i = 0; i < 5; i++) {
-                    let a1 = i * PI2 / 5 - Math.PI / 2;
-                    let a2 = (i + 1) * PI2 / 5 - Math.PI / 2;
-                    let aMid = a1 + Math.PI / 5;
-                    
-                    let px = Math.cos(a1) * (r * 0.38);
-                    let py = Math.sin(a1) * (r * 0.38);
-                    let px2 = Math.cos(a2) * (r * 0.38);
-                    let py2 = Math.sin(a2) * (r * 0.38);
-                    
-                    let ex = Math.cos(a1) * (r * 0.85);
-                    let ey = Math.sin(a1) * (r * 0.85);
-                    let ex2 = Math.cos(a2) * (r * 0.85);
-                    let ey2 = Math.sin(a2) * (r * 0.85);
-
-                    ctx.beginPath();
-                    ctx.moveTo(px, py);
-                    ctx.lineTo(ex, ey);
-                    ctx.lineTo(ex2, ey2);
-                    ctx.stroke();
-
-                    ctx.beginPath();
-                    ctx.arc(Math.cos(aMid) * r, Math.sin(aMid) * r, r * 0.42, 0, PI2);
-                    ctx.fill();
-                    ctx.stroke();
-                }
-
-                ctx.restore(); 
-                
-                ctx.beginPath();
-                ctx.arc(0, 0, this.radius, 0, PI2);
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = '#222';
-                ctx.stroke();
+                // Disegno del pallone tramite Canvas Caching super veloce
+                let cache = getBallCanvas(this.radius);
+                ctx.drawImage(cache.canvas, -this.radius - cache.pad, -this.radius - cache.pad, this.radius * 2 + cache.pad * 2, this.radius * 2 + cache.pad * 2);
 
                 if(isFireCore) {
                     ctx.beginPath();
@@ -981,7 +1033,9 @@
             ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.scale(dpr, dpr);
             ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
             
-            clearTokenCache(); resetPositions();
+            clearTokenCache(); 
+            generateFieldCache(); // Rigenera cache a ogni init
+            resetPositions();
             if(gameState === GAME_STATE_MENU || gameState === GAME_STATE_OVER) drawStaticBackground();
         }
         window.addEventListener('resize', initDisplay);
@@ -1323,7 +1377,14 @@
             }
         }
 
-        function drawStaticBackground() { ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT); drawField(); team1.forEach(p => p.draw(ctx)); team2.forEach(p => p.draw(ctx)); ball.draw(ctx); }
+        function drawStaticBackground() { 
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+            if (!fieldCacheCanvas) generateFieldCache();
+            ctx.drawImage(fieldCacheCanvas, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+            team1.forEach(p => p.draw(ctx)); 
+            team2.forEach(p => p.draw(ctx)); 
+            ball.draw(ctx); 
+        }
 
         window.gameLoopRunning = false;
 
@@ -1361,7 +1422,10 @@
             ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT); ctx.save();
             if (shakeTime > 0) ctx.translate((Math.random() - 0.5) * shakeMagnitude, (Math.random() - 0.5) * shakeMagnitude);
             
-            drawField(); 
+            // Disegna il campo precalcolato (enorme boost agli FPS)
+            if (!fieldCacheCanvas) generateFieldCache();
+            ctx.drawImage(fieldCacheCanvas, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+
             for (let i = 0; i < particlePool.length; i++) { particlePool[i].draw(ctx); }
             drawSlingshotLine(); team1.forEach(p => p.draw(ctx)); team2.forEach(p => p.draw(ctx)); ball.draw(ctx);
             for (let i = 0; i < textPool.length; i++) { textPool[i].draw(ctx); }
