@@ -9,20 +9,17 @@
     <!-- OTTIMIZZAZIONI DI CARICAMENTO -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="video" href="itcyborgscommettestake.mp4">
-    <link rel="preload" as="video" href="inglesepresentbettingexchangeroom.mp4">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,700;1,700&family=Montserrat:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet">
     
-    <title>CyberTorneo - TV Broadcast Edition</title>
+    <title>CyberTorneo - Telegram Edition</title>
     <style>
         :root {
             --p1-neon: #00FF66;
             --p2-neon: #FF0055;
-            --bg-dark: #030408;
+            --bg-dark: #224a10; 
             --bg-outer: #010102;
         }
 
-        /* Anti-Glitch e Ottimizzazione App Nativa - Accelerazione Hardware */
         * { -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; outline: none; box-sizing: border-box; }
 
         body {
@@ -31,7 +28,6 @@
             height: 100vh; height: 100dvh; width: 100vw; overflow: hidden; touch-action: none; overscroll-behavior: none;
         }
 
-        /* Container Esterno: Centra il gioco su schermi larghi (Desktop/Landscape) */
         #game-container {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
             background-color: var(--bg-outer);
@@ -39,25 +35,21 @@
             -webkit-transform: translateZ(0); transform: translateZ(0); will-change: transform;
         }
         
-        /* Wrapper Interno: Il vero campo da gioco con le proporzioni bloccate */
         #game-wrapper {
             position: relative; background-color: var(--bg-dark);
             overflow: hidden; 
-            box-shadow: 0 0 40px rgba(0, 255, 102, 0.03), 0 0 100px rgba(0,0,0,1); /* Effetto Cabinet Arcade */
+            box-shadow: 0 0 50px rgba(0,0,0,1);
         }
         
-        canvas, #screen-flash, #scanlines, #ui-layer, #sponsor-bumper, .overlay-screen {
+        canvas, #screen-flash, #ui-layer, #sponsor-bumper, .overlay-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         }
         
         canvas { z-index: 1; touch-action: none; image-rendering: auto; }
 
-        /* Effetti Visivi Ambientali */
         #screen-flash { background: white; pointer-events: none; z-index: 8; opacity: 0; transition: opacity 0.05s ease-out; will-change: opacity; }
-        #scanlines { background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.05)); background-size: 100% 4px; pointer-events: none; z-index: 5; mix-blend-mode: overlay; }
         #ui-layer { pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; z-index: 10; }
 
-        /* Top HUD */
         #top-hud { display: flex; justify-content: center; align-items: flex-start; padding: 15px; }
         
         #score-board {
@@ -88,8 +80,7 @@
             transition: all 0.3s ease; min-width: 90px; border-radius: 2px;
         }
 
-        /* Overlay A Schermo Intero */
-        .overlay-screen { background: var(--bg-dark); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; -webkit-transform: translateZ(0); transform: translateZ(0); }
+        .overlay-screen { background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; -webkit-transform: translateZ(0); transform: translateZ(0); }
         
         .overlay-content {
             background: linear-gradient(145deg, #0f121b 0%, #050609 100%);
@@ -100,39 +91,19 @@
 
         .hidden { display: none !important; }
 
-        /* Stili Video Presentazione Menu */
-        .menu-video-container {
-            width: 100%; max-width: 260px; aspect-ratio: 16 / 9; margin: 0 auto 15px auto;
-            border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15); border-bottom: 2px solid var(--p1-neon);
-            box-shadow: none; overflow: hidden; background: #000; position: relative;
-            -webkit-transform: translateZ(0); transform: translateZ(0);
-        }
-        .menu-video { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
-        .watermark-cover {
-            position: absolute; bottom: 0; right: 0; width: 36px; height: 36px; z-index: 10;
-            border-radius: 6px 0 0 0; background-color: rgba(0, 0, 0, 0.85); 
-            display: flex; align-items: center; justify-content: center; padding: 2px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1); border-left: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .watermark-cover img { width: 100%; height: 100%; object-fit: contain; display: block; }
-
         #teams-scroll-area { width: 100%; max-height: 45vh; overflow-y: auto; margin-bottom: 10px; -webkit-overflow-scrolling: touch; touch-action: pan-y; scrollbar-width: none; }
         #teams-scroll-area::-webkit-scrollbar { display: none; }
 
-        /* Sponsor Bumper */
         #sponsor-bumper { background-color: #030408; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #sponsor-bumper::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('logocyborgwinner.jpeg'); background-size: cover; background-position: center; opacity: 1; z-index: -1; transform: scale(1); transition: transform 5s linear; }
         #sponsor-bumper.active { opacity: 1; pointer-events: auto; }
-        #sponsor-bumper.active::before { transform: scale(1.08); }
         .sponsor-content { text-align: center; transform: translateY(15px); opacity: 0; transition: all 1s cubic-bezier(0.25, 1, 0.5, 1) 0.3s; text-shadow: 0 4px 15px rgba(0,0,0,0.8); }
         #sponsor-bumper.active .sponsor-content { transform: translateY(0); opacity: 1; }
         .sponsor-subtitle { font-family: 'Montserrat', sans-serif; font-size: clamp(10px, 3vmin, 14px); letter-spacing: 6px; color: #ffffff; margin-bottom: 5px; text-transform: uppercase; }
-        .sponsor-divider { width: 0; height: 2px; background: linear-gradient(90deg, transparent, #39FF14, transparent); margin: 15px auto; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.8s; }
+        .sponsor-divider { width: 0; height: 2px; background: linear-gradient(90deg, transparent, #2AABEE, transparent); margin: 15px auto; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.8s; }
         #sponsor-bumper.active .sponsor-divider { width: 150px; }
         .sponsor-title { font-family: 'Chakra Petch', sans-serif; font-size: clamp(26px, 7vmin, 50px); color: #ffffff; font-weight: 900; letter-spacing: 4px; line-height: 1.1; text-transform: uppercase; text-shadow: 0 10px 30px rgba(0,0,0,1); }
-        .sponsor-title span { color: #39FF14; }
+        .sponsor-title span { color: #2AABEE; }
 
-        /* Pulsanti Modalità */
         .mode-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #888; padding: 12px; font-size: 13px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px; border-radius: 8px; cursor: pointer; flex: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; }
         .mode-btn.active { background: rgba(0, 255, 102, 0.12); border-color: var(--p1-neon); color: var(--p1-neon); }
 
@@ -147,30 +118,16 @@
         #p2-grid .team-btn.active span { color: var(--p2-neon); }
         .flag { width: 100%; height: 100%; display: block; object-fit: cover; }
 
-        /* Pulsanti */
         .joystick-btn-only { background: transparent; border: none; box-shadow: none; cursor: pointer; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px; outline: none; padding: 0; -webkit-tap-highlight-color: transparent; }
         .joystick-btn-only svg { width: 60px; height: 60px; filter: drop-shadow(0 0 10px rgba(0,255,102,0.4)); animation: pulse-joystick 2.5s infinite alternate ease-in-out; will-change: transform, filter; }
         @keyframes pulse-joystick { 0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,255,102,0.2)); } 100% { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(0,255,102,0.6)); } }
         @keyframes pulse-joystick-overdrive { 0% { transform: scale(1.05); filter: drop-shadow(0 0 15px rgba(57,255,20,0.6)); } 100% { transform: scale(1.15); filter: drop-shadow(0 0 35px rgba(57,255,20,1)); } }
         .joystick-btn-only:active svg { transform: scale(0.9) !important; animation: none; }
 
-        .logo-start-btn { position: relative; background: radial-gradient(circle at center, rgba(5, 8, 12, 0.9) 0%, rgba(0, 0, 0, 1) 100%); border: 2px solid var(--p1-neon); border-radius: 50%; width: 80px; height: 80px; cursor: pointer; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 5px; outline: none; padding: 0; -webkit-transform: translateZ(0); transform: translateZ(0); }
-        .logo-start-btn svg { width: 32px; height: 32px; margin-bottom: 2px; }
-        .logo-start-btn span { font-family: 'Chakra Petch', sans-serif; color: var(--p1-neon); font-size: 13px; font-weight: 900; letter-spacing: 2px; }
-        .gold-btn { border-color: #FFD700; }
-        .gold-btn span { color: #FFD700; font-size: 11px; }
-
-        .small-pulse-btn { width: 55px !important; height: 55px !important; margin-top: 5px !important; animation: soft-pulse 2s infinite alternate ease-in-out; }
-        .small-pulse-btn svg { width: 22px !important; height: 22px !important; margin-bottom: 2px; }
-        .small-pulse-btn span { font-size: 9px !important; letter-spacing: 1px !important; }
-        @keyframes soft-pulse { 0% { transform: scale(1); box-shadow: 0 0 5px rgba(255,215,0,0.2); } 100% { transform: scale(1.08); box-shadow: 0 0 15px rgba(255,215,0,0.6); border-color: #FFF8A0; } }
-
-        /* Messaggi In-Game */
         #message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(35px, 9vmin, 80px); font-weight: 900; font-style: italic; text-align: center; color: #fff; text-transform: uppercase; z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; width: 100%; letter-spacing: 4px; will-change: opacity, transform; text-shadow: 0 5px 15px rgba(0,0,0,0.8); }
         #message.active { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: glitchPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes glitchPop { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
 
-        /* Trophy - Flat & Minimal */
         .cup-trophy-container { position: relative; width: 160px; height: 180px; margin: 0 auto 20px auto; }
         .cup-handle { position: absolute; top: 30px; width: 45px; height: 60px; border: 6px solid #DAA520; border-radius: 20px; z-index: 1; }
         .handle-left { left: 15px; border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;}
@@ -187,16 +144,6 @@
 
     <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; width: 1px; height: 1px; left: -9999px; top: -9999px; pointer-events: none;" aria-hidden="true">
         <defs>
-            <linearGradient id="gradMetallic" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#e0e0e0"/>
-                <stop offset="50%" stop-color="#999999"/>
-                <stop offset="100%" stop-color="#666666"/>
-            </linearGradient>
-            <g id="betting-logo">
-                <path d="M60,11.5 L64.5,21.5 A35,35 0 0,1 78.5,28.5 L88.5,24 L94,36 L85,42.5 A35,35 0 0,1 85,57.5 L94,64 L88.5,76 L78.5,71.5 A35,35 0 0,1 64.5,78.5 L60,88.5 L40,88.5 L35.5,78.5 A35,35 0 0,1 21.5,71.5 L11.5,76 L6,64 L15,57.5 A35,35 0 0,1 15,42.5 L6,36 L11.5,24 L21.5,28.5 A35,35 0 0,1 35.5,21.5 L40,11.5 Z" fill="url(#gradMetallic)"/>
-                <circle cx="50" cy="50" r="24" fill="#000000"/>
-                <path d="M 34 66 Q 45 40 66 34 Q 55 60 34 66 Z" fill="#39FF14"/>
-            </g>
             <g id="gamepad-icon">
                 <path d="M 15 45 C 15 30 25 25 40 25 L 60 25 C 75 25 85 30 85 45 C 85 65 90 75 75 75 C 65 75 60 60 50 60 C 40 60 35 75 25 75 C 10 75 15 65 15 45 Z" fill="#222" stroke="#555" stroke-width="2"/>
                 <path d="M 27 45 h 10 m -5 -5 v 10" stroke="#111" stroke-width="4.5" stroke-linecap="round"/>
@@ -212,17 +159,15 @@
     </svg>
 
     <div id="game-container">
-        <!-- Wrapper Scalabile Dinamico (Rispetta le proporzioni ovunque) -->
         <div id="game-wrapper">
             <canvas id="gameCanvas"></canvas>
             <div id="screen-flash"></div> 
-            <div id="scanlines"></div>
             
             <div id="sponsor-bumper" class="hidden">
                 <div class="sponsor-content">
-                    <div class="sponsor-subtitle">PROUDLY SPONSORED BY</div>
+                    <div class="sponsor-subtitle">POWERED BY</div>
                     <div class="sponsor-divider"></div>
-                    <div class="sponsor-title">BETTING<br><span>EXCHANGE</span> ROOM</div>
+                    <div class="sponsor-title">TELEGRAM<br><span>NETWORK</span></div>
                 </div>
             </div>
 
@@ -240,19 +185,9 @@
                     </div>
                 </div>
 
-                <!-- Menu Principale -->
                 <div id="team-menu" class="overlay-screen">
                     <div class="overlay-content">
                         
-                        <div class="menu-video-container">
-                            <video class="menu-video" autoplay muted playsinline preload="metadata" id="intro-video">
-                                <source src="itcyborgscommettestake.mp4" type="video/mp4">
-                            </video>
-                            <div class="watermark-cover">
-                                <img src="logo sfondo nero betting exchange room.jpeg" alt="Logo">
-                            </div>
-                        </div>
-
                         <div style="display:flex; width:100%; gap:8px; margin-bottom:4px;">
                             <button id="btn-1p" class="mode-btn active">1 PLAYER</button>
                             <button id="btn-2p" class="mode-btn">2 PLAYERS</button>
@@ -274,7 +209,6 @@
                     </div>
                 </div>
 
-                <!-- Game Over -->
                 <div id="game-over-screen" class="overlay-screen hidden">
                     <div class="overlay-content" style="padding: 15px;">
                         <div id="winner-flag-container"></div>
@@ -285,12 +219,6 @@
                             <button id="restart-btn" class="joystick-btn-only" style="margin-top: 0;">
                                 <svg viewBox="0 0 100 100"><use href="#gamepad-icon"></use></svg>
                             </button>
-                            <a href="https://betting-exchange-room-landing-page.vercel.app/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                                <button class="logo-start-btn gold-btn small-pulse-btn">
-                                    <svg viewBox="0 0 100 100"><use href="#betting-logo"></use></svg>
-                                    <span>JOIN US</span>
-                                </button>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -301,11 +229,17 @@
     </div>
 
     <script>
+        // Caricamento Immagine Globale (Logo Tondo)
+        const logoTondoImg = new Image();
+        logoTondoImg.src = 'logo-tondo.jpeg';
+        // Quando il logo è caricato, svuotiamo la cache vettoriale così da ridisegnare subito i Token dell'AI
+        logoTondoImg.onload = () => { clearTokenCache(); };
+
         // --- SISTEMA RISVEGLIO INCONSAPEVOLE (7 CHAKRA AI) ---
         let aiLevel = parseInt(localStorage.getItem('cyberTorneo_ai_rank')) || 1;
 
         const chakraData = [
-            { name: "NULL", color: "#ffffff", hz: 396 }, // Indice 0 non usato
+            { name: "NULL", color: "#ffffff", hz: 396 }, 
             { name: "MULADHARA (ROOT)", color: "#FF0000", hz: 396 },       // Lvl 1
             { name: "SVADHISTHANA (SACRAL)", color: "#FF7F00", hz: 417 },  // Lvl 2
             { name: "MANIPURA (SOLAR)", color: "#FFD700", hz: 528 },       // Lvl 3
@@ -314,19 +248,6 @@
             { name: "AJNA (THIRD EYE)", color: "#4B0082", hz: 852 },       // Lvl 6
             { name: "SAHASRARA (CROWN)", color: "#9400D3", hz: 963 }       // Lvl 7
         ];
-
-        // --- FORZATURA VIDEO AUTOPLAY ---
-        function forceVideoPlay() {
-            document.querySelectorAll('video').forEach(v => {
-                if (v.paused) {
-                    let playPromise = v.play();
-                    if (playPromise !== undefined) playPromise.catch(e => console.log("Autoplay bloccato", e));
-                }
-            });
-        }
-        document.addEventListener('DOMContentLoaded', forceVideoPlay);
-        document.addEventListener('touchstart', forceVideoPlay, { once: true });
-        document.addEventListener('click', forceVideoPlay, { once: true });
 
         // --- PREVENZIONE GLITCH TOUCH ---
         window.addEventListener('contextmenu', e => e.preventDefault());
@@ -400,9 +321,19 @@
         }
 
         class Ball extends CircleEntity {
-            constructor(x, y) { super(x, y, 16, 0.8); this.trail = []; }
+            constructor(x, y) { 
+                super(x, y, 16, 0.8); 
+                this.trail = []; 
+                this.rotation = 0; 
+            } 
             update() {
                 super.update(); let speed = Math.hypot(this.vx, this.vy);
+                
+                if (speed > 0.1) {
+                    let spinDir = (this.vx > 0) ? 1 : -1;
+                    this.rotation += (speed / this.radius) * spinDir * 0.3;
+                }
+
                 if (speed > 2) this.trail.push({x: this.x, y: this.y, life: 10, speed: speed});
                 for (let i = this.trail.length - 1; i >= 0; i--) { 
                     this.trail[i].life--; 
@@ -413,20 +344,114 @@
                 ctx.save();
                 let currentSpeed = Math.hypot(this.vx, this.vy);
                 let isFireCore = currentSpeed > 18;
-                let coreColor = isFireCore ? '#FF0055' : '#00FF66';
                 let trailColor = isFireCore ? '255, 0, 85' : '0, 255, 102';
                 
+                // Draw Scia
                 if (this.trail.length > 1) {
                     ctx.beginPath(); ctx.moveTo(this.trail[0].x, this.trail[0].y);
                     for (let i = 1; i < this.trail.length; i++) ctx.lineTo(this.trail[i].x, this.trail[i].y);
                     ctx.lineTo(this.x, this.y);
                     ctx.lineWidth = this.radius * 1.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-                    ctx.strokeStyle = `rgba(${trailColor}, 0.2)`; ctx.stroke();
+                    ctx.strokeStyle = `rgba(${trailColor}, 0.3)`; ctx.stroke();
                 }
                 
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, PI2);
-                ctx.fillStyle = '#ffffff'; ctx.fill();
-                ctx.lineWidth = 2; ctx.strokeStyle = coreColor; ctx.stroke();
+                ctx.translate(this.x, this.y);
+                
+                // Ombra fissa non ruotata (Previene glitch su Safari)
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 6;
+                ctx.shadowOffsetY = 4;
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius, 0, PI2);
+                ctx.fillStyle = 'rgba(0,0,0,1)';
+                ctx.fill();
+                
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.shadowColor = 'transparent';
+
+                ctx.rotate(this.rotation);
+
+                // DISEGNO MATEMATICO DEL PALLONE (Migliorato 3D vettoriale)
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius, 0, PI2);
+                ctx.clip(); // Maschera di ritaglio per l'effetto sferico
+
+                // Sfondo con gradiente radiale 3D
+                let grad = ctx.createRadialGradient(-this.radius*0.3, -this.radius*0.3, this.radius*0.1, 0, 0, this.radius);
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.7, '#e0e0e0');
+                grad.addColorStop(1, '#999999');
+                ctx.fillStyle = grad;
+                ctx.fillRect(-this.radius, -this.radius, this.radius*2, this.radius*2);
+
+                // Geometria a esagoni e pentagoni
+                ctx.fillStyle = '#1a1a1a';
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1.5;
+                ctx.lineJoin = 'round';
+                let r = this.radius;
+
+                // Pentagono centrale
+                ctx.beginPath();
+                for (let i = 0; i < 5; i++) {
+                    let a = i * PI2 / 5 - Math.PI / 2;
+                    let px = Math.cos(a) * (r * 0.38);
+                    let py = Math.sin(a) * (r * 0.38);
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // Linee dal pentagono centrale ai lati e pentagoni periferici
+                for (let i = 0; i < 5; i++) {
+                    let a1 = i * PI2 / 5 - Math.PI / 2;
+                    let a2 = (i + 1) * PI2 / 5 - Math.PI / 2;
+                    let aMid = a1 + Math.PI / 5;
+                    
+                    let px = Math.cos(a1) * (r * 0.38);
+                    let py = Math.sin(a1) * (r * 0.38);
+                    let px2 = Math.cos(a2) * (r * 0.38);
+                    let py2 = Math.sin(a2) * (r * 0.38);
+                    
+                    let ex = Math.cos(a1) * (r * 0.85);
+                    let ey = Math.sin(a1) * (r * 0.85);
+                    let ex2 = Math.cos(a2) * (r * 0.85);
+                    let ey2 = Math.sin(a2) * (r * 0.85);
+
+                    ctx.beginPath();
+                    ctx.moveTo(px, py);
+                    ctx.lineTo(ex, ey);
+                    ctx.lineTo(ex2, ey2);
+                    ctx.stroke();
+
+                    // Mezzi pentagoni sui bordi
+                    ctx.beginPath();
+                    ctx.arc(Math.cos(aMid) * r, Math.sin(aMid) * r, r * 0.42, 0, PI2);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
+                ctx.restore(); // Rimuovi il clip
+                
+                // Bordo netto attorno al pallone
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius, 0, PI2);
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = '#222';
+                ctx.stroke();
+
+                if(isFireCore) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.radius, 0, PI2);
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#FF0055';
+                    ctx.stroke();
+                }
+
                 ctx.restore();
             }
         }
@@ -455,31 +480,31 @@
         let matchDuration = 180, timeRemaining = matchDuration, timerInterval = null;
         let turnTimeRemaining = 5.0, lastTurnIndicatorText = "", lastTurnIndicatorColor = "";
 
-        // --- SISTEMA DI DISPLAY OTTIMIZZATO PER TUTTI GLI SCHERMI ---
         function initDisplay() {
             const w = window.innerWidth;
             const h = window.innerHeight;
             let screenRatio = h / w;
+            let targetRatio = 1.6; 
 
-            // Forza una proporzione di campo giocabile su Desktop / Modalità Landscape
-            if (screenRatio < 1.3) screenRatio = 1.6; // Costringe il campo a rimanere verticale
-            if (screenRatio > 2.2) screenRatio = 2.2; // Evita campi troppo lunghi su telefoni ultrawide
+            let visualWidth, visualHeight;
 
-            GAME_HEIGHT = GAME_WIDTH * screenRatio;
+            if (screenRatio < targetRatio) {
+                visualHeight = h;
+                visualWidth = h / targetRatio;
+            } else {
+                visualWidth = w;
+                visualHeight = w * targetRatio;
+            }
+
+            GAME_WIDTH = 600;
+            GAME_HEIGHT = GAME_WIDTH * targetRatio;
+            
             mTop = Math.max(140, GAME_HEIGHT * 0.15); 
             mBot = Math.max(70, GAME_HEIGHT * 0.08);
             
             dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = GAME_WIDTH * dpr; 
             canvas.height = GAME_HEIGHT * dpr;
-
-            // Calcola la grandezza visiva del Wrapper
-            let visualHeight = h;
-            let visualWidth = h / screenRatio;
-            if (visualWidth > w) {
-                visualWidth = w;
-                visualHeight = w * screenRatio;
-            }
 
             const wrapper = document.getElementById('game-wrapper');
             wrapper.style.width = `${visualWidth}px`;
@@ -518,8 +543,8 @@
         };
 
         let gameMode = 1;
-        let selectedTeamP1 = 'ITA';
-        let selectedTeamP2 = 'MEX';
+        let selectedTeamP1 = 'ITA'; 
+        let selectedTeamP2 = 'MEX'; 
 
         function checkBossStatus() {
             const btn1p = document.getElementById('btn-1p');
@@ -568,7 +593,6 @@
 
         checkBossStatus();
 
-        // --- SISTEMA AUDIO ---
         let audioCtx = null;
         let crowdGainNode = null;
         let sponsorVoicePlayed = false;
@@ -624,25 +648,13 @@
             if(oscChakra && audioCtx) oscChakra.frequency.setTargetAtTime(chakraData[aiLevel].hz, audioCtx.currentTime, 0.5);
         }
 
-        function commentatorSpeak(text, rate = 1.1, pitch = 1.1) {
-            if ('speechSynthesis' in window) {
-                let msg = new SpeechSynthesisUtterance(text);
-                msg.lang = 'en-US'; msg.rate = rate; msg.pitch = pitch; msg.volume = 1.0;
-                window.speechSynthesis.speak(msg);
-            }
-        }
-
         function playSponsorBumper(callback) {
             const bumper = document.getElementById('sponsor-bumper');
             bumper.classList.remove('hidden'); void bumper.offsetWidth; bumper.classList.add('active');
-            if (!sponsorVoicePlayed) {
-                commentatorSpeak("Sponsored by Betting Exchange Room. 3 minutes on the clock. First to 3 goals wins.", 1.0, 1.0);
-                sponsorVoicePlayed = true; 
-            }
             setTimeout(() => {
                 bumper.classList.remove('active');
                 setTimeout(() => { bumper.classList.add('hidden'); if (callback) callback(); }, 800); 
-            }, 3500); 
+            }, 2500); 
         }
 
         function playShootSound() {
@@ -688,7 +700,7 @@
                 score2El.style.color = '#FF0055'; score2El.style.textShadow = '0 0 25px rgba(255,0,85,0.8)';
             } else {
                 let aiColor = chakraData[aiLevel].color;
-                document.getElementById('sb-flag-2').innerHTML = `<div style="font-size: 18px; margin-top:-3px; filter: drop-shadow(0 0 5px ${aiColor});">🤖</div>`;
+                document.getElementById('sb-flag-2').innerHTML = `<img src="logo-tondo.jpeg" style="height: 100%; width: auto; aspect-ratio: 1/1; border-radius: 50%; border: 1px solid ${aiColor}; box-shadow: 0 0 8px ${aiColor}; display: block; margin: 0 auto; object-fit: cover;">`;
                 score2El.style.color = aiColor; score2El.style.textShadow = `0 0 20px ${aiColor}80`;
                 scoreBoardEl.style.borderBottomColor = aiColor;
             }
@@ -702,9 +714,6 @@
                 gameState = GAME_STATE_PLAYING; 
                 hideMessage();
                 startTimer();
-                
-                let vsText = gameMode === 2 ? teamNamesEn[selectedTeamP2] : "The System";
-                commentatorSpeak(`The match begins! ${teamNamesEn[selectedTeamP1]} against ${vsText}!`, 1.1, 1.0);
                 
                 if (!window.gameLoopRunning) {
                     window.gameLoopRunning = true;
@@ -790,10 +799,9 @@
         function drawAiToken(ctx, x, y, radius, isDrag, currentAiLevel) {
             ctx.save(); 
             ctx.beginPath(); ctx.arc(x, y, radius, 0, PI2);
-            ctx.fillStyle = '#111'; // Corpo nero base mantenuto
+            ctx.fillStyle = '#111';
             ctx.fill();
             
-            // Cerchio Esterno colorato in base al Chakra Level
             let rimColor = chakraData[currentAiLevel].color;
             ctx.lineWidth = isDrag ? 4 : 2; ctx.strokeStyle = rimColor; 
             ctx.shadowBlur = 15; ctx.shadowColor = rimColor;
@@ -808,40 +816,109 @@
             }
             ctx.closePath(); ctx.fillStyle = '#333'; ctx.fill();
 
-            ctx.beginPath(); ctx.arc(0, 0, radius * 0.4, 0, PI2); ctx.fillStyle = '#000000'; ctx.fill();
-
+            // Inserimento Logo Tondo all'interno del token dell'AI
             ctx.beginPath();
-            let l = radius * 0.25; let w = radius * 0.1; 
-            ctx.moveTo(-l, l); ctx.quadraticCurveTo(-w, -w, l, -l); ctx.quadraticCurveTo(w, w, -l, l);
-            // Colore logo interno sempre verde acceso
-            ctx.fillStyle = '#39FF14'; ctx.fill();
+            ctx.arc(0, 0, radius * 0.45, 0, PI2);
+            ctx.closePath();
+            
+            ctx.save();
+            ctx.clip(); 
+            if (logoTondoImg.complete && logoTondoImg.naturalWidth !== 0) {
+                ctx.drawImage(logoTondoImg, -radius * 0.45, -radius * 0.45, radius * 0.9, radius * 0.9);
+            } else {
+                ctx.fillStyle = '#000000'; 
+                ctx.fill(); 
+            }
+            ctx.restore();
+
+            // Anello colorato di demarcazione attorno al logo
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.45, 0, PI2);
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = rimColor;
+            ctx.stroke();
 
             ctx.restore();
         }
 
         function drawField() {
-            ctx.fillStyle = '#030408'; ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-            ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-            for (let i = 0; i <= GAME_WIDTH; i += 60) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, GAME_HEIGHT); ctx.stroke(); }
-            for (let i = 0; i <= GAME_HEIGHT; i += 60) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(GAME_WIDTH, i); ctx.stroke(); }
-            ctx.save(); ctx.lineCap = 'square'; ctx.lineJoin = 'miter';
-            
-            const drawFlatLines = (drawPathFunc, color) => { ctx.beginPath(); drawPathFunc(); ctx.lineWidth = 2; ctx.strokeStyle = color; ctx.stroke(); };
+            ctx.fillStyle = '#224a10'; 
+            ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-            drawFlatLines(() => {
-                ctx.rect(mSide, mTop, GAME_WIDTH - mSide * 2, GAME_HEIGHT - mTop - mBot);
-                const midY = mTop + (GAME_HEIGHT - mTop - mBot) / 2;
-                ctx.moveTo(mSide, midY); ctx.lineTo(GAME_WIDTH - mSide, midY); ctx.arc(GAME_WIDTH / 2, midY, 80, 0, PI2);
-            }, 'rgba(255,255,255,0.2)');
+            const playX = mSide;
+            const playY = mTop;
+            const playW = GAME_WIDTH - mSide * 2;
+            const playH = GAME_HEIGHT - mTop - mBot;
+
+            const stripeCount = 14;
+            const stripeHeight = playH / stripeCount;
+            for (let i = 0; i < stripeCount; i++) {
+                ctx.fillStyle = i % 2 === 0 ? '#3A7C21' : '#326A1D';
+                ctx.fillRect(playX, playY + i * stripeHeight, playW, stripeHeight);
+            }
+
+            ctx.save();
+            ctx.lineCap = 'square';
+            ctx.lineJoin = 'miter';
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+
+            ctx.strokeRect(playX, playY, playW, playH);
+
+            const midY = playY + playH / 2;
+            ctx.beginPath();
+            ctx.moveTo(playX, midY);
+            ctx.lineTo(playX + playW, midY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(GAME_WIDTH / 2, midY, playW * 0.15, 0, Math.PI * 2);
+            ctx.stroke();
             
-            let p2Color = gameMode === 2 ? '#FF0055' : chakraData[aiLevel].color;
-            drawFlatLines(() => { ctx.rect(GAME_WIDTH / 2 - 130, mTop, 260, 140); ctx.rect(GAME_WIDTH / 2 - 60, mTop, 120, 50); }, p2Color);
-            drawFlatLines(() => { ctx.rect(GAME_WIDTH / 2 - 130, GAME_HEIGHT - mBot - 140, 260, 140); ctx.rect(GAME_WIDTH / 2 - 60, GAME_HEIGHT - mBot - 50, 120, 50); }, '#00FF66');
+            ctx.beginPath();
+            ctx.arc(GAME_WIDTH / 2, midY, 4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            ctx.fill();
+
+            const penW = playW * 0.55;
+            const penH = playH * 0.15;
+            const penX = GAME_WIDTH / 2 - penW / 2;
+            ctx.strokeRect(penX, playY, penW, penH); 
+            ctx.strokeRect(penX, playY + playH - penH, penW, penH); 
+
+            const goalAreaW = playW * 0.25;
+            const goalAreaH = playH * 0.05;
+            const goalAreaX = GAME_WIDTH / 2 - goalAreaW / 2;
+            ctx.strokeRect(goalAreaX, playY, goalAreaW, goalAreaH); 
+            ctx.strokeRect(goalAreaX, playY + playH - goalAreaH, goalAreaW, goalAreaH); 
+
+            const penSpotDist = playH * 0.11;
+            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + penSpotDist, 3, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, 3, 0, Math.PI*2); ctx.fill();
+
+            const arcR = playW * 0.15;
+            ctx.save();
+            ctx.beginPath(); ctx.rect(playX, playY + penH, playW, playH/2 - penH); ctx.clip();
+            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + penSpotDist, arcR, 0, Math.PI*2); ctx.stroke();
+            ctx.restore();
+
+            ctx.save();
+            ctx.beginPath(); ctx.rect(playX, midY, playW, playH/2 - penH); ctx.clip();
+            ctx.beginPath(); ctx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, arcR, 0, Math.PI*2); ctx.stroke();
+            ctx.restore();
+
+            const cornerR = playW * 0.03;
+            ctx.beginPath(); ctx.arc(playX, playY, cornerR, 0, Math.PI/2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(playX+playW, playY, cornerR, Math.PI/2, Math.PI); ctx.stroke();
+            ctx.beginPath(); ctx.arc(playX, playY+playH, cornerR, -Math.PI/2, 0); ctx.stroke();
+            ctx.beginPath(); ctx.arc(playX+playW, playY+playH, cornerR, Math.PI, -Math.PI/2); ctx.stroke();
 
             const gx = GAME_WIDTH / 2 - goalWidth / 2;
+            let p2Color = gameMode === 2 ? '#FF0055' : chakraData[aiLevel].color;
             let p2Fill = gameMode === 2 ? 'rgba(255, 0, 85, 0.15)' : `${chakraData[aiLevel].color}26`; 
-            ctx.fillStyle = p2Fill; ctx.fillRect(gx, mTop - 20, goalWidth, 20); ctx.lineWidth = 3; ctx.strokeStyle = p2Color; ctx.strokeRect(gx, mTop - 20, goalWidth, 20);
-            ctx.fillStyle = 'rgba(0, 255, 102, 0.15)'; ctx.fillRect(gx, GAME_HEIGHT - mBot, goalWidth, 20); ctx.strokeStyle = '#00FF66'; ctx.strokeRect(gx, GAME_HEIGHT - mBot, goalWidth, 20);
+            ctx.fillStyle = p2Fill; ctx.fillRect(gx, playY - 20, goalWidth, 20); ctx.lineWidth = 3; ctx.strokeStyle = p2Color; ctx.strokeRect(gx, playY - 20, goalWidth, 20);
+            ctx.fillStyle = 'rgba(0, 255, 102, 0.15)'; ctx.fillRect(gx, playY + playH, goalWidth, 20); ctx.strokeStyle = '#00FF66'; ctx.strokeRect(gx, playY + playH, goalWidth, 20);
+            
             ctx.restore();
         }
 
@@ -979,12 +1056,13 @@
                 e1.x -= nx * overlap * m1Ratio; e1.y -= ny * overlap * m1Ratio; e2.x += nx * overlap * m2Ratio; e2.y += ny * overlap * m2Ratio;
                 
                 let kx = (e1.vx - e2.vx), ky = (e1.vy - e2.vy); let p = (1 + 0.8) * (nx * kx + ny * ky) / totalMass;
-                e1.vx -= p * e2.mass * nx; e1.vx -= p * e2.mass * nx; e1.vy -= p * e2.mass * ny; e2.vx += p * e1.mass * nx; e2.vy += p * e1.mass * ny;
+                
+                e1.vx -= p * e2.mass * nx; e1.vy -= p * e2.mass * ny; e2.vx += p * e1.mass * nx; e2.vy += p * e1.mass * ny;
                 
                 let imp = Math.abs(p);
                 if (imp > 5) {
                     playImpactSound(imp); 
-                    let c = (e1===ball||e2===ball) ? '#00FF66' : '#ffffff';
+                    let c = (e1===ball||e2===ball) ? '#4CAF50' : '#ffffff';
                     createExplosion(e1.x + nx * e1.radius, e1.y + ny * e1.radius, c, Math.min(imp, 15), imp, 3, 20);
                     
                     if (imp > 20) { triggerScreenShake(12, imp * 0.5); hitStopFrames = 4; triggerFlash(0.4); spawnText(e1.x + nx*e1.radius, e1.y + ny*e1.radius, impactWords[Math.floor(Math.random()*impactWords.length)], '#FF0055'); } 
@@ -1054,7 +1132,6 @@
         function timeUp() {
             gameState = GAME_STATE_OVER; isMoving = false; forceStopAll([...team1, ...team2, ball]); triggerFlash(1);
             showMessage("TIME UP!"); messageEl.style.color = '#FFD700'; messageEl.style.setProperty('--accent-color', '#FFD700');
-            commentatorSpeak("Time is up!", 1.1, 1.0);
             setTimeout(() => { hideMessage(); showEndScreen(); }, 2500);
         }
 
@@ -1064,11 +1141,6 @@
                     <div class="cup-handle handle-left"></div><div class="cup-handle handle-right"></div><div class="cup-stem"></div><div class="cup-base-top"></div>
                     <div class="trophy-base"><div class="base-plate">CHAMPION</div></div>
                     <div class="cup-bowl"><div class="cup-band"></div><div class="cup-sparkle s1"></div><div class="cup-sparkle s2"></div><div class="cup-sparkle s3"></div></div>
-                </div>`;
-            const finalVideoHTML = `
-                <div class="menu-video-container" style="max-width: 160px; margin-bottom: 10px; border-color: #ffffff; box-shadow: none;">
-                    <video class="menu-video" autoplay muted playsinline preload="auto" loop><source src="inglesepresentbettingexchangeroom.mp4" type="video/mp4"></video>
-                    <div class="watermark-cover" style="width: 30px; height: 30px; border-radius: 4px 0 0 0; box-shadow: none;"><img src="logo sfondo nero betting exchange room.jpeg" alt="Logo"></div>
                 </div>`;
 
             let winner = 0; if (scoreP1 > scoreP2) winner = 1; else if (scoreP2 > scoreP1) winner = 2;
@@ -1090,7 +1162,7 @@
                     gameOverTitleEl.innerText = teamNamesEn[selectedTeamP2] + " WINS!"; gameOverTitleEl.style.color = "#FF0055";
                 } else {
                     let aiColor = chakraData[aiLevel].color;
-                    flagHTML = `<div style="font-size: 30px; margin: 0 auto 5px; filter: drop-shadow(0 2px 10px ${aiColor});">🤖</div>`;
+                    flagHTML = `<img src="logo-tondo.jpeg" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid ${aiColor}; box-shadow: 0 2px 15px ${aiColor}; margin: 0 auto 10px; display: block; object-fit: cover;">`;
                     gameOverTitleEl.innerText = "SYSTEM WINS"; gameOverTitleEl.style.color = aiColor;
                 }
             } else {
@@ -1098,10 +1170,9 @@
                 gameOverTitleEl.innerText = "IT'S A DRAW!"; gameOverTitleEl.style.color = "#FFD700";
             }
             
-            winnerFlagContainerEl.innerHTML = finalVideoHTML + flagHTML;
+            winnerFlagContainerEl.innerHTML = flagHTML;
             gameOverIconEl.innerHTML = `<div style="transform: scale(0.6); transform-origin: top center; height: 110px;">${goldCupHTML}</div>`;
             gameOverScreenEl.classList.remove('hidden');
-            forceVideoPlay();
         }
 
         function scoreGoal(playerScored) {
@@ -1111,7 +1182,6 @@
                 scoreP1++; score1El.innerText = scoreP1; currentTurn = 2; 
                 createExplosion(GAME_WIDTH / 2, mTop, '#00FF66', 40, 30, 8, 150);
                 showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#00FF66');
-                commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! ${teamNamesEn[selectedTeamP1]} scores!`, 1.3, 1.4);
             } else {
                 scoreP2++; score2El.innerText = scoreP2; currentTurn = 1;
                 let color = gameMode === 2 ? '#FF0055' : chakraData[aiLevel].color;
@@ -1119,10 +1189,8 @@
                 
                 if (gameMode === 2) {
                     showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#FF0055');
-                    commentatorSpeak(`GOOOOOOOOOOOOOOAL!!! ${teamNamesEn[selectedTeamP2]} scores!`, 1.3, 1.4);
                 } else {
                     showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', color);
-                    commentatorSpeak("GOOOOOOOOOOOOOOAL!!! The System scores!", 1.3, 0.8);
                 }
             }
             updateTurnUI();
@@ -1177,9 +1245,6 @@
         function drawStaticBackground() { ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT); drawField(); team1.forEach(p => p.draw(ctx)); team2.forEach(p => p.draw(ctx)); ball.draw(ctx); }
 
         window.gameLoopRunning = false;
-
-        const introVideo = document.getElementById('intro-video'); const startBtn = document.getElementById('start-btn');
-        if (introVideo && startBtn) { introVideo.addEventListener('ended', () => { const svgIcon = startBtn.querySelector('svg'); if(svgIcon) svgIcon.style.animation = 'pulse-joystick-overdrive 0.3s infinite alternate ease-in-out'; }); }
 
         function gameLoop(time) {
             if(!window.gameLoopRunning) return;
