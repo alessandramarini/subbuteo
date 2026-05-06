@@ -24,7 +24,7 @@
         * { -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; outline: none; box-sizing: border-box; }
 
         html, body {
-            margin: 0; padding: 0; background: var(--bg-outer);
+            margin: 0; padding: 0; background: var(--bg-dark); /* Sfondo uguale al campo per eliminare bordi neri */
             color: #fff; font-family: 'Montserrat', sans-serif;
             height: 100%; width: 100%; overflow: hidden; 
             touch-action: none; overscroll-behavior: none; /* Blocca il pull-to-refresh e il bouncing su iOS */
@@ -32,16 +32,15 @@
 
         #game-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--bg-outer);
-            display: flex; justify-content: center; align-items: center; overflow: hidden;
-            -webkit-transform: translateZ(0); transform: translateZ(0); will-change: transform;
+            background-color: var(--bg-dark);
+            overflow: hidden;
         }
         
         #game-wrapper {
-            position: relative; background-color: var(--bg-dark);
+            position: absolute; top: 0; left: 0;
+            background-color: var(--bg-dark);
             overflow: hidden; 
-            box-shadow: 0 0 50px rgba(0,0,0,1);
-            /* Le dimensioni saranno gestite in JS via transform: scale per stabilità su tutti i device */
+            transform-origin: top left; /* Essenziale per il nuovo scaler a tutto schermo */
         }
         
         canvas, #screen-flash, #ui-layer, #sponsor-bumper, .overlay-screen {
@@ -90,7 +89,7 @@
             border: 1px solid rgba(255, 255, 255, 0.06); border-top: 1px solid rgba(255, 255, 255, 0.15); border-bottom: 3px solid var(--p1-neon);
             border-radius: 16px; padding: 20px 10px; text-align: center; pointer-events: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
             width: 95%; max-width: 400px; 
-            max-height: 95dvh; /* Evita sforamenti verticali su smartphone piccoli */
+            max-height: 88%; /* Margine sicuro sopra e sotto, layout perfettamente adattivo */
             display: flex; flex-direction: column; align-items: center; overflow: hidden;
         }
 
@@ -111,10 +110,10 @@
             flex-shrink: 0; /* Impedisce al video di rimpicciolirsi su schermi bassi */
         }
 
-        /* Scorrimento sicuro per touch e adattivo */
+        /* Scorrimento sicuro per touch e adattivo: ora si adatta all'altezza residua automaticamente */
         #teams-scroll-area { 
             width: 100%; 
-            flex: 1; /* Prende lo spazio residuo senza sforare il max-height */
+            flex: 1 1 auto; 
             min-height: 0;
             overflow-y: auto; 
             margin-bottom: 10px; 
@@ -332,8 +331,8 @@
         });
 
         // Configurazione Resa Visiva e Stabilità Fisica
-        const LOGICAL_WIDTH = 600;
-        const LOGICAL_HEIGHT = 900;
+        let LOGICAL_WIDTH = 600;
+        let LOGICAL_HEIGHT = 900;
         let GAME_WIDTH = LOGICAL_WIDTH;
         let GAME_HEIGHT = LOGICAL_HEIGHT;
         let dpr = 1; 
@@ -569,9 +568,10 @@
         // Cache del campo per evitare di ridisegnare linee ed esagoni 60 volte al secondo
         let fieldCacheCanvas = null;
         function generateFieldCache() {
+            if (GAME_WIDTH <= 0 || GAME_HEIGHT <= 0) return;
             fieldCacheCanvas = document.createElement('canvas');
-            fieldCacheCanvas.width = GAME_WIDTH * dpr;
-            fieldCacheCanvas.height = GAME_HEIGHT * dpr;
+            fieldCacheCanvas.width = Math.max(1, GAME_WIDTH * dpr);
+            fieldCacheCanvas.height = Math.max(1, GAME_HEIGHT * dpr);
             const fCtx = fieldCacheCanvas.getContext('2d', { alpha: false });
             fCtx.scale(dpr, dpr);
 
@@ -658,7 +658,7 @@
         // Cache del Pallone per evitare drop di FPS
         let cachedBallCanvas = null;
         function getBallCanvas(radius) {
-            if (!cachedBallCanvas) {
+            if (!cachedBallCanvas || cachedBallCanvas.width === 0) {
                 cachedBallCanvas = document.createElement('canvas');
                 const pad = 2;
                 cachedBallCanvas.width = (radius * 2 + pad * 2) * dpr;
@@ -899,7 +899,9 @@
         function drawStaticBackground() { 
             ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
             if (!fieldCacheCanvas) generateFieldCache();
-            ctx.drawImage(fieldCacheCanvas, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+            if (fieldCacheCanvas && fieldCacheCanvas.width > 0 && fieldCacheCanvas.height > 0) {
+                ctx.drawImage(fieldCacheCanvas, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+            }
             team1.forEach(p => p.draw(ctx)); 
             team2.forEach(p => p.draw(ctx)); 
             ball.draw(ctx); 
@@ -1014,17 +1016,36 @@
         let turnTimeRemaining = 5.0, lastTurnIndicatorText = "", lastTurnIndicatorColor = "";
 
         function initDisplay() {
-            const w = window.innerWidth;
-            const h = window.innerHeight;
+            // Evita dimensioni a zero durante l'inizializzazione dell'iframe
+            const w = Math.max(100, window.innerWidth);
+            const h = Math.max(100, window.innerHeight);
             
-            // Calcolo scala per adattare i 600x900 perfetti a qualsiasi schermo
-            const scale = Math.min(w / LOGICAL_WIDTH, h / LOGICAL_HEIGHT);
+            // Fai in modo che il width logico sia una base fissa (es: 600) e calcola l'height proporzionalmente per far sparire per sempre i bordi neri
+            let scale = w / 600;
+            let logicalW = 600;
+            let logicalH = scale > 0 ? h / scale : 900;
+
+            // Se il dispositivo è in landscape (come tablet o pc in orizzontale), evita che il campo diventi schiacciato
+            if (logicalH < 700) {
+                logicalH = 900;
+                scale = h / 900;
+                logicalW = w / scale;
+            }
+
+            LOGICAL_WIDTH = logicalW;
+            LOGICAL_HEIGHT = logicalH;
+            GAME_WIDTH = logicalW;
+            GAME_HEIGHT = logicalH;
+            
+            // Ricalcola i margini in base alla nuova altezza reale, per far partire i giocatori alla distanza corretta
+            mTop = Math.max(160, GAME_HEIGHT * 0.15); 
+            mBot = Math.max(90, GAME_HEIGHT * 0.10);
 
             const wrapper = document.getElementById('game-wrapper');
             wrapper.style.width = `${LOGICAL_WIDTH}px`;
             wrapper.style.height = `${LOGICAL_HEIGHT}px`;
             wrapper.style.transform = `scale(${scale})`;
-            wrapper.style.transformOrigin = 'center center';
+            wrapper.style.transformOrigin = 'top left'; // Lo scalerà esattamente dal bordo senza margini!
             
             dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = LOGICAL_WIDTH * dpr; 
@@ -1042,7 +1063,7 @@
 
         function updatePointerCoords(clientX, clientY) {
             const rect = canvas.getBoundingClientRect();
-            // Adatta le coordinate del tocco tenendo conto della scala CSS usata
+            // Adatta le coordinate del tocco tenendo conto della scala CSS
             const scaleX = LOGICAL_WIDTH / rect.width;
             const scaleY = LOGICAL_HEIGHT / rect.height;
             pointer.x = (clientX - rect.left) * scaleX;
@@ -1380,7 +1401,9 @@
         function drawStaticBackground() { 
             ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
             if (!fieldCacheCanvas) generateFieldCache();
-            ctx.drawImage(fieldCacheCanvas, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+            if (fieldCacheCanvas && fieldCacheCanvas.width > 0 && fieldCacheCanvas.height > 0) {
+                ctx.drawImage(fieldCacheCanvas, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+            }
             team1.forEach(p => p.draw(ctx)); 
             team2.forEach(p => p.draw(ctx)); 
             ball.draw(ctx); 
@@ -1424,7 +1447,9 @@
             
             // Disegna il campo precalcolato (enorme boost agli FPS)
             if (!fieldCacheCanvas) generateFieldCache();
-            ctx.drawImage(fieldCacheCanvas, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+            if (fieldCacheCanvas && fieldCacheCanvas.width > 0 && fieldCacheCanvas.height > 0) {
+                ctx.drawImage(fieldCacheCanvas, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+            }
 
             for (let i = 0; i < particlePool.length; i++) { particlePool[i].draw(ctx); }
             drawSlingshotLine(); team1.forEach(p => p.draw(ctx)); team2.forEach(p => p.draw(ctx)); ball.draw(ctx);
