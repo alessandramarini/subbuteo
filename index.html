@@ -24,23 +24,24 @@
         * { -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; outline: none; box-sizing: border-box; }
 
         html, body {
-            margin: 0; padding: 0; background: var(--bg-dark); /* Sfondo uguale al campo per eliminare bordi neri */
+            margin: 0; padding: 0; background: var(--bg-dark); 
             color: #fff; font-family: 'Montserrat', sans-serif;
             height: 100%; width: 100%; overflow: hidden; 
-            touch-action: none; overscroll-behavior: none; /* Blocca il pull-to-refresh e il bouncing su iOS */
+            touch-action: none; overscroll-behavior: none; 
         }
 
         #game-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg-dark);
             overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
         }
         
         #game-wrapper {
             position: absolute; top: 0; left: 0;
             background-color: var(--bg-dark);
             overflow: hidden; 
-            transform-origin: top left; /* Essenziale per il nuovo scaler a tutto schermo */
+            transform-origin: top left; 
         }
         
         canvas, #screen-flash, #ui-layer, #sponsor-bumper, .overlay-screen {
@@ -61,7 +62,7 @@
             -webkit-transform: translateZ(0); transform: translateZ(0); margin-top: -1px; transition: border-bottom-color 1s ease;
         }
         
-        .sb-flag-container { width: 36px; height: 24px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; background: #000; }
+        .sb-flag-container { width: 44px; height: 30px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; background: #000; }
         .sb-flag-container img, .sb-flag-container svg { width: 100%; height: 100%; object-fit: cover; display: block; }
         
         #timer-display {
@@ -77,9 +78,9 @@
         .score-p1 { color: var(--p1-neon); min-width: 25px; text-align: center; }
         .score-p2 { color: #ffffff; min-width: 25px; text-align: center; transition: color 1s, text-shadow 1s; }
         #turn-indicator {
-            font-family: 'Chakra Petch', sans-serif; font-size: 12px; padding: 4px 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Chakra Petch', sans-serif; font-size: 13px; padding: 4px 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
             color: #888; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 4px;
-            transition: all 0.3s ease; min-width: 90px; border-radius: 2px;
+            transition: all 0.3s ease; min-width: 100px; border-radius: 4px; font-weight: bold;
         }
 
         .overlay-screen { background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; -webkit-transform: translateZ(0); transform: translateZ(0); }
@@ -88,7 +89,7 @@
             background: linear-gradient(145deg, #0f121b 0%, #050609 100%);
             border: 1px solid rgba(255, 255, 255, 0.06); border-top: 1px solid rgba(255, 255, 255, 0.15); border-bottom: 3px solid var(--p1-neon);
             border-radius: 16px; padding: 25px 15px; text-align: center; pointer-events: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
-            width: 96%; max-width: 560px; /* Aumentato drasticamente per sfruttare l'intero schermo */
+            width: 96%; max-width: 800px; 
             max-height: 94%; 
             display: flex; flex-direction: column; align-items: center; overflow: hidden;
         }
@@ -97,20 +98,19 @@
 
         .inline-video-box {
             width: 100%;
+            max-width: 480px;
             height: auto;
             aspect-ratio: 16 / 9;
-            max-height: 180px; /* Leggermente più alto vista la maggiore larghezza */
-            object-fit: cover;
+            object-fit: contain; /* Non taglia le teste nei video */
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 15px;
+            margin: 0 auto 15px auto;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             pointer-events: none;
             background-color: #000;
             flex-shrink: 0; 
         }
 
-        /* Scorrimento sicuro per touch e adattivo */
         #teams-scroll-area { 
             width: 100%; 
             flex: 1 1 auto; 
@@ -121,17 +121,18 @@
             touch-action: pan-y; 
             scrollbar-width: thin; 
             scrollbar-color: var(--p1-neon) rgba(255, 255, 255, 0.05); 
-            max-height: 50vh; /* Permette alla griglia di espandersi in verticale */
+            max-height: 60vh; 
+            padding: 0 5px;
         }
         #teams-scroll-area::-webkit-scrollbar { width: 6px; display: block; }
         #teams-scroll-area::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
         #teams-scroll-area::-webkit-scrollbar-thumb { background: var(--p1-neon); border-radius: 4px; }
 
-        .button-group { width: 100%; display: flex; gap: 10px; margin-bottom: 15px; flex-shrink: 0; }
+        .button-group { width: 100%; max-width: 480px; display: flex; gap: 10px; margin: 0 auto 15px auto; flex-shrink: 0; }
 
         #teams-flex-container { display: flex; width: 100%; gap: 12px; justify-content: center; align-items: flex-start; }
-        .team-column { flex: 1; display: flex; flex-direction: column; align-items: center; }
-        .team-title { margin: 5px 0 10px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; white-space: nowrap; font-weight: bold; }
+        .team-column { flex: 1; display: flex; flex-direction: column; align-items: center; min-width: 0; }
+        .team-title { margin: 5px 0 10px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; white-space: nowrap; font-weight: bold; }
 
         #sponsor-bumper { background-color: #030408; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sponsor-bumper.active { opacity: 1; pointer-events: auto; }
@@ -146,16 +147,16 @@
         .mode-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #888; padding: 12px; font-size: 14px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px; border-radius: 8px; cursor: pointer; flex: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; }
         .mode-btn.active { background: rgba(0, 255, 102, 0.12); border-color: var(--p1-neon); color: var(--p1-neon); }
 
-        .grid-options { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%; padding: 5px;}
-        /* Bandiere molto più grandi e ariose */
-        .team-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 68px; }
-        .team-btn .flag-container { width: 45px; height: 30px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); position: relative; background: #222; }
-        .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; transition: color 0.3s; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+        /* Nuova Griglia Ariosa e Ottimizzata */
+        .grid-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; width: 100%; padding: 5px; }
+        .team-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 10px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; min-height: 85px; }
+        .team-btn .flag-container { width: 60px; height: 40px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); position: relative; background: #222; box-shadow: 0 2px 8px rgba(0,0,0,0.5); flex-shrink: 0; }
+        .team-btn span { color: #888; font-family: 'Chakra Petch', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; transition: color 0.3s; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; text-align: center; }
         
         @media (hover: hover) { .team-btn:hover { background: rgba(255, 255, 255, 0.08); } .team-btn:hover span { color: #fff; } }
-        .team-btn.active { background: rgba(0, 255, 102, 0.1); border: 1px solid var(--p1-neon); }
+        .team-btn.active { background: rgba(0, 255, 102, 0.1); border: 1px solid var(--p1-neon); box-shadow: 0 0 10px rgba(0,255,102,0.2); }
         .team-btn.active span { color: var(--p1-neon); }
-        #p2-grid .team-btn.active { background: rgba(255, 0, 85, 0.1); border: 1px solid var(--p2-neon); }
+        #p2-grid .team-btn.active { background: rgba(255, 0, 85, 0.1); border: 1px solid var(--p2-neon); box-shadow: 0 0 10px rgba(255,0,85,0.2); }
         #p2-grid .team-btn.active span { color: var(--p2-neon); }
         .flag { width: 100%; height: 100%; display: block; object-fit: cover; }
 
@@ -228,7 +229,7 @@
                 <div id="team-menu" class="overlay-screen">
                     <div class="overlay-content">
                         
-                        <!-- Video Menu -->
+                        <!-- Video Menu Contenuto in Modo Ottimale -->
                         <video id="menu-video" class="inline-video-box" src="itcyborgscommettestake.mp4" autoplay loop muted playsinline webkit-playsinline></video>
 
                         <div class="button-group">
@@ -260,7 +261,7 @@
                 <div id="game-over-screen" class="overlay-screen hidden">
                     <div class="overlay-content">
                         
-                        <!-- Video Game Over -->
+                        <!-- Video Game Over Ottimizzato -->
                         <video id="gameover-video" class="inline-video-box" src="inglesepresentbettingexchangeroom.mp4" autoplay loop muted playsinline webkit-playsinline></video>
 
                         <div id="winner-flag-container"></div>
@@ -281,40 +282,32 @@
     </div>
 
     <script>
-        // Caricamento Immagine Globale (Logo Tondo)
         const logoTondoImg = new Image();
         logoTondoImg.src = 'logo-tondo.jpeg';
         logoTondoImg.onload = () => { clearTokenCache(); };
 
-        // --- SISTEMA RISVEGLIO INCONSAPEVOLE (7 CHAKRA AI) ---
         let aiLevel = parseInt(localStorage.getItem('cyberTorneo_ai_rank')) || 1;
 
         const chakraData = [
             { name: "NULL", color: "#ffffff", hz: 396 }, 
-            { name: "MULADHARA (ROOT)", color: "#FF0000", hz: 396 },       // Lvl 1
-            { name: "SVADHISTHANA (SACRAL)", color: "#FF7F00", hz: 417 },  // Lvl 2
-            { name: "MANIPURA (SOLAR)", color: "#FFD700", hz: 528 },       // Lvl 3
-            { name: "ANAHATA (HEART)", color: "#00FF00", hz: 639 },        // Lvl 4
-            { name: "VISHUDDHA (THROAT)", color: "#00FFFF", hz: 741 },     // Lvl 5
-            { name: "AJNA (THIRD EYE)", color: "#4B0082", hz: 852 },       // Lvl 6
-            { name: "SAHASRARA (CROWN)", color: "#9400D3", hz: 963 }       // Lvl 7
+            { name: "MULADHARA (ROOT)", color: "#FF0000", hz: 396 },       
+            { name: "SVADHISTHANA (SACRAL)", color: "#FF7F00", hz: 417 },  
+            { name: "MANIPURA (SOLAR)", color: "#FFD700", hz: 528 },       
+            { name: "ANAHATA (HEART)", color: "#00FF00", hz: 639 },        
+            { name: "VISHUDDHA (THROAT)", color: "#00FFFF", hz: 741 },     
+            { name: "AJNA (THIRD EYE)", color: "#4B0082", hz: 852 },       
+            { name: "SAHASRARA (CROWN)", color: "#9400D3", hz: 963 }       
         ];
 
-        // --- PREVENZIONE GLITCH TOUCH E RUBBER-BANDING ---
         window.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('touchmove', e => { 
-            // Consenti lo scroll solo dentro l'area specifica
             const scrollArea = e.target.closest('#teams-scroll-area');
             if (scrollArea) {
-                // Non prevenire l'evento se siamo nell'area scrollabile, a meno che non si sia al limite
                 const isAtTop = scrollArea.scrollTop === 0;
                 const isAtBottom = scrollArea.scrollHeight - scrollArea.scrollTop <= scrollArea.clientHeight;
                 const isMovingDown = e.touches[0].clientY > (scrollArea.lastY || 0);
                 scrollArea.lastY = e.touches[0].clientY;
-                
-                if ((isAtTop && isMovingDown) || (isAtBottom && !isMovingDown)) {
-                    if(e.cancelable) e.preventDefault();
-                }
+                if ((isAtTop && isMovingDown) || (isAtBottom && !isMovingDown)) { if(e.cancelable) e.preventDefault(); }
                 return;
             }
             if(e.cancelable) e.preventDefault(); 
@@ -325,10 +318,8 @@
             isTabActive = !document.hidden;
             if(isTabActive) {
                 lastTime = performance.now();
-                // Risveglia l'audio per non perdere sync e risparmiare batteria
                 if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             } else {
-                // Metti in pausa il motore audio quando la finestra è chiusa/invisibile
                 if (audioCtx && audioCtx.state === 'running') audioCtx.suspend();
             }
         });
@@ -341,19 +332,21 @@
         let dpr = 1; 
         const PI2 = Math.PI * 2; 
         
-        let mTop = 190, mBot = 90, mSide = 20; 
-        const goalWidth = 200, goalHeight = 20; 
+        // Setup Adattivo Orizzontale/Verticale
+        let padTop = 190, padBottom = 90, padLeft = 20, padRight = 20; 
+        let isLandscape = false;
+        let goalSize = 200;
+        let goalDepth = 20;
+
         const friction = 0.96, ballFriction = 0.985; 
         const maxBallSpeed = 26; const maxDragPull = 150; 
 
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d', { alpha: false }); 
 
-        // Riferimenti Video
         const menuVideo = document.getElementById('menu-video');
         const gameOverVideo = document.getElementById('gameover-video');
 
-        // --- DATABASE NAZIONI DEL MONDO (ORDINE ALFABETICO INGLESE) ---
         const countries = [
             {id:'af', name:'Afghanistan'}, {id:'al', name:'Albania'}, {id:'dz', name:'Algeria'}, {id:'ad', name:'Andorra'}, {id:'ao', name:'Angola'},
             {id:'ag', name:'Antigua & Barbuda'}, {id:'ar', name:'Argentina'}, {id:'am', name:'Armenia'}, {id:'au', name:'Australia'}, {id:'at', name:'Austria'},
@@ -396,13 +389,12 @@
             {id:'va', name:'Vatican City'}, {id:'ve', name:'Venezuela'}, {id:'vn', name:'Vietnam'}, {id:'ye', name:'Yemen'}, {id:'zm', name:'Zambia'}, {id:'zw', name:'Zimbabwe'}
         ];
 
-        // --- SISTEMA PRELOAD BANDIERE ---
         let loadedFlags = {};
         function preloadFlag(code) {
             if (!loadedFlags[code]) {
                 const img = new Image();
                 img.crossOrigin = "anonymous";
-                img.src = `https://flagcdn.com/w80/${code}.png`;
+                img.src = `https://flagcdn.com/w160/${code}.png`;
                 loadedFlags[code] = img;
                 img.onload = () => { clearTokenCache(); };
             }
@@ -435,13 +427,13 @@
                 const btn = document.createElement('button');
                 btn.className = 'team-btn ' + ((!isP2 && team.id === selectedTeamP1) || (isP2 && team.id === selectedTeamP2) ? 'active' : '');
                 btn.dataset.team = team.id;
-                // Carica la bandiera in HD per la griglia
-                btn.innerHTML = `<div class="flag-container"><img src="https://flagcdn.com/w80/${team.id}.png" class="flag" loading="lazy" alt="${team.name}"></div><span title="${team.name}">${team.name}</span>`;
+                // Carica un formato thumbnail leggerissimo (w40) per il menu, in modo che sia immediato.
+                btn.innerHTML = `<div class="flag-container"><img src="https://flagcdn.com/w40/${team.id}.png" class="flag" loading="lazy" alt="${team.name}"></div><span title="${team.name}">${team.name}</span>`;
                 btn.onclick = () => {
                     container.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     if (isP2) selectedTeamP2 = team.id; else selectedTeamP1 = team.id;
-                    preloadFlag(team.id); 
+                    preloadFlag(team.id); // Qui scatta il download del w160 per il canvas
                 };
                 container.appendChild(btn);
             });
@@ -450,7 +442,6 @@
         buildTeamGrid('p1-grid', false);
         buildTeamGrid('p2-grid', true);
 
-        // --- GESTIONE LAYOUT COLONNE ---
         document.getElementById('btn-1p').addEventListener('click', () => {
             gameMode = 1;
             document.getElementById('btn-1p').classList.add('active');
@@ -471,7 +462,6 @@
 
         let audioCtx = null;
         let crowdGainNode = null;
-        let sponsorVoicePlayed = false;
         let oscChakra = null;
 
         function initAudio() {
@@ -565,11 +555,9 @@
             osc.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + (isGoal ? 2.5 : 0.3));
         }
 
-        // --- SISTEMA CACHING VETTORIALE ULTRA-PRESTAZIONALE ---
         let tokenCache = {};
         function clearTokenCache() { tokenCache = {}; }
 
-        // Cache del campo per evitare di ridisegnare linee ed esagoni 60 volte al secondo
         let fieldCacheCanvas = null;
         function generateFieldCache() {
             if (GAME_WIDTH <= 0 || GAME_HEIGHT <= 0) return;
@@ -582,16 +570,26 @@
             fCtx.fillStyle = '#224a10'; 
             fCtx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-            const playX = mSide;
-            const playY = mTop;
-            const playW = GAME_WIDTH - mSide * 2;
-            const playH = GAME_HEIGHT - mTop - mBot;
+            const playX = padLeft;
+            const playY = padTop;
+            const playW = GAME_WIDTH - padLeft - padRight;
+            const playH = GAME_HEIGHT - padTop - padBottom;
+            const midX = playX + playW / 2;
+            const midY = playY + playH / 2;
 
             const stripeCount = 14;
-            const stripeHeight = playH / stripeCount;
-            for (let i = 0; i < stripeCount; i++) {
-                fCtx.fillStyle = i % 2 === 0 ? '#3A7C21' : '#326A1D';
-                fCtx.fillRect(playX, playY + i * stripeHeight, playW, stripeHeight);
+            if (isLandscape) {
+                const stripeWidth = playW / stripeCount;
+                for (let i = 0; i < stripeCount; i++) {
+                    fCtx.fillStyle = i % 2 === 0 ? '#3A7C21' : '#326A1D';
+                    fCtx.fillRect(playX + i * stripeWidth, playY, stripeWidth, playH);
+                }
+            } else {
+                const stripeHeight = playH / stripeCount;
+                for (let i = 0; i < stripeCount; i++) {
+                    fCtx.fillStyle = i % 2 === 0 ? '#3A7C21' : '#326A1D';
+                    fCtx.fillRect(playX, playY + i * stripeHeight, playW, stripeHeight);
+                }
             }
 
             fCtx.save();
@@ -602,64 +600,87 @@
 
             fCtx.strokeRect(playX, playY, playW, playH);
 
-            const midY = playY + playH / 2;
             fCtx.beginPath();
-            fCtx.moveTo(playX, midY);
-            fCtx.lineTo(playX + playW, midY);
+            if (isLandscape) {
+                fCtx.moveTo(midX, playY); fCtx.lineTo(midX, playY + playH);
+            } else {
+                fCtx.moveTo(playX, midY); fCtx.lineTo(playX + playW, midY);
+            }
             fCtx.stroke();
 
-            fCtx.beginPath();
-            fCtx.arc(GAME_WIDTH / 2, midY, playW * 0.15, 0, Math.PI * 2);
-            fCtx.stroke();
+            const circleR = isLandscape ? playH * 0.15 : playW * 0.15;
+            fCtx.beginPath(); fCtx.arc(midX, midY, circleR, 0, Math.PI * 2); fCtx.stroke();
             
-            fCtx.beginPath();
-            fCtx.arc(GAME_WIDTH / 2, midY, 4, 0, Math.PI * 2);
-            fCtx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-            fCtx.fill();
+            fCtx.beginPath(); fCtx.arc(midX, midY, 4, 0, Math.PI * 2); fCtx.fillStyle = 'rgba(255, 255, 255, 0.85)'; fCtx.fill();
 
-            const penW = playW * 0.55;
-            const penH = playH * 0.15;
-            const penX = GAME_WIDTH / 2 - penW / 2;
-            fCtx.strokeRect(penX, playY, penW, penH); 
-            fCtx.strokeRect(penX, playY + playH - penH, penW, penH); 
+            const penWidth = isLandscape ? playH * 0.55 : playW * 0.55;
+            const penDepth = isLandscape ? playW * 0.15 : playH * 0.15;
+            const goalAreaWidth = isLandscape ? playH * 0.25 : playW * 0.25;
+            const goalAreaDepth = isLandscape ? playW * 0.05 : playH * 0.05;
+            const penSpotDist = isLandscape ? playW * 0.11 : playH * 0.11;
+            const arcR = isLandscape ? playH * 0.15 : playW * 0.15;
 
-            const goalAreaW = playW * 0.25;
-            const goalAreaH = playH * 0.05;
-            const goalAreaX = GAME_WIDTH / 2 - goalAreaW / 2;
-            fCtx.strokeRect(goalAreaX, playY, goalAreaW, goalAreaH); 
-            fCtx.strokeRect(goalAreaX, playY + playH - goalAreaH, goalAreaW, goalAreaH); 
+            if (isLandscape) {
+                fCtx.strokeRect(playX, midY - penWidth/2, penDepth, penWidth); 
+                fCtx.strokeRect(playX, midY - goalAreaWidth/2, goalAreaDepth, goalAreaWidth); 
+                fCtx.beginPath(); fCtx.arc(playX + penSpotDist, midY, 3, 0, Math.PI*2); fCtx.fill();
 
-            const penSpotDist = playH * 0.11;
-            fCtx.beginPath(); fCtx.arc(GAME_WIDTH/2, playY + penSpotDist, 3, 0, Math.PI*2); fCtx.fill();
-            fCtx.beginPath(); fCtx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, 3, 0, Math.PI*2); fCtx.fill();
+                fCtx.strokeRect(playX + playW - penDepth, midY - penWidth/2, penDepth, penWidth); 
+                fCtx.strokeRect(playX + playW - goalAreaDepth, midY - goalAreaWidth/2, goalAreaDepth, goalAreaWidth); 
+                fCtx.beginPath(); fCtx.arc(playX + playW - penSpotDist, midY, 3, 0, Math.PI*2); fCtx.fill();
 
-            const arcR = playW * 0.15;
-            fCtx.save();
-            fCtx.beginPath(); fCtx.rect(playX, playY + penH, playW, playH/2 - penH); fCtx.clip();
-            fCtx.beginPath(); fCtx.arc(GAME_WIDTH/2, playY + penSpotDist, arcR, 0, Math.PI*2); fCtx.stroke();
-            fCtx.restore();
+                fCtx.save();
+                fCtx.beginPath(); fCtx.rect(playX + penDepth, playY, playW/2 - penDepth, playH); fCtx.clip();
+                fCtx.beginPath(); fCtx.arc(playX + penSpotDist, midY, arcR, 0, Math.PI*2); fCtx.stroke();
+                fCtx.restore();
 
-            fCtx.save();
-            fCtx.beginPath(); fCtx.rect(playX, midY, playW, playH/2 - penH); fCtx.clip();
-            fCtx.beginPath(); fCtx.arc(GAME_WIDTH/2, playY + playH - penSpotDist, arcR, 0, Math.PI*2); fCtx.stroke();
-            fCtx.restore();
+                fCtx.save();
+                fCtx.beginPath(); fCtx.rect(midX, playY, playW/2 - penDepth, playH); fCtx.clip();
+                fCtx.beginPath(); fCtx.arc(playX + playW - penSpotDist, midY, arcR, 0, Math.PI*2); fCtx.stroke();
+                fCtx.restore();
+            } else {
+                fCtx.strokeRect(midX - penWidth/2, playY, penWidth, penDepth); 
+                fCtx.strokeRect(midX - goalAreaWidth/2, playY, goalAreaWidth, goalAreaDepth); 
+                fCtx.beginPath(); fCtx.arc(midX, playY + penSpotDist, 3, 0, Math.PI*2); fCtx.fill();
 
-            const cornerR = playW * 0.03;
+                fCtx.strokeRect(midX - penWidth/2, playY + playH - penDepth, penWidth, penDepth); 
+                fCtx.strokeRect(midX - goalAreaWidth/2, playY + playH - goalAreaDepth, goalAreaWidth, goalAreaDepth); 
+                fCtx.beginPath(); fCtx.arc(midX, playY + playH - penSpotDist, 3, 0, Math.PI*2); fCtx.fill();
+
+                fCtx.save();
+                fCtx.beginPath(); fCtx.rect(playX, playY + penDepth, playW, playH/2 - penDepth); fCtx.clip();
+                fCtx.beginPath(); fCtx.arc(midX, playY + penSpotDist, arcR, 0, Math.PI*2); fCtx.stroke();
+                fCtx.restore();
+
+                fCtx.save();
+                fCtx.beginPath(); fCtx.rect(playX, midY, playW, playH/2 - penDepth); fCtx.clip();
+                fCtx.beginPath(); fCtx.arc(midX, playY + playH - penSpotDist, arcR, 0, Math.PI*2); fCtx.stroke();
+                fCtx.restore();
+            }
+
+            const cornerR = isLandscape ? playH * 0.03 : playW * 0.03;
             fCtx.beginPath(); fCtx.arc(playX, playY, cornerR, 0, Math.PI/2); fCtx.stroke();
             fCtx.beginPath(); fCtx.arc(playX+playW, playY, cornerR, Math.PI/2, Math.PI); fCtx.stroke();
             fCtx.beginPath(); fCtx.arc(playX, playY+playH, cornerR, -Math.PI/2, 0); fCtx.stroke();
             fCtx.beginPath(); fCtx.arc(playX+playW, playY+playH, cornerR, Math.PI, -Math.PI/2); fCtx.stroke();
 
-            const gx = GAME_WIDTH / 2 - goalWidth / 2;
             let p2Color = gameMode === 2 ? '#FF0055' : chakraData[aiLevel].color;
             let p2Fill = gameMode === 2 ? 'rgba(255, 0, 85, 0.15)' : `${chakraData[aiLevel].color}26`; 
-            fCtx.fillStyle = p2Fill; fCtx.fillRect(gx, playY - 20, goalWidth, 20); fCtx.lineWidth = 3; fCtx.strokeStyle = p2Color; fCtx.strokeRect(gx, playY - 20, goalWidth, 20);
-            fCtx.fillStyle = 'rgba(0, 255, 102, 0.15)'; fCtx.fillRect(gx, playY + playH, goalWidth, 20); fCtx.strokeStyle = '#00FF66'; fCtx.strokeRect(gx, playY + playH, goalWidth, 20);
+            fCtx.lineWidth = 3;
+
+            if (isLandscape) {
+                const gy = midY - goalSize / 2;
+                fCtx.fillStyle = 'rgba(0, 255, 102, 0.15)'; fCtx.fillRect(playX - goalDepth, gy, goalDepth, goalSize); fCtx.strokeStyle = '#00FF66'; fCtx.strokeRect(playX - goalDepth, gy, goalDepth, goalSize);
+                fCtx.fillStyle = p2Fill; fCtx.fillRect(playX + playW, gy, goalDepth, goalSize); fCtx.strokeStyle = p2Color; fCtx.strokeRect(playX + playW, gy, goalDepth, goalSize);
+            } else {
+                const gx = midX - goalSize / 2;
+                fCtx.fillStyle = p2Fill; fCtx.fillRect(gx, playY - goalDepth, goalSize, goalDepth); fCtx.strokeStyle = p2Color; fCtx.strokeRect(gx, playY - goalDepth, goalSize, goalDepth);
+                fCtx.fillStyle = 'rgba(0, 255, 102, 0.15)'; fCtx.fillRect(gx, playY + playH, goalSize, goalDepth); fCtx.strokeStyle = '#00FF66'; fCtx.strokeRect(gx, playY + playH, goalSize, goalDepth);
+            }
             
             fCtx.restore();
         }
 
-        // Cache del Pallone per evitare drop di FPS
         let cachedBallCanvas = null;
         function getBallCanvas(radius) {
             if (!cachedBallCanvas || cachedBallCanvas.width === 0) {
@@ -766,10 +787,10 @@
             
             if(menuVideo) menuVideo.pause();
 
-            document.getElementById('sb-flag-1').innerHTML = `<img src="https://flagcdn.com/w40/${selectedTeamP1}.png" class="flag">`;
+            document.getElementById('sb-flag-1').innerHTML = `<img src="https://flagcdn.com/w80/${selectedTeamP1}.png" class="flag">`;
             
             if (gameMode === 2) {
-                document.getElementById('sb-flag-2').innerHTML = `<img src="https://flagcdn.com/w40/${selectedTeamP2}.png" class="flag">`;
+                document.getElementById('sb-flag-2').innerHTML = `<img src="https://flagcdn.com/w80/${selectedTeamP2}.png" class="flag">`;
                 score2El.style.color = '#FF0055'; score2El.style.textShadow = '0 0 25px rgba(255,0,85,0.8)';
             } else {
                 let aiColor = chakraData[aiLevel].color;
@@ -778,7 +799,6 @@
                 scoreBoardEl.style.borderBottomColor = aiColor;
             }
 
-            // Rigenera il field cache coi colori corretti (goal p2)
             generateFieldCache();
             drawStaticBackground(); 
             
@@ -979,7 +999,6 @@
 
                 ctx.rotate(this.rotation);
 
-                // Disegno del pallone tramite Canvas Caching super veloce
                 let cache = getBallCanvas(this.radius);
                 ctx.drawImage(cache.canvas, -this.radius - cache.pad, -this.radius - cache.pad, this.radius * 2 + cache.pad * 2, this.radius * 2 + cache.pad * 2);
 
@@ -1020,36 +1039,62 @@
         let turnTimeRemaining = 5.0, lastTurnIndicatorText = "", lastTurnIndicatorColor = "";
 
         function initDisplay() {
-            // Evita dimensioni a zero durante l'inizializzazione dell'iframe
             const w = Math.max(100, window.innerWidth);
             const h = Math.max(100, window.innerHeight);
             
-            // Fai in modo che il width logico sia una base fissa (es: 600) e calcola l'height proporzionalmente per far sparire per sempre i bordi neri
-            let scale = w / 600;
-            let logicalW = 600;
-            let logicalH = scale > 0 ? h / scale : 900;
+            isLandscape = w > h;
 
-            // Se il dispositivo è in landscape (come tablet o pc in orizzontale), evita che il campo diventi schiacciato
-            if (logicalH < 700) {
-                logicalH = 900;
-                scale = h / 900;
+            let scale;
+            let logicalW, logicalH;
+
+            if (isLandscape) {
+                // Layout Orizzontale per PC
+                logicalH = 700;
+                scale = h / logicalH;
                 logicalW = w / scale;
+
+                if (logicalW > 1600) {
+                    logicalW = 1600;
+                    scale = w / logicalW;
+                    logicalH = h / scale;
+                }
+                
+                padTop = 110; 
+                padBottom = 40;
+                padLeft = Math.max(60, logicalW * 0.08);
+                padRight = Math.max(60, logicalW * 0.08);
+            } else {
+                // Layout Verticale per Smartphone
+                logicalW = 600;
+                scale = w / logicalW;
+                logicalH = h / scale;
+
+                if (logicalH < 700) {
+                    logicalH = 900;
+                    scale = h / logicalH;
+                    logicalW = w / scale;
+                }
+
+                padTop = Math.max(160, logicalH * 0.15); 
+                padBottom = Math.max(90, logicalH * 0.10);
+                padLeft = 20;
+                padRight = 20;
             }
 
             LOGICAL_WIDTH = logicalW;
             LOGICAL_HEIGHT = logicalH;
             GAME_WIDTH = logicalW;
             GAME_HEIGHT = logicalH;
-            
-            // Ricalcola i margini in base alla nuova altezza reale, per far partire i giocatori alla distanza corretta
-            mTop = Math.max(160, GAME_HEIGHT * 0.15); 
-            mBot = Math.max(90, GAME_HEIGHT * 0.10);
 
             const wrapper = document.getElementById('game-wrapper');
             wrapper.style.width = `${LOGICAL_WIDTH}px`;
             wrapper.style.height = `${LOGICAL_HEIGHT}px`;
             wrapper.style.transform = `scale(${scale})`;
-            wrapper.style.transformOrigin = 'top left'; // Lo scalerà esattamente dal bordo senza margini!
+            
+            const scaledW = LOGICAL_WIDTH * scale;
+            const scaledH = LOGICAL_HEIGHT * scale;
+            wrapper.style.left = `${(w - scaledW) / 2}px`;
+            wrapper.style.top = `${(h - scaledH) / 2}px`;
             
             dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = LOGICAL_WIDTH * dpr; 
@@ -1059,15 +1104,15 @@
             ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
             
             clearTokenCache(); 
-            generateFieldCache(); // Rigenera cache a ogni init
+            generateFieldCache();
             resetPositions();
             if(gameState === GAME_STATE_MENU || gameState === GAME_STATE_OVER) drawStaticBackground();
         }
         window.addEventListener('resize', initDisplay);
 
         function updatePointerCoords(clientX, clientY) {
-            const rect = canvas.getBoundingClientRect();
-            // Adatta le coordinate del tocco tenendo conto della scala CSS
+            const wrapper = document.getElementById('game-wrapper');
+            const rect = wrapper.getBoundingClientRect();
             const scaleX = LOGICAL_WIDTH / rect.width;
             const scaleY = LOGICAL_HEIGHT / rect.height;
             pointer.x = (clientX - rect.left) * scaleX;
@@ -1123,10 +1168,10 @@
             if (isMoving) { updateTurnUI("WAIT...", "#888"); } 
             else {
                 let t = Math.max(0, turnTimeRemaining).toFixed(1);
-                if (currentTurn === 1) { updateTurnUI(`P1 ◀ ${t}s`, turnTimeRemaining <= 2 ? "#FF0055" : "#00FF66"); } 
+                if (currentTurn === 1) { updateTurnUI(`P1 ⏳ ${t}s`, turnTimeRemaining <= 2 ? "#FF0055" : "#00FF66"); } 
                 else {
-                    if (gameMode === 2) updateTurnUI(`${t}s ▶ P2`, "#FF0055");
-                    else updateTurnUI(`SYSTEM ▶`, chakraData[aiLevel].color);
+                    if (gameMode === 2) updateTurnUI(`P2 ⏳ ${t}s`, "#FF0055");
+                    else updateTurnUI(`SYS ⏳`, chakraData[aiLevel].color);
                 }
             }
         }
@@ -1140,20 +1185,41 @@
 
         function resetPositions() {
             ball.x = GAME_WIDTH / 2; ball.y = GAME_HEIGHT / 2; ball.vx = 0; ball.vy = 0;
-            const p1Y = GAME_HEIGHT - mBot - 120; 
-            const p2Y = mTop + 140; 
             
-            team1[0].startX = GAME_WIDTH / 2; team1[0].startY = GAME_HEIGHT - mBot - 40;
-            team1[1].startX = GAME_WIDTH / 2 - 120; team1[1].startY = p1Y;
-            team1[2].startX = GAME_WIDTH / 2 + 120; team1[2].startY = p1Y;
-            team1[3].startX = GAME_WIDTH / 2 - 100; team1[3].startY = p1Y - 140;
-            team1[4].startX = GAME_WIDTH / 2 + 100; team1[4].startY = p1Y - 140;
+            const midX = GAME_WIDTH / 2;
+            const midY = GAME_HEIGHT / 2;
 
-            team2[0].startX = GAME_WIDTH / 2; team2[0].startY = mTop + 40;
-            team2[1].startX = GAME_WIDTH / 2 - 120; team2[1].startY = p2Y;
-            team2[2].startX = GAME_WIDTH / 2 + 120; team2[2].startY = p2Y;
-            team2[3].startX = GAME_WIDTH / 2 - 100; team2[3].startY = p2Y + 140;
-            team2[4].startX = GAME_WIDTH / 2 + 100; team2[4].startY = p2Y + 140;
+            if (isLandscape) {
+                const p1X = padLeft + 120; 
+                const p2X = GAME_WIDTH - padRight - 140; 
+                
+                team1[0].startX = padLeft + 40; team1[0].startY = midY;
+                team1[1].startX = p1X; team1[1].startY = midY - 120;
+                team1[2].startX = p1X; team1[2].startY = midY + 120;
+                team1[3].startX = p1X + 140; team1[3].startY = midY - 100;
+                team1[4].startX = p1X + 140; team1[4].startY = midY + 100;
+
+                team2[0].startX = GAME_WIDTH - padRight - 40; team2[0].startY = midY;
+                team2[1].startX = p2X; team2[1].startY = midY - 120;
+                team2[2].startX = p2X; team2[2].startY = midY + 120;
+                team2[3].startX = p2X - 140; team2[3].startY = midY - 100;
+                team2[4].startX = p2X - 140; team2[4].startY = midY + 100;
+            } else {
+                const p1Y = GAME_HEIGHT - padBottom - 120; 
+                const p2Y = padTop + 140; 
+                
+                team1[0].startX = midX; team1[0].startY = GAME_HEIGHT - padBottom - 40;
+                team1[1].startX = midX - 120; team1[1].startY = p1Y;
+                team1[2].startX = midX + 120; team1[2].startY = p1Y;
+                team1[3].startX = midX - 100; team1[3].startY = p1Y - 140;
+                team1[4].startX = midX + 100; team1[4].startY = p1Y - 140;
+
+                team2[0].startX = midX; team2[0].startY = padTop + 40;
+                team2[1].startX = midX - 120; team2[1].startY = p2Y;
+                team2[2].startX = midX + 120; team2[2].startY = p2Y;
+                team2[3].startX = midX - 100; team2[3].startY = p2Y + 140;
+                team2[4].startX = midX + 100; team2[4].startY = p2Y + 140;
+            }
 
             team1.forEach(p => p.resetPosition()); team2.forEach(p => p.resetPosition());
             dragTarget = null; isMoving = false; hitStopFrames = 0; turnTimeRemaining = 5.0;
@@ -1168,7 +1234,11 @@
                 let bestPlayer = null, minDist = Infinity;
                 for (let p of team2) {
                     let d = Math.hypot(ball.x - p.x, ball.y - p.y);
-                    if (p.y < ball.y - 15) d *= 0.5; 
+                    if (isLandscape) {
+                        if (p.x > ball.x + 15) d *= 0.5; 
+                    } else {
+                        if (p.y < ball.y - 15) d *= 0.5; 
+                    }
                     if (d < minDist) { minDist = d; bestPlayer = p; }
                 }
                 if (bestPlayer) { 
@@ -1243,20 +1313,56 @@
 
             for (let i = 0; i < allEnt.length; i++) { for (let j = i + 1; j < allEnt.length; j++) { if (allEnt[i] === dragTarget || allEnt[j] === dragTarget) continue; resolveCollision(allEnt[i], allEnt[j]); } }
 
-            [...team1, ...team2, ball].forEach(p => {
-                if (p.x < p.radius + mSide) { p.x = p.radius + mSide; p.vx *= -0.5; } if (p.x > GAME_WIDTH - p.radius - mSide) { p.x = GAME_WIDTH - p.radius - mSide; p.vx *= -0.5; }
-            });
-
             [...team1, ...team2].forEach(p => {
-                if (p.y < p.radius + mTop) { p.y = p.radius + mTop; p.vy *= -0.5; } if (p.y > GAME_HEIGHT - p.radius - mBot) { p.y = GAME_HEIGHT - p.radius - mBot; p.vy *= -0.5; }
+                if (p.x < p.radius + padLeft) { p.x = p.radius + padLeft; p.vx *= -0.5; } 
+                if (p.x > GAME_WIDTH - p.radius - padRight) { p.x = GAME_WIDTH - p.radius - padRight; p.vx *= -0.5; }
+                if (p.y < p.radius + padTop) { p.y = p.radius + padTop; p.vy *= -0.5; } 
+                if (p.y > GAME_HEIGHT - p.radius - padBottom) { p.y = GAME_HEIGHT - p.radius - padBottom; p.vy *= -0.5; }
             });
 
-            const gx1 = GAME_WIDTH/2 - goalWidth/2, gx2 = GAME_WIDTH/2 + goalWidth/2;
-            if (gameState !== GAME_STATE_GOAL && gameState !== GAME_STATE_OVER) {
-                if (ball.y < ball.radius + mTop) { if (ball.x > gx1 && ball.x < gx2) { scoreGoal(1); } else { ball.y = ball.radius + mTop; ball.vy *= -0.8; } }
-                else if (ball.y > GAME_HEIGHT - ball.radius - mBot) { if (ball.x > gx1 && ball.x < gx2) { scoreGoal(2); } else { ball.y = GAME_HEIGHT - ball.radius - mBot; ball.vy *= -0.8; } }
+            const midX = GAME_WIDTH / 2;
+            const midY = GAME_HEIGHT / 2;
+
+            if (isLandscape) {
+                const gy1 = midY - goalSize / 2;
+                const gy2 = midY + goalSize / 2;
+                
+                if (ball.y < ball.radius + padTop) { ball.y = ball.radius + padTop; ball.vy *= -0.8; }
+                if (ball.y > GAME_HEIGHT - ball.radius - padBottom) { ball.y = GAME_HEIGHT - ball.radius - padBottom; ball.vy *= -0.8; }
+                
+                if (gameState !== GAME_STATE_GOAL && gameState !== GAME_STATE_OVER) {
+                    if (ball.x < ball.radius + padLeft) {
+                        if (ball.y > gy1 && ball.y < gy2) { scoreGoal(2); } 
+                        else { ball.x = ball.radius + padLeft; ball.vx *= -0.8; }
+                    }
+                    else if (ball.x > GAME_WIDTH - ball.radius - padRight) {
+                        if (ball.y > gy1 && ball.y < gy2) { scoreGoal(1); } 
+                        else { ball.x = GAME_WIDTH - ball.radius - padRight; ball.vx *= -0.8; }
+                    }
+                } else {
+                    if (ball.x < ball.radius + padLeft) { ball.x = ball.radius + padLeft; ball.vx *= -0.8; } 
+                    if (ball.x > GAME_WIDTH - ball.radius - padRight) { ball.x = GAME_WIDTH - ball.radius - padRight; ball.vx *= -0.8; }
+                }
             } else {
-                if (ball.y < ball.radius + mTop) { ball.y = ball.radius + mTop; ball.vy *= -0.8; } if (ball.y > GAME_HEIGHT - ball.radius - mBot) { ball.y = GAME_HEIGHT - ball.radius - mBot; ball.vy *= -0.8; }
+                const gx1 = midX - goalSize / 2;
+                const gx2 = midX + goalSize / 2;
+                
+                if (ball.x < ball.radius + padLeft) { ball.x = ball.radius + padLeft; ball.vx *= -0.8; }
+                if (ball.x > GAME_WIDTH - ball.radius - padRight) { ball.x = GAME_WIDTH - ball.radius - padRight; ball.vx *= -0.8; }
+                
+                if (gameState !== GAME_STATE_GOAL && gameState !== GAME_STATE_OVER) {
+                    if (ball.y < ball.radius + padTop) { 
+                        if (ball.x > gx1 && ball.x < gx2) { scoreGoal(1); } 
+                        else { ball.y = ball.radius + padTop; ball.vy *= -0.8; } 
+                    }
+                    else if (ball.y > GAME_HEIGHT - ball.radius - padBottom) { 
+                        if (ball.x > gx1 && ball.x < gx2) { scoreGoal(2); } 
+                        else { ball.y = GAME_HEIGHT - ball.radius - padBottom; ball.vy *= -0.8; } 
+                    }
+                } else {
+                    if (ball.y < ball.radius + padTop) { ball.y = ball.radius + padTop; ball.vy *= -0.8; } 
+                    if (ball.y > GAME_HEIGHT - ball.radius - padBottom) { ball.y = GAME_HEIGHT - ball.radius - padBottom; ball.vy *= -0.8; }
+                }
             }
         }
 
@@ -1300,7 +1406,7 @@
             let flagHTML = '';
 
             if (winner === 1) {
-                flagHTML = `<div class="flag-container" style="width: 60px; height: 36px; margin: 0 auto 5px; border-radius: 4px; overflow: hidden; border: 2px solid #00FF66; box-shadow: 0 3px 15px rgba(0,255,102,0.4);"><img src="https://flagcdn.com/w80/${selectedTeamP1}.png" style="width:100%; height:100%; object-fit:cover; display:block;"></div>`;
+                flagHTML = `<div class="flag-container" style="width: 80px; height: 50px; margin: 0 auto 5px; border-radius: 4px; overflow: hidden; border: 2px solid #00FF66; box-shadow: 0 3px 15px rgba(0,255,102,0.4);"><img src="https://flagcdn.com/w160/${selectedTeamP1}.png" style="width:100%; height:100%; object-fit:cover; display:block;"></div>`;
                 gameOverTitleEl.innerText = getTeamName(selectedTeamP1).toUpperCase() + " WINS!"; gameOverTitleEl.style.color = "#00FF66";
                 
                 if (gameMode === 1) {
@@ -1311,15 +1417,15 @@
                 }
             } else if (winner === 2) {
                 if (gameMode === 2) {
-                    flagHTML = `<div class="flag-container" style="width: 60px; height: 36px; margin: 0 auto 5px; border-radius: 4px; overflow: hidden; border: 2px solid #FF0055; box-shadow: 0 3px 15px rgba(255,0,85,0.4);"><img src="https://flagcdn.com/w80/${selectedTeamP2}.png" style="width:100%; height:100%; object-fit:cover; display:block;"></div>`;
+                    flagHTML = `<div class="flag-container" style="width: 80px; height: 50px; margin: 0 auto 5px; border-radius: 4px; overflow: hidden; border: 2px solid #FF0055; box-shadow: 0 3px 15px rgba(255,0,85,0.4);"><img src="https://flagcdn.com/w160/${selectedTeamP2}.png" style="width:100%; height:100%; object-fit:cover; display:block;"></div>`;
                     gameOverTitleEl.innerText = getTeamName(selectedTeamP2).toUpperCase() + " WINS!"; gameOverTitleEl.style.color = "#FF0055";
                 } else {
                     let aiColor = chakraData[aiLevel].color;
-                    flagHTML = `<img src="logo-tondo.jpeg" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid ${aiColor}; box-shadow: 0 2px 15px ${aiColor}; margin: 0 auto 10px; display: block; object-fit: cover;">`;
+                    flagHTML = `<img src="logo-tondo.jpeg" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid ${aiColor}; box-shadow: 0 2px 15px ${aiColor}; margin: 0 auto 10px; display: block; object-fit: cover;">`;
                     gameOverTitleEl.innerText = "SYSTEM WINS"; gameOverTitleEl.style.color = aiColor;
                 }
             } else {
-                flagHTML = `<div style="font-size: 30px; margin: 0 auto 5px; filter: drop-shadow(0 2px 5px rgba(255,255,255,0.4));">🤝</div>`;
+                flagHTML = `<div style="font-size: 40px; margin: 0 auto 5px; filter: drop-shadow(0 2px 5px rgba(255,255,255,0.4));">🤝</div>`;
                 gameOverTitleEl.innerText = "IT'S A DRAW!"; gameOverTitleEl.style.color = "#FFD700";
             }
             
@@ -1327,7 +1433,6 @@
             gameOverIconEl.innerHTML = `<div style="transform: scale(0.6); transform-origin: top center; height: 110px;">${goldCupHTML}</div>`;
             gameOverScreenEl.classList.remove('hidden');
             
-            // Fai partire il video del risultato finale
             if(gameOverVideo) gameOverVideo.play().catch(e => console.log(e));
         }
 
@@ -1336,12 +1441,12 @@
 
             if (playerScored === 1) {
                 scoreP1++; score1El.innerText = scoreP1; currentTurn = 2; 
-                createExplosion(GAME_WIDTH / 2, mTop, '#00FF66', 40, 30, 8, 150);
+                createExplosion(isLandscape ? GAME_WIDTH - padRight : GAME_WIDTH / 2, isLandscape ? GAME_HEIGHT / 2 : padTop, '#00FF66', 40, 30, 8, 150);
                 showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#00FF66');
             } else {
                 scoreP2++; score2El.innerText = scoreP2; currentTurn = 1;
                 let color = gameMode === 2 ? '#FF0055' : chakraData[aiLevel].color;
-                createExplosion(GAME_WIDTH / 2, GAME_HEIGHT - mBot, color, 40, 30, 8, 150);
+                createExplosion(isLandscape ? padLeft : GAME_WIDTH / 2, isLandscape ? GAME_HEIGHT / 2 : GAME_HEIGHT - padBottom, color, 40, 30, 8, 150);
                 
                 if (gameMode === 2) {
                     showMessage(`GOAL!`); messageEl.style.color = '#fff'; messageEl.style.setProperty('--accent-color', '#FF0055');
@@ -1402,17 +1507,6 @@
             }
         }
 
-        function drawStaticBackground() { 
-            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-            if (!fieldCacheCanvas) generateFieldCache();
-            if (fieldCacheCanvas && fieldCacheCanvas.width > 0 && fieldCacheCanvas.height > 0) {
-                ctx.drawImage(fieldCacheCanvas, 0, 0, GAME_WIDTH, GAME_HEIGHT);
-            }
-            team1.forEach(p => p.draw(ctx)); 
-            team2.forEach(p => p.draw(ctx)); 
-            ball.draw(ctx); 
-        }
-
         window.gameLoopRunning = false;
 
         function gameLoop(time) {
@@ -1449,7 +1543,6 @@
             ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT); ctx.save();
             if (shakeTime > 0) ctx.translate((Math.random() - 0.5) * shakeMagnitude, (Math.random() - 0.5) * shakeMagnitude);
             
-            // Disegna il campo precalcolato (enorme boost agli FPS)
             if (!fieldCacheCanvas) generateFieldCache();
             if (fieldCacheCanvas && fieldCacheCanvas.width > 0 && fieldCacheCanvas.height > 0) {
                 ctx.drawImage(fieldCacheCanvas, 0, 0, GAME_WIDTH, GAME_HEIGHT);
