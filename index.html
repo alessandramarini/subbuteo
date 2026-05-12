@@ -19,6 +19,7 @@
             --p2-neon: #FF0055;
             --bg-dark: #224a10; 
             --bg-outer: #010102;
+            --share-neon: #2AABEE;
         }
 
         * { -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; outline: none; box-sizing: border-box; }
@@ -101,7 +102,7 @@
             max-width: 480px;
             height: auto;
             aspect-ratio: 16 / 9;
-            object-fit: contain; /* Non taglia le teste nei video */
+            object-fit: contain;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
             margin: 0 auto 15px auto;
@@ -147,7 +148,6 @@
         .mode-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #888; padding: 12px; font-size: 14px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px; border-radius: 8px; cursor: pointer; flex: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; }
         .mode-btn.active { background: rgba(0, 255, 102, 0.12); border-color: var(--p1-neon); color: var(--p1-neon); }
 
-        /* Nuova Griglia Ariosa e Ottimizzata */
         .grid-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; width: 100%; padding: 5px; }
         .team-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 10px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; min-height: 85px; }
         .team-btn .flag-container { width: 60px; height: 40px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); position: relative; background: #222; box-shadow: 0 2px 8px rgba(0,0,0,0.5); flex-shrink: 0; }
@@ -161,9 +161,15 @@
         .flag { width: 100%; height: 100%; display: block; object-fit: cover; }
 
         .joystick-btn-only { flex-shrink: 0; background: transparent; border: none; box-shadow: none; cursor: pointer; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 5px; outline: none; padding: 0; -webkit-tap-highlight-color: transparent; }
-        .joystick-btn-only svg { width: 65px; height: 65px; filter: drop-shadow(0 0 10px rgba(0,255,102,0.4)); animation: pulse-joystick 2.5s infinite alternate ease-in-out; will-change: transform, filter; }
+        .joystick-btn-only svg { width: 65px; height: 65px; filter: drop-shadow(0 0 10px rgba(0,255,102,0.4)); animation: pulse-joystick 2.5s infinite alternate ease-in-out; will-change: transform, filter; transition: transform 0.1s; }
+        .joystick-btn-only.share-btn svg { filter: drop-shadow(0 0 10px rgba(42,171,238,0.4)); animation: pulse-share 2.5s infinite alternate ease-in-out; }
+        
         @keyframes pulse-joystick { 0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,255,102,0.2)); } 100% { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(0,255,102,0.6)); } }
+        @keyframes pulse-share { 0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(42,171,238,0.2)); } 100% { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(42,171,238,0.6)); } }
+        
         .joystick-btn-only:active svg { transform: scale(0.9) !important; animation: none; }
+        
+        .action-buttons-container { display: flex; flex-direction: row; gap: 30px; justify-content: center; align-items: center; width: 100%; flex-shrink: 0; margin-top: 10px; }
 
         #message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; font-weight: 900; font-style: italic; text-align: center; color: #fff; text-transform: uppercase; z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; width: 100%; letter-spacing: 4px; will-change: opacity, transform; text-shadow: 0 5px 15px rgba(0,0,0,0.8); }
         #message.active { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: glitchPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -195,6 +201,14 @@
                 <circle cx="78" cy="37" r="3.5" fill="#FF0055"/>
                 <circle cx="62" cy="37" r="3.5" fill="#1E90FF"/>
                 <circle cx="70" cy="29" r="3.5" fill="#FFD700"/>
+            </g>
+            <g id="share-icon">
+                <!-- Share SVG Icon -->
+                <circle cx="70" cy="30" r="9" fill="#222" stroke="#2AABEE" stroke-width="3"/>
+                <circle cx="30" cy="50" r="9" fill="#222" stroke="#2AABEE" stroke-width="3"/>
+                <circle cx="70" cy="70" r="9" fill="#222" stroke="#2AABEE" stroke-width="3"/>
+                <line x1="38" y1="45" x2="62" y2="35" stroke="#2AABEE" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="38" y1="55" x2="62" y2="65" stroke="#2AABEE" stroke-width="3.5" stroke-linecap="round"/>
             </g>
         </defs>
     </svg>
@@ -229,7 +243,6 @@
                 <div id="team-menu" class="overlay-screen">
                     <div class="overlay-content">
                         
-                        <!-- Video Menu Contenuto in Modo Ottimale -->
                         <video id="menu-video" class="inline-video-box" src="itcyborgscommettestake.mp4" autoplay loop muted playsinline webkit-playsinline></video>
 
                         <div class="button-group">
@@ -237,7 +250,6 @@
                             <button id="btn-2p" class="mode-btn">2 PLAYERS</button>
                         </div>
 
-                        <!-- Layout a Colonne per la selezione squadre (TUTTE LE NAZIONI DEL MONDO) -->
                         <div id="teams-scroll-area">
                             <div id="teams-flex-container">
                                 <div class="team-column" id="p1-column">
@@ -261,16 +273,19 @@
                 <div id="game-over-screen" class="overlay-screen hidden">
                     <div class="overlay-content">
                         
-                        <!-- Video Game Over Ottimizzato -->
                         <video id="gameover-video" class="inline-video-box" src="inglesepresentbettingexchangeroom.mp4" autoplay loop muted playsinline webkit-playsinline></video>
 
                         <div id="winner-flag-container"></div>
                         <h2 id="game-over-title" style="font-size: 32px; margin-bottom: 5px; flex-shrink: 0;">MATCH OVER</h2>
                         <div id="game-over-icon" style="margin-bottom: 0;"></div>
                         
-                        <div style="display: flex; flex-direction: column; gap: 8px; justify-content: center; align-items: center; width: 100%; flex-shrink: 0;">
-                            <button id="restart-btn" class="joystick-btn-only" style="margin-top: 0;">
+                        <!-- Contenitore Bottoni Rigioca e Condividi -->
+                        <div class="action-buttons-container">
+                            <button id="restart-btn" class="joystick-btn-only">
                                 <svg viewBox="0 0 100 100"><use href="#gamepad-icon"></use></svg>
+                            </button>
+                            <button id="share-btn" class="joystick-btn-only share-btn">
+                                <svg viewBox="0 0 100 100"><use href="#share-icon"></use></svg>
                             </button>
                         </div>
                     </div>
@@ -324,7 +339,6 @@
             }
         });
 
-        // Configurazione Resa Visiva e Stabilità Fisica
         let LOGICAL_WIDTH = 600;
         let LOGICAL_HEIGHT = 900;
         let GAME_WIDTH = LOGICAL_WIDTH;
@@ -332,7 +346,6 @@
         let dpr = 1; 
         const PI2 = Math.PI * 2; 
         
-        // Setup Adattivo Orizzontale/Verticale
         let padTop = 190, padBottom = 90, padLeft = 20, padRight = 20; 
         let isLandscape = false;
         let goalSize = 200;
@@ -427,13 +440,12 @@
                 const btn = document.createElement('button');
                 btn.className = 'team-btn ' + ((!isP2 && team.id === selectedTeamP1) || (isP2 && team.id === selectedTeamP2) ? 'active' : '');
                 btn.dataset.team = team.id;
-                // Carica un formato thumbnail leggerissimo (w40) per il menu, in modo che sia immediato.
                 btn.innerHTML = `<div class="flag-container"><img src="https://flagcdn.com/w40/${team.id}.png" class="flag" loading="lazy" alt="${team.name}"></div><span title="${team.name}">${team.name}</span>`;
                 btn.onclick = () => {
                     container.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     if (isP2) selectedTeamP2 = team.id; else selectedTeamP1 = team.id;
-                    preloadFlag(team.id); // Qui scatta il download del w160 per il canvas
+                    preloadFlag(team.id);
                 };
                 container.appendChild(btn);
             });
@@ -829,6 +841,36 @@
             
             if(gameOverVideo) gameOverVideo.pause();
             if(menuVideo) menuVideo.play().catch(e => console.log(e));
+        });
+
+        // Gestione Condivisione (Share API)
+        document.getElementById('share-btn').addEventListener('click', async () => {
+            const shareData = {
+                title: 'CyberTorneo - Telegram Edition',
+                text: 'Guarda questo fantastico gioco in stile Cyberpunk! Riuscirai a battermi?',
+                url: window.location.href
+            };
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    // Fallback per browser che non supportano la Share API (copia negli appunti)
+                    const tempInput = document.createElement('textarea');
+                    tempInput.value = shareData.url;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    
+                    showMessage("LINK COPIATO!");
+                    messageEl.style.color = 'var(--share-neon)';
+                    messageEl.style.setProperty('--accent-color', 'var(--share-neon)');
+                    setTimeout(() => hideMessage(), 2500);
+                }
+            } catch (err) {
+                console.log('Condivisione annullata o fallita: ', err);
+            }
         });
 
         function showMessage(html) { messageEl.innerHTML = html; messageEl.classList.add('active'); }
