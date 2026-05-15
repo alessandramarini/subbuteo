@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     
-    <!-- OTTIMIZZAZIONI DI CARICAMENTO GLOBALE: DNS Prefetch & Preconnect -->
+    <!-- OTTIMIZZAZIONI DI CARICAMENTO GLOBALE -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="dns-prefetch" href="https://flagcdn.com">
@@ -15,15 +15,17 @@
     <link rel="preconnect" href="https://flagcdn.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,700;1,700&family=Montserrat:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet">
     
-    <title>CyberTorneo - Telegram Edition</title>
+    <title>BETTING EXCHANGE ROOM</title>
 
     <style>
         :root {
             --p1-neon: #00FF66;
             --p2-neon: #FF0055;
-            --bg-dark: #224a10; 
+            --bg-dark: #1a3a0c; 
             --bg-outer: #010102;
             --share-neon: #2AABEE;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
         * { -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; outline: none; box-sizing: border-box; }
@@ -88,23 +90,50 @@
             transition: all 0.3s ease; min-width: 100px; border-radius: 4px; font-weight: bold;
         }
 
-        .overlay-screen { background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; -webkit-transform: translateZ(0); transform: translateZ(0); }
+        .overlay-screen { background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; -webkit-transform: translateZ(0); transform: translateZ(0); }
         
         .overlay-content {
-            background: linear-gradient(145deg, #0f121b 0%, #050609 100%);
-            border: 1px solid rgba(255, 255, 255, 0.06); border-top: 1px solid rgba(255, 255, 255, 0.15); border-bottom: 3px solid var(--p1-neon);
-            border-radius: 16px; padding: 20px 15px; text-align: center; pointer-events: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            background: linear-gradient(145deg, rgba(15,18,27,0.95) 0%, rgba(5,6,9,0.98) 100%);
+            border: 1px solid var(--glass-border); border-top: 1px solid rgba(255, 255, 255, 0.15); border-bottom: 3px solid var(--p1-neon);
+            border-radius: 24px; padding: 25px 20px; text-align: center; pointer-events: auto; box-shadow: 0 30px 60px rgba(0,0,0,0.9);
             width: 96%; max-width: 800px; 
             max-height: 95dvh; 
             display: flex; flex-direction: column; align-items: center; overflow: hidden;
         }
 
+        /* NEW BRAND HEADER */
+        .brand-header {
+            display: flex; flex-direction: column; align-items: center; margin-bottom: 12px; width: 100%;
+            animation: floatLogo 3s ease-in-out infinite;
+        }
+        @keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        
+        .brand-logo {
+            width: 75px; height: 75px; border-radius: 50%;
+            border: 2px solid var(--p1-neon);
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.4), inset 0 0 10px rgba(0, 255, 102, 0.4);
+            margin-bottom: 8px; object-fit: cover; background: #000;
+        }
+        .brand-title {
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 26px; font-weight: 900; margin: 0;
+            text-align: center; text-transform: uppercase; letter-spacing: 1px;
+            background: linear-gradient(180deg, #ffffff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0px 4px 15px rgba(0,0,0,0.8); line-height: 1.1;
+        }
+        .brand-title span { 
+            background: linear-gradient(180deg, #00FF66 0%, #008833 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: block; font-size: 20px; letter-spacing: 4px; margin-top: 2px;
+        }
+
         .hidden { display: none !important; }
 
         .inline-video-box {
-            width: 100%; max-width: 440px; height: auto; aspect-ratio: 16 / 9; object-fit: contain;
-            border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); margin: 0 auto 15px auto;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); pointer-events: none; background-color: #000; flex-shrink: 0; 
+            width: 100%; max-width: 380px; height: auto; aspect-ratio: 16 / 9; object-fit: contain;
+            border-radius: 16px; border: 1px solid var(--glass-border); margin: 0 auto 15px auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; background-color: #000; flex-shrink: 0; 
         }
 
         #teams-scroll-area { 
@@ -116,52 +145,96 @@
         #teams-scroll-area::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
         #teams-scroll-area::-webkit-scrollbar-thumb { background: var(--p1-neon); border-radius: 4px; }
 
-        .button-group { width: 100%; max-width: 480px; display: flex; gap: 10px; margin: 0 auto 15px auto; flex-shrink: 0; }
+        .button-group { width: 100%; max-width: 480px; display: flex; gap: 15px; margin: 0 auto 15px auto; flex-shrink: 0; }
         #teams-flex-container { display: flex; width: 100%; gap: 12px; justify-content: center; align-items: flex-start; }
         .team-column { flex: 1; display: flex; flex-direction: column; align-items: center; min-width: 0; }
         .team-title { margin: 5px 0 10px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; white-space: nowrap; font-weight: bold; }
 
-        .mode-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #888; padding: 12px; font-size: 14px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: 1px; border-radius: 8px; cursor: pointer; flex: 1; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; }
-        .mode-btn.active { background: rgba(0, 255, 102, 0.12); border-color: var(--p1-neon); color: var(--p1-neon); }
+        /* MODERN MODE BUTTONS */
+        .mode-btn { 
+            background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); color: #888; 
+            padding: 14px; font-size: 14px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; 
+            letter-spacing: 1px; border-radius: 50px; cursor: pointer; flex: 1; 
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy effect */
+            text-transform: uppercase; position: relative; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.05);
+        }
+        .mode-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transition: 0.5s; }
+        .mode-btn:hover::before { left: 100%; }
+        .mode-btn:active { transform: scale(0.95); }
+        .mode-btn.active { 
+            background: linear-gradient(135deg, rgba(0, 255, 102, 0.2) 0%, rgba(0, 150, 50, 0.1) 100%); 
+            border-color: var(--p1-neon); color: #fff; 
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.3), inset 0 2px 10px rgba(0, 255, 102, 0.2);
+            text-shadow: 0 0 8px rgba(0, 255, 102, 0.8);
+        }
 
         .grid-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; width: 100%; padding: 5px; }
         
-        .team-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 10px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; min-height: 85px; }
-        .team-btn .flag-container { width: 60px; height: 40px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.3); position: relative; background: #222; box-shadow: 0 4px 8px rgba(0,0,0,0.6); flex-shrink: 0; }
-        
-        /* OTIMIZZAZIONE NOMI BANDIERE (ALTA RISOLUZIONE, CONTRASTO, LEGGIBILITA) */
+        /* MODERN TEAM BUTTONS */
+        .team-btn { 
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; 
+            padding: 12px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; 
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); width: 100%; min-height: 90px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: relative; overflow: hidden;
+        }
+        .team-btn .flag-container { 
+            width: 60px; height: 40px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); 
+            position: relative; background: #222; box-shadow: 0 4px 10px rgba(0,0,0,0.5); flex-shrink: 0; transition: transform 0.3s;
+        }
         .team-btn span { 
-            color: #ffffff; 
-            font-family: 'Chakra Petch', sans-serif; 
-            font-size: 13px; /* Ingrandito */
-            font-weight: 700; 
-            letter-spacing: 0.5px; 
-            /* Doppio contorno nero e ombra morbida per massimo contrasto */
-            text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0px 2px 4px rgba(0,0,0,0.8); 
-            transition: color 0.3s, text-shadow 0.3s; 
-            width: 100%; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            display: block; 
-            text-align: center; 
-            margin-top: 4px;
+            color: #ccc; font-family: 'Chakra Petch', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; 
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.8); transition: color 0.3s, text-shadow 0.3s; 
+            width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; text-align: center; margin-top: 2px;
         }
         
-        @media (hover: hover) { .team-btn:hover { background: rgba(255, 255, 255, 0.08); } .team-btn:hover span { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.8), 1px 1px 0 #000, -1px -1px 0 #000; } }
-        .team-btn.active { background: rgba(0, 255, 102, 0.1); border: 1px solid var(--p1-neon); box-shadow: 0 0 10px rgba(0,255,102,0.2); }
-        .team-btn.active span { color: var(--p1-neon); text-shadow: 0 0 8px var(--p1-neon), 1px 1px 0 #000, -1px -1px 0 #000; }
-        #p2-grid .team-btn.active { background: rgba(255, 0, 85, 0.1); border: 1px solid var(--p2-neon); box-shadow: 0 0 10px rgba(255,0,85,0.2); }
-        #p2-grid .team-btn.active span { color: var(--p2-neon); text-shadow: 0 0 8px var(--p2-neon), 1px 1px 0 #000, -1px -1px 0 #000; }
+        @media (hover: hover) { 
+            .team-btn:hover { background: rgba(255, 255, 255, 0.08); transform: translateY(-2px); } 
+            .team-btn:hover .flag-container { transform: scale(1.05); }
+            .team-btn:hover span { color: #fff; } 
+        }
+        .team-btn:active { transform: scale(0.95); }
+        .team-btn.active { 
+            background: linear-gradient(135deg, rgba(0, 255, 102, 0.15) 0%, rgba(0, 0, 0, 0) 100%); 
+            border: 1px solid var(--p1-neon); 
+            box-shadow: 0 0 15px rgba(0,255,102,0.2), inset 0 0 15px rgba(0,255,102,0.1); 
+        }
+        .team-btn.active span { color: var(--p1-neon); text-shadow: 0 0 8px rgba(0,255,102,0.6); }
+        #p2-grid .team-btn.active { 
+            background: linear-gradient(135deg, rgba(255, 0, 85, 0.15) 0%, rgba(0, 0, 0, 0) 100%); 
+            border: 1px solid var(--p2-neon); 
+            box-shadow: 0 0 15px rgba(255,0,85,0.2), inset 0 0 15px rgba(255,0,85,0.1); 
+        }
+        #p2-grid .team-btn.active span { color: var(--p2-neon); text-shadow: 0 0 8px rgba(255,0,85,0.6); }
         .flag { width: 100%; height: 100%; display: block; object-fit: cover; }
 
-        .joystick-btn-only { flex-shrink: 0; background: transparent; border: none; box-shadow: none; cursor: pointer; pointer-events: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 5px; outline: none; padding: 0; -webkit-tap-highlight-color: transparent; }
-        .joystick-btn-only svg { width: 65px; height: 65px; filter: drop-shadow(0 0 10px rgba(0,255,102,0.4)); animation: pulse-joystick 2.5s infinite alternate ease-in-out; will-change: transform, filter; transition: transform 0.1s; }
-        @keyframes pulse-joystick { 0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,255,102,0.2)); } 100% { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(0,255,102,0.6)); } }
-        .joystick-btn-only:active svg { transform: scale(0.9) !important; animation: none; }
-        
-        .action-buttons-container { display: flex; flex-direction: row; gap: 30px; justify-content: center; align-items: center; width: 100%; flex-shrink: 0; margin-top: 10px; }
+        /* MODERN START/RESTART JOYSTICK BUTTON */
+        .action-buttons-container { display: flex; flex-direction: row; gap: 30px; justify-content: center; align-items: center; width: 100%; flex-shrink: 0; margin-top: 15px; }
 
+        .joystick-btn-only { 
+            flex-shrink: 0; background: linear-gradient(145deg, #222, #111); 
+            border: 2px solid rgba(0, 255, 102, 0.3); border-radius: 50%; 
+            width: 80px; height: 80px; cursor: pointer; pointer-events: auto; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            outline: none; padding: 0; -webkit-tap-highlight-color: transparent; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 2px 10px rgba(255,255,255,0.1), 0 0 20px rgba(0,255,102,0.2);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .joystick-btn-only::after {
+            content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px;
+            border-radius: 50%; border: 1px solid var(--p1-neon); opacity: 0.5;
+            animation: pulse-ring 2.5s infinite alternate ease-in-out; pointer-events: none;
+        }
+        .joystick-btn-only svg { width: 45px; height: 45px; filter: drop-shadow(0 0 5px rgba(0,255,102,0.8)); transition: transform 0.2s; }
+        
+        @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.2; box-shadow: 0 0 10px rgba(0,255,102,0.2); } 100% { transform: scale(1.1); opacity: 0.8; box-shadow: 0 0 30px rgba(0,255,102,0.6); } }
+        
+        .joystick-btn-only:hover { background: linear-gradient(145deg, #2a2a2a, #151515); transform: translateY(-2px); border-color: var(--p1-neon); box-shadow: 0 15px 30px rgba(0,0,0,0.9), inset 0 2px 10px rgba(255,255,255,0.2), 0 0 30px rgba(0,255,102,0.4); }
+        .joystick-btn-only:active { transform: translateY(4px) scale(0.95); box-shadow: 0 5px 10px rgba(0,0,0,0.9), inset 0 5px 15px rgba(0,0,0,0.5); }
+        .joystick-btn-only:active svg { transform: scale(0.9); }
+        
         #sponsor-bumper { background-color: #030408; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sponsor-bumper.active { opacity: 1; pointer-events: auto; }
         .sponsor-content { text-align: center; transform: translateY(15px); opacity: 0; transition: all 1s cubic-bezier(0.25, 1, 0.5, 1) 0.3s; text-shadow: 0 4px 15px rgba(0,0,0,0.8); }
@@ -189,7 +262,6 @@
     </style>
 </head>
 <body>
-
     <svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; width: 1px; height: 1px; left: -9999px; top: -9999px; pointer-events: none;" aria-hidden="true">
         <defs>
             <g id="gamepad-icon">
@@ -233,9 +305,16 @@
                     </div>
                 </div>
 
+                <!-- MAIN MENU OVERLAY -->
                 <div id="team-menu" class="overlay-screen">
                     <div class="overlay-content">
-                        <video id="menu-video" class="inline-video-box" src="itcyborgscommettestake.mp4" autoplay loop muted playsinline webkit-playsinline></video>
+                        <!-- HEADER CON LOGO E TITOLO -->
+                        <div class="brand-header">
+                            <img src="logo-tondo.jpeg" alt="Logo Betting Exchange" class="brand-logo" onerror="this.src='https://placehold.co/80x80/00FF66/000?text=BE'">
+                            <h1 class="brand-title">BETTING EXCHANGE <span>ROOM</span></h1>
+                        </div>
+
+                        <!-- <video id="menu-video" class="inline-video-box" src="itcyborgscommettestake.mp4" autoplay loop muted playsinline webkit-playsinline></video> -->
 
                         <div class="button-group">
                             <button id="btn-1p" class="mode-btn active">1 PLAYER</button>
@@ -245,18 +324,18 @@
                         <div id="teams-scroll-area">
                             <div id="teams-flex-container">
                                 <div class="team-column" id="p1-column">
-                                    <h3 class="team-title" style="color:#00FF66;">🟢 P1 Team</h3>
+                                    <h3 class="team-title" style="color:#00FF66; text-shadow: 0 0 10px rgba(0,255,102,0.5);">🟢 P1 Team</h3>
                                     <div class="grid-options" id="p1-grid"></div>
                                 </div>
 
                                 <div class="team-column hidden" id="p2-column">
-                                    <h3 class="team-title" style="color:#FF0055;">🔴 P2 Team</h3>
+                                    <h3 class="team-title" style="color:#FF0055; text-shadow: 0 0 10px rgba(255,0,85,0.5);">🔴 P2 Team</h3>
                                     <div class="grid-options" id="p2-grid"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Pulsante Joystick Centrato -->
+                        <!-- Pulsante Joystick Centrato Moderno -->
                         <div class="action-buttons-container">
                             <button id="start-btn" class="joystick-btn-only">
                                 <svg viewBox="0 0 100 100"><use href="#gamepad-icon"></use></svg>
@@ -265,15 +344,22 @@
                     </div>
                 </div>
 
+                <!-- GAME OVER OVERLAY -->
                 <div id="game-over-screen" class="overlay-screen hidden">
                     <div class="overlay-content">
-                        <video id="gameover-video" class="inline-video-box" src="inglesepresentbettingexchangeroom.mp4" autoplay loop muted playsinline webkit-playsinline></video>
+                        <!-- HEADER CON LOGO E TITOLO ANCHE QUI -->
+                        <div class="brand-header" style="margin-bottom: 5px;">
+                            <img src="logo-tondo.jpeg" alt="Logo" class="brand-logo" style="width: 50px; height: 50px;" onerror="this.src='https://placehold.co/50x50/00FF66/000?text=BE'">
+                            <h1 class="brand-title" style="font-size: 20px;">BETTING EXCHANGE <span>ROOM</span></h1>
+                        </div>
+
+                        <!-- <video id="gameover-video" class="inline-video-box" src="inglesepresentbettingexchangeroom.mp4" autoplay loop muted playsinline webkit-playsinline></video> -->
 
                         <div id="winner-flag-container"></div>
-                        <h2 id="game-over-title" style="font-size: 32px; margin-bottom: 5px; flex-shrink: 0;">MATCH OVER</h2>
+                        <h2 id="game-over-title" style="font-size: 32px; margin-bottom: 5px; flex-shrink: 0; text-shadow: 0 5px 15px rgba(0,0,0,0.8);">MATCH OVER</h2>
                         <div id="game-over-icon" style="margin-bottom: 0;"></div>
                         
-                        <!-- Contenitore Bottone Rigioca (Centrato, Condivisione rimossa) -->
+                        <!-- Contenitore Bottone Rigioca Moderno -->
                         <div class="action-buttons-container">
                             <button id="restart-btn" class="joystick-btn-only">
                                 <svg viewBox="0 0 100 100"><use href="#gamepad-icon"></use></svg>
@@ -418,7 +504,7 @@
         function checkBossStatus() {
             const btn1p = document.getElementById('btn-1p');
             if (gameMode === 1 && aiLevel > 1) {
-                btn1p.innerHTML = `1 PLAYER <span style="font-size:10px; opacity:0.8; letter-spacing:0px;">- LIV: ${aiLevel}</span>`;
+                btn1p.innerHTML = `1 PLAYER <span style="font-size:10px; opacity:0.8; letter-spacing:0px; display:block;">- LIV: ${aiLevel}</span>`;
             } else {
                 btn1p.innerHTML = `1 PLAYER`;
             }
@@ -431,7 +517,6 @@
                 const btn = document.createElement('button');
                 btn.className = 'team-btn ' + ((!isP2 && team.id === selectedTeamP1) || (isP2 && team.id === selectedTeamP2) ? 'active' : '');
                 btn.dataset.team = team.id;
-                // Ottimizzazione: w80 per la griglia invece di w40, display nitido sui retina
                 btn.innerHTML = `<div class="flag-container"><img src="https://flagcdn.com/w80/${team.id}.png" class="flag" loading="lazy" alt="${team.name}"></div><span title="${team.name}">${team.name}</span>`;
                 btn.onclick = () => {
                     container.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
@@ -798,7 +883,7 @@
                 score2El.style.color = '#FF0055'; score2El.style.textShadow = '0 0 25px rgba(255,0,85,0.8)';
             } else {
                 let aiColor = chakraData[aiLevel].color;
-                document.getElementById('sb-flag-2').innerHTML = `<img src="logo-tondo.jpeg" style="height: 100%; width: auto; aspect-ratio: 1/1; border-radius: 50%; border: 1px solid ${aiColor}; box-shadow: 0 0 8px ${aiColor}; display: block; margin: 0 auto; object-fit: cover;">`;
+                document.getElementById('sb-flag-2').innerHTML = `<img src="logo-tondo.jpeg" style="height: 100%; width: auto; aspect-ratio: 1/1; border-radius: 50%; border: 1px solid ${aiColor}; box-shadow: 0 0 8px ${aiColor}; display: block; margin: 0 auto; object-fit: cover;" onerror="this.src='https://placehold.co/40x40/000/FFF?text=AI'">`;
                 score2El.style.color = aiColor; score2El.style.textShadow = `0 0 20px ${aiColor}80`;
                 scoreBoardEl.style.borderBottomColor = aiColor;
             }
@@ -1052,7 +1137,6 @@
             let logicalW, logicalH;
 
             if (isLandscape) {
-                // Layout Orizzontale per PC
                 logicalH = 700;
                 scale = h / logicalH;
                 logicalW = w / scale;
@@ -1068,7 +1152,6 @@
                 padLeft = Math.max(60, logicalW * 0.08);
                 padRight = Math.max(60, logicalW * 0.08);
             } else {
-                // Layout Verticale per Smartphone
                 logicalW = 600;
                 scale = w / logicalW;
                 logicalH = h / scale;
@@ -1425,7 +1508,7 @@
                     gameOverTitleEl.innerText = getTeamName(selectedTeamP2).toUpperCase() + " WINS!"; gameOverTitleEl.style.color = "#FF0055";
                 } else {
                     let aiColor = chakraData[aiLevel].color;
-                    flagHTML = `<img src="logo-tondo.jpeg" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid ${aiColor}; box-shadow: 0 2px 15px ${aiColor}; margin: 0 auto 10px; display: block; object-fit: cover;">`;
+                    flagHTML = `<img src="logo-tondo.jpeg" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid ${aiColor}; box-shadow: 0 2px 15px ${aiColor}; margin: 0 auto 10px; display: block; object-fit: cover;" onerror="this.src='https://placehold.co/60x60/000/FFF?text=AI'">`;
                     gameOverTitleEl.innerText = "SYSTEM WINS"; gameOverTitleEl.style.color = aiColor;
                 }
             } else {
